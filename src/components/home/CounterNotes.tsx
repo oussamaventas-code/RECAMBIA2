@@ -1,0 +1,155 @@
+"use client";
+
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { reviews } from "@/data/reviews";
+import { whatsappGenericUrl } from "@/lib/whatsapp";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.2 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
+function StarRating({ rating }: { rating: number }) {
+  return (
+    <div className="flex gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <svg
+          key={star}
+          className={`h-4 w-4 ${star <= rating ? "text-accent" : "text-line-strong"}`}
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+      ))}
+    </div>
+  );
+}
+
+export function CounterNotes() {
+  const quotes = reviews.slice(0, 2);
+
+  return (
+    <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="grid grid-cols-1 gap-6 md:grid-cols-2"
+      >
+        {/* B2B Card */}
+        <motion.div
+          variants={itemVariants}
+          className="group relative overflow-hidden rounded-2xl border border-line bg-surface-1"
+        >
+          {/* Background image overlay */}
+          <div
+            className="absolute inset-0 bg-cover bg-center opacity-15 transition-opacity group-hover:opacity-20"
+            style={{ backgroundImage: "url(/images/b2b-workshop.png)" }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-surface-1 via-surface-1/90 to-transparent" />
+
+          <div className="relative p-6 sm:p-8">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent-glow px-3 py-1">
+              <svg className="h-4 w-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+              <span className="text-xs font-semibold text-accent">Profesionales</span>
+            </div>
+
+            <h2 className="font-display text-2xl sm:text-3xl text-ink mb-3">
+              ¿Tienes taller?
+            </h2>
+            <p className="text-sm text-ink-muted leading-relaxed max-w-md">
+              Tarifa profesional desde el primer pedido y entrega{" "}
+              <span className="font-semibold text-ink">antes de las 9h</span>.
+              Pides por WhatsApp, confirmas por WhatsApp. Sin plataformas raras.
+            </p>
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/talleres-asociados"
+                className="inline-flex items-center justify-center rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-accent-dark hover:shadow-lg hover:shadow-accent/20 active:scale-95"
+              >
+                Tarifa profesional
+              </Link>
+              <a
+                href={whatsappGenericUrl(
+                  "Hola, tengo un taller y quiero información de la tarifa profesional."
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-line-strong px-5 py-3 text-sm font-medium text-ink transition-all hover:border-accent hover:text-accent hover:bg-accent-glow"
+              >
+                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                </svg>
+                WhatsApp
+              </a>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Reviews Card */}
+        <motion.div
+          variants={itemVariants}
+          className="rounded-2xl border border-line bg-surface-1 p-6 sm:p-8"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="font-display text-2xl text-ink">Lo que dicen</h2>
+            <span className="text-[10px] text-ink-faint">
+              Opiniones del mostrador
+            </span>
+          </div>
+
+          <ul className="flex flex-col gap-5">
+            {quotes.map((review, idx) => (
+              <motion.li
+                key={review.id}
+                initial={{ opacity: 0, x: -10 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.15 }}
+                className="rounded-xl bg-surface-2 p-4 border border-line/50"
+              >
+                <div className="flex items-start gap-3">
+                  {/* Avatar */}
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/15 text-sm font-bold text-accent">
+                    {review.author
+                      .split(" ")
+                      .map((w) => w[0])
+                      .join("")
+                      .slice(0, 2)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-semibold text-ink">
+                        {review.author}
+                      </span>
+                      <StarRating rating={review.rating} />
+                    </div>
+                    <p className="text-sm text-ink-muted leading-relaxed">
+                      &ldquo;{review.text}&rdquo;
+                    </p>
+                    <p className="mt-2 font-mono-num text-xs text-ink-faint">
+                      {review.vehicle} — {review.part}
+                    </p>
+                  </div>
+                </div>
+              </motion.li>
+            ))}
+          </ul>
+        </motion.div>
+      </motion.div>
+    </section>
+  );
+}
