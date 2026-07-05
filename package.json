@@ -1,5 +1,5 @@
 {
-  "name": "recambia-tmp",
+  "name": "recambia",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,9 +9,12 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "next": "16.2.10",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.42.2",
+    "next": "^15.5.20",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -19,7 +22,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.10",
+    "eslint-config-next": "^15.5.20",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
