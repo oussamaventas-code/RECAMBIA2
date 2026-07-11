@@ -5,15 +5,6 @@ import { products } from "@/data/products";
 import Link from "next/link";
 import { Metadata } from "next";
 
-// En un caso real, estas opciones se sacarían de la base de datos
-const MOCK_VEHICLE_DATA = {
-  plate: "1234 ABC",
-  make: "Seat",
-  model: "Leon",
-  engine: "1.5 TSI",
-  year: 2020,
-};
-
 export async function generateMetadata({ params }: { params: Promise<{ marca: string, modelo: string, categoria: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
   const categoriaCapitalized = resolvedParams.categoria.charAt(0).toUpperCase() + resolvedParams.categoria.slice(1);
@@ -104,18 +95,13 @@ export default async function SEOCategoryPage({ params }: { params: Promise<{ ma
                   <option>Recomendados</option>
                   <option>Precio: Menor a Mayor</option>
                   <option>Precio: Mayor a Menor</option>
-                  <option>Mejor valorados</option>
                 </select>
               </div>
 
               {filteredProducts.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {filteredProducts.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      vehicle={MOCK_VEHICLE_DATA}
-                    />
+                    <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
               ) : (

@@ -47,9 +47,13 @@ export function PopularParts() {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
-  const popular = [...products]
-    .sort((a, b) => b.reviewCount - a.reviewCount)
-    .slice(0, 8);
+  // Una pieza por categoría para dar variedad a la selección destacada.
+  const seenCategories = new Set<string>();
+  const popular = products.filter((p) => {
+    if (seenCategories.has(p.category)) return false;
+    seenCategories.add(p.category);
+    return true;
+  });
 
   /* ── Update arrow visibility based on scroll position ── */
   const updateScrollState = useCallback(() => {
@@ -92,7 +96,7 @@ export function PopularParts() {
         className="flex items-baseline justify-between mb-8"
       >
         <h2 className="font-display text-3xl sm:text-4xl text-ink">
-          Lo más pedido
+          Piezas destacadas
         </h2>
         <Link
           href="/resultados"

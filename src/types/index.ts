@@ -12,23 +12,6 @@ export interface Category {
   refCount: number;
 }
 
-export interface Vehicle {
-  plate: string;
-  make: string;
-  model: string;
-  engine: string;
-  year: number;
-}
-
-export interface Review {
-  id: string;
-  author: string;
-  vehicle: string;
-  part: string;
-  rating: number;
-  text: string;
-}
-
 export interface ProductSpec {
   label: string;
   value: string;
@@ -50,6 +33,7 @@ export interface Product {
   compatibleWith: string[];
   specs: ProductSpec[];
   crossSell: string[];
-  rating: number;
-  reviewCount: number;
+  // Pack/kit genérico (no ligado a una referencia OEM exacta) en vez de
+  // pieza de encaje preciso — ver PACK_BADGE en ProductCard.
+  isPack?: boolean;
 }

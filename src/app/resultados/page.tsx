@@ -4,12 +4,11 @@ import { Footer } from "@/components/layout/Footer";
 import { VehicleBanner } from "@/components/resultados/VehicleBanner";
 import { ResultsView } from "@/components/resultados/ResultsView";
 import { products } from "@/data/products";
-import { identifyVehicle } from "@/data/vehicles";
 
 export const metadata: Metadata = {
   title: "Resultados de búsqueda",
   description:
-    "Piezas compatibles con tu coche, verificadas por matrícula. Stock en España, entrega mañana.",
+    "Busca piezas por categoría, marca o precio. Confirma compatibilidad con tu matrícula por WhatsApp.",
 };
 
 interface ResultadosPageProps {
@@ -18,16 +17,16 @@ interface ResultadosPageProps {
 
 export default async function ResultadosPage({ searchParams }: ResultadosPageProps) {
   const { matricula, categoria } = await searchParams;
-  const vehicle = matricula ? identifyVehicle(matricula) : null;
+  const plate = matricula ?? null;
 
   return (
     <>
       <Nav showPlate />
       <main className="flex-1">
-        <VehicleBanner vehicle={vehicle} />
+        <VehicleBanner plate={plate} />
         <ResultsView
           products={products}
-          vehicle={vehicle}
+          plate={plate}
           initialCategory={categoria}
         />
       </main>

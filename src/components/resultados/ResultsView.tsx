@@ -2,13 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import type { Product, Vehicle } from "@/types";
+import type { Product } from "@/types";
 import { categories } from "@/data/categories";
 import { ProductCard } from "./ProductCard";
 
 interface ResultsViewProps {
   products: Product[];
-  vehicle: Vehicle | null;
+  plate: string | null;
   initialCategory?: string;
 }
 
@@ -19,7 +19,7 @@ const PRICE_RANGES = [
   { label: "Más de 100 €", min: 100, max: Infinity },
 ];
 
-export function ResultsView({ products, vehicle, initialCategory }: ResultsViewProps) {
+export function ResultsView({ products, plate, initialCategory }: ResultsViewProps) {
   const [category, setCategory] = useState(initialCategory ?? "");
   const [brand, setBrand] = useState("");
   const [priceRange, setPriceRange] = useState(0);
@@ -46,10 +46,8 @@ export function ResultsView({ products, vehicle, initialCategory }: ResultsViewP
       result.sort((a, b) => a.price - b.price);
     } else if (sortBy === "priceDesc") {
       result.sort((a, b) => b.price - a.price);
-    } else {
-      // recommended (sort by reviewCount / rating logic could go here)
-      result.sort((a, b) => b.reviewCount - a.reviewCount);
     }
+    // "recommended" mantiene el orden curado del catálogo.
 
     return result;
   }, [products, category, brand, priceRange, onlyTomorrow, sortBy]);
@@ -221,7 +219,7 @@ export function ResultsView({ products, vehicle, initialCategory }: ResultsViewP
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.25 }}
                 >
-                  <ProductCard product={product} vehicle={vehicle} />
+                  <ProductCard product={product} plate={plate} />
                 </motion.div>
               ))}
             </AnimatePresence>

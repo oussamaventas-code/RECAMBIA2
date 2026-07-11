@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { InfoPage } from "@/components/layout/InfoPage";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
+import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "Contacto",
@@ -20,7 +21,7 @@ const CHANNELS = [
     icon: "📞",
     title: "Teléfono",
     detail: "Lunes a viernes, de 9:00 a 18:30.",
-    action: { label: "600 00 00 00", href: "tel:+34600000000" },
+    action: { label: PHONE_DISPLAY, href: `tel:${PHONE_TEL}` },
     external: false,
   },
   {

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { PlateSearch } from "@/components/matricula/PlateSearch";
 import { categories } from "@/data/categories";
+import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/site-config";
 import { GlobalSearch } from "./GlobalSearch";
 
 const LINKS = [
@@ -45,8 +46,8 @@ export function Nav({ showPlate = false }: { showPlate?: boolean }) {
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <a href="tel:+34600000000" className="hover:text-ink transition-colors">
-              📞 600 00 00 00
+            <a href={`tel:${PHONE_TEL}`} className="hover:text-ink transition-colors">
+              📞 {PHONE_DISPLAY}
             </a>
             <Link href="/ayuda" className="hover:text-ink transition-colors">
               Ayuda
@@ -211,10 +212,10 @@ export function Nav({ showPlate = false }: { showPlate?: boolean }) {
                     ¿Necesitas ayuda?
                   </p>
                   <a
-                    href="tel:+34600000000"
+                    href={`tel:${PHONE_TEL}`}
                     className="flex items-center gap-2 font-mono-num text-lg font-bold text-ink"
                   >
-                    <span className="text-accent">📞</span> 600 00 00 00
+                    <span className="text-accent">📞</span> {PHONE_DISPLAY}
                   </a>
                 </div>
               </div>

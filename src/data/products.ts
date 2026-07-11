@@ -6,6 +6,11 @@ import type { Product } from "@/types";
 // la demo). El Excel de origen NO trae precio, stock en vivo, specs ni
 // compatibilidad por matrícula: esos campos siguen siendo marcadores de
 // demo hasta que conectéis el feed real de precio/stock y TecDoc.
+//
+// Los productos con isPack:true (al final del array) son packs/kits
+// genéricos de mantenimiento: no llevan referencia OEM exacta ni encaje
+// verificado, se venden igual en la mayoría de turismos y la compatibilidad
+// final se confirma por WhatsApp como con el resto del catálogo.
 export const products: Product[] = [
   // ---- FRENOS ----
   {
@@ -27,8 +32,6 @@ export const products: Product[] = [
       { label: "Marca", value: "TRW" },
     ],
     crossSell: ["p2"],
-    rating: 4.7,
-    reviewCount: 38,
   },
   {
     id: "p2",
@@ -48,8 +51,6 @@ export const products: Product[] = [
       { label: "Marca", value: "Ferodo" },
     ],
     crossSell: ["p1"],
-    rating: 4.8,
-    reviewCount: 61,
   },
   {
     id: "p3",
@@ -69,8 +70,6 @@ export const products: Product[] = [
       { label: "Marca", value: "Bosch" },
     ],
     crossSell: ["p4"],
-    rating: 4.9,
-    reviewCount: 112,
   },
   {
     id: "p4",
@@ -90,8 +89,6 @@ export const products: Product[] = [
       { label: "Marca", value: "Necto" },
     ],
     crossSell: ["p3"],
-    rating: 4.6,
-    reviewCount: 27,
   },
 
   // ---- FILTROS ----
@@ -110,8 +107,6 @@ export const products: Product[] = [
     compatibleWith: ["SEAT León TDI", "Toledo II TDI"],
     specs: [{ label: "Tipo", value: "Combustible (gasoil)" }],
     crossSell: ["p6"],
-    rating: 4.8,
-    reviewCount: 94,
   },
   {
     id: "p6",
@@ -128,8 +123,6 @@ export const products: Product[] = [
     compatibleWith: ["Citroën Jumper", "Fiat Ducato", "Peugeot Boxer"],
     specs: [{ label: "Tipo", value: "Filtro de habitáculo" }],
     crossSell: ["p5", "p7"],
-    rating: 4.7,
-    reviewCount: 73,
   },
   {
     id: "p7",
@@ -146,8 +139,6 @@ export const products: Product[] = [
     compatibleWith: ["BMW — por confirmar con matrícula"],
     specs: [{ label: "Tipo", value: "Panel filtrante" }],
     crossSell: ["p8"],
-    rating: 4.8,
-    reviewCount: 58,
   },
   {
     id: "p8",
@@ -164,8 +155,6 @@ export const products: Product[] = [
     compatibleWith: ["Citroën — varios modelos", "Peugeot — varios modelos"],
     specs: [{ label: "Tipo", value: "Cartucho filtrante" }],
     crossSell: ["p7"],
-    rating: 4.9,
-    reviewCount: 140,
   },
 
   // ---- SUSPENSIÓN ----
@@ -184,8 +173,6 @@ export const products: Product[] = [
     compatibleWith: ["Toyota — por confirmar con matrícula"],
     specs: [{ label: "Gama", value: "RAID (todo terreno)" }],
     crossSell: ["p10"],
-    rating: 4.8,
-    reviewCount: 22,
   },
   {
     id: "p10",
@@ -205,8 +192,6 @@ export const products: Product[] = [
       { label: "Gama", value: "Original" },
     ],
     crossSell: ["p9"],
-    rating: 4.7,
-    reviewCount: 85,
   },
   {
     id: "p11",
@@ -223,8 +208,6 @@ export const products: Product[] = [
     compatibleWith: ["BMW Serie 5 E39"],
     specs: [{ label: "Posición", value: "Derecho" }],
     crossSell: ["p12"],
-    rating: 4.8,
-    reviewCount: 33,
   },
   {
     id: "p12",
@@ -241,8 +224,6 @@ export const products: Product[] = [
     compatibleWith: ["Peugeot 206 GTI (1998-2003)"],
     specs: [{ label: "Gama", value: "Sport" }],
     crossSell: ["p11"],
-    rating: 4.9,
-    reviewCount: 19,
   },
 
   // ---- MOTOR ----
@@ -261,8 +242,6 @@ export const products: Product[] = [
     compatibleWith: ["Fiat — varios modelos", "Lancia — varios modelos"],
     specs: [{ label: "Tipo", value: "Distribución" }],
     crossSell: ["p14"],
-    rating: 4.8,
-    reviewCount: 67,
   },
   {
     id: "p14",
@@ -280,8 +259,6 @@ export const products: Product[] = [
     compatibleWith: ["Renault — por confirmar con matrícula"],
     specs: [{ label: "Incluye", value: "Correa, tensor y rodillos" }],
     crossSell: ["p13", "p16"],
-    rating: 4.7,
-    reviewCount: 41,
   },
   {
     id: "p15",
@@ -298,8 +275,6 @@ export const products: Product[] = [
     compatibleWith: ["Uso industrial / comercial"],
     specs: [{ label: "Tipo", value: "Poli-V" }],
     crossSell: [],
-    rating: 4.6,
-    reviewCount: 15,
   },
   {
     id: "p16",
@@ -316,8 +291,6 @@ export const products: Product[] = [
     compatibleWith: ["Ford Focus", "Ford Fiesta", "Ford Fusion"],
     specs: [{ label: "Tipo", value: "Mecánica" }],
     crossSell: ["p14"],
-    rating: 4.8,
-    reviewCount: 52,
   },
 
   // ---- ELÉCTRICO ----
@@ -336,8 +309,6 @@ export const products: Product[] = [
     compatibleWith: ["Mitsubishi — por confirmar con matrícula"],
     specs: [{ label: "Gama", value: "Nuevo (CGB)" }],
     crossSell: ["p18"],
-    rating: 4.7,
-    reviewCount: 29,
   },
   {
     id: "p18",
@@ -354,8 +325,6 @@ export const products: Product[] = [
     compatibleWith: ["Hyundai — por confirmar con matrícula"],
     specs: [{ label: "Gama", value: "Nuevo (CGB)" }],
     crossSell: ["p17"],
-    rating: 4.7,
-    reviewCount: 24,
   },
   {
     id: "p19",
@@ -372,8 +341,6 @@ export const products: Product[] = [
     compatibleWith: ["Por confirmar con matrícula"],
     specs: [{ label: "Gama", value: "Nuevo (CGB)" }],
     crossSell: ["p20"],
-    rating: 4.6,
-    reviewCount: 18,
   },
   {
     id: "p20",
@@ -390,8 +357,6 @@ export const products: Product[] = [
     compatibleWith: ["Por confirmar con matrícula"],
     specs: [{ label: "Marca", value: "Prestolite" }],
     crossSell: ["p19"],
-    rating: 4.5,
-    reviewCount: 11,
   },
 
   // ---- TRANSMISIÓN ----
@@ -410,8 +375,6 @@ export const products: Product[] = [
     compatibleWith: ["Renault R-18 GTs"],
     specs: [{ label: "Gama", value: "OE (EO1)" }],
     crossSell: ["p22"],
-    rating: 4.8,
-    reviewCount: 14,
   },
   {
     id: "p22",
@@ -428,8 +391,6 @@ export const products: Product[] = [
     compatibleWith: ["Toyota Land Cruiser 3.4D"],
     specs: [{ label: "Gama", value: "OE (EO1)" }],
     crossSell: ["p21"],
-    rating: 4.9,
-    reviewCount: 21,
   },
   {
     id: "p23",
@@ -447,8 +408,6 @@ export const products: Product[] = [
     compatibleWith: ["Ford Mondeo III", "Ford Transit"],
     specs: [{ label: "Tipo", value: "Volante bimasa" }],
     crossSell: [],
-    rating: 4.7,
-    reviewCount: 17,
   },
   {
     id: "p24",
@@ -465,8 +424,6 @@ export const products: Product[] = [
     compatibleWith: ["Renault Kangoo 1.9D"],
     specs: [{ label: "Posición", value: "Derecha" }],
     crossSell: [],
-    rating: 4.6,
-    reviewCount: 9,
   },
 
   // ---- CARROCERÍA ----
@@ -488,8 +445,6 @@ export const products: Product[] = [
       { label: "Cristal", value: "Convexo" },
     ],
     crossSell: ["p26"],
-    rating: 4.6,
-    reviewCount: 30,
   },
   {
     id: "p26",
@@ -506,8 +461,6 @@ export const products: Product[] = [
     compatibleWith: ["Por confirmar con matrícula"],
     specs: [{ label: "Color", value: "Rojo / ámbar" }],
     crossSell: ["p27"],
-    rating: 4.5,
-    reviewCount: 20,
   },
   {
     id: "p27",
@@ -527,8 +480,6 @@ export const products: Product[] = [
       { label: "Color", value: "Blanco" },
     ],
     crossSell: ["p26"],
-    rating: 4.6,
-    reviewCount: 12,
   },
   {
     id: "p28",
@@ -545,8 +496,6 @@ export const products: Product[] = [
     compatibleWith: ["Mercedes — por confirmar con matrícula"],
     specs: [{ label: "Tipo", value: "Luna delantera" }],
     crossSell: [],
-    rating: 4.4,
-    reviewCount: 8,
   },
 
   // ---- CLIMATIZACIÓN ----
@@ -565,8 +514,6 @@ export const products: Product[] = [
     compatibleWith: ["Citroën XM Turbo CT-D (desde 1995)"],
     specs: [{ label: "Marca", value: "Nissens" }],
     crossSell: ["p30"],
-    rating: 4.7,
-    reviewCount: 16,
   },
   {
     id: "p30",
@@ -583,8 +530,6 @@ export const products: Product[] = [
     compatibleWith: ["Audi — varios modelos", "SEAT — varios modelos", "VW Golf V 2.0"],
     specs: [{ label: "Marca", value: "Valeo" }],
     crossSell: ["p29"],
-    rating: 4.8,
-    reviewCount: 44,
   },
   {
     id: "p31",
@@ -601,8 +546,6 @@ export const products: Product[] = [
     compatibleWith: ["Fiat Punto (2002-)", "Fiat Idea"],
     specs: [{ label: "Tipo", value: "Condensador A/C" }],
     crossSell: ["p32"],
-    rating: 4.7,
-    reviewCount: 26,
   },
   {
     id: "p32",
@@ -619,8 +562,131 @@ export const products: Product[] = [
     compatibleWith: ["Nissan Terrano II"],
     specs: [{ label: "Modelo compresor", value: "Calsonic DKV14C" }],
     crossSell: ["p31"],
-    rating: 4.6,
-    reviewCount: 13,
+  },
+
+  // ---- PACKS GENÉRICOS DE MANTENIMIENTO ----
+  {
+    id: "p33",
+    slug: "pack-pastillas-freno-delanteras-generico",
+    name: "Pack pastillas de freno delanteras (genérico)",
+    category: "frenos",
+    brand: "RECAMBIA",
+    oemRef: "PACK-FREN-DEL",
+    equivalentRefs: [],
+    price: 34.9,
+    stock: "alto",
+    deliveryTomorrow: true,
+    images: [],
+    compatibleWith: ["La mayoría de turismos — confirmamos tu modelo por WhatsApp"],
+    specs: [
+      { label: "Incluye", value: "Juego de 4 pastillas" },
+      { label: "Eje", value: "Delantero" },
+    ],
+    crossSell: ["p34", "p35"],
+    isPack: true,
+  },
+  {
+    id: "p34",
+    slug: "pack-pastillas-freno-traseras-generico",
+    name: "Pack pastillas de freno traseras (genérico)",
+    category: "frenos",
+    brand: "RECAMBIA",
+    oemRef: "PACK-FREN-TRA",
+    equivalentRefs: [],
+    price: 29.9,
+    stock: "alto",
+    deliveryTomorrow: true,
+    images: [],
+    compatibleWith: ["La mayoría de turismos — confirmamos tu modelo por WhatsApp"],
+    specs: [
+      { label: "Incluye", value: "Juego de 4 pastillas" },
+      { label: "Eje", value: "Trasero" },
+    ],
+    crossSell: ["p33", "p35"],
+    isPack: true,
+  },
+  {
+    id: "p35",
+    slug: "kit-discos-pastillas-delanteros-generico",
+    name: "Kit discos + pastillas delanteros (genérico)",
+    category: "frenos",
+    brand: "RECAMBIA",
+    oemRef: "PACK-FREN-KIT-DEL",
+    equivalentRefs: [],
+    price: 89.9,
+    compareAtPrice: 108.8,
+    stock: "alto",
+    deliveryTomorrow: true,
+    images: [],
+    compatibleWith: ["La mayoría de turismos — confirmamos tu modelo por WhatsApp"],
+    specs: [
+      { label: "Incluye", value: "2 discos + juego de 4 pastillas" },
+      { label: "Eje", value: "Delantero" },
+    ],
+    crossSell: ["p33", "p34"],
+    isPack: true,
+  },
+  {
+    id: "p36",
+    slug: "pack-filtros-mantenimiento-generico",
+    name: "Pack de filtros de mantenimiento (genérico)",
+    category: "filtros",
+    brand: "RECAMBIA",
+    oemRef: "PACK-FILT-MANT",
+    equivalentRefs: [],
+    price: 39.9,
+    stock: "alto",
+    deliveryTomorrow: true,
+    images: [],
+    compatibleWith: ["La mayoría de turismos — confirmamos tu modelo por WhatsApp"],
+    specs: [
+      { label: "Incluye", value: "Filtro de aceite, aire y habitáculo" },
+      { label: "Uso", value: "Revisión / mantenimiento periódico" },
+    ],
+    crossSell: ["p37", "p38"],
+    isPack: true,
+  },
+  {
+    id: "p37",
+    slug: "aceite-motor-5w30-sintetico-5l",
+    name: "Aceite de motor 5W30 sintético (5L)",
+    category: "aceites",
+    brand: "RECAMBIA",
+    oemRef: "ACEITE-5W30-5L",
+    equivalentRefs: [],
+    price: 34.9,
+    stock: "alto",
+    deliveryTomorrow: true,
+    images: [],
+    compatibleWith: ["Gasolina y diésel — confirmamos la especificación de tu motor por WhatsApp"],
+    specs: [
+      { label: "Viscosidad", value: "5W30" },
+      { label: "Formato", value: "Garrafa 5 litros" },
+      { label: "Tipo", value: "Sintético" },
+    ],
+    crossSell: ["p38", "p36"],
+    isPack: true,
+  },
+  {
+    id: "p38",
+    slug: "aceite-motor-5w40-sintetico-5l",
+    name: "Aceite de motor 5W40 sintético (5L)",
+    category: "aceites",
+    brand: "RECAMBIA",
+    oemRef: "ACEITE-5W40-5L",
+    equivalentRefs: [],
+    price: 32.9,
+    stock: "alto",
+    deliveryTomorrow: true,
+    images: [],
+    compatibleWith: ["Gasolina y diésel — confirmamos la especificación de tu motor por WhatsApp"],
+    specs: [
+      { label: "Viscosidad", value: "5W40" },
+      { label: "Formato", value: "Garrafa 5 litros" },
+      { label: "Tipo", value: "Sintético" },
+    ],
+    crossSell: ["p37", "p36"],
+    isPack: true,
   },
 ];
 

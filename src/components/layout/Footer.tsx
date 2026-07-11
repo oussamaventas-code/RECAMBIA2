@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { BUSINESS_HOURS, PHONE_DISPLAY, PHONE_TEL } from "@/lib/site-config";
 
 const COLUMNS = [
   {
@@ -106,7 +107,7 @@ export function Footer() {
 
             <div className="mt-6 flex flex-col gap-3">
               <a
-                href="tel:+34600000000"
+                href={`tel:${PHONE_TEL}`}
                 className="group flex items-center gap-3 text-sm text-ink-muted hover:text-ink transition-colors"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-surface-2 group-hover:bg-accent/15 group-hover:text-accent transition-colors">
@@ -115,8 +116,8 @@ export function Footer() {
                   </svg>
                 </div>
                 <div>
-                  <p className="font-semibold text-ink">600 00 00 00</p>
-                  <p className="text-xs">Lunes a Viernes (9:00 - 18:30)</p>
+                  <p className="font-semibold text-ink">{PHONE_DISPLAY}</p>
+                  <p className="text-xs">{BUSINESS_HOURS}</p>
                 </div>
               </a>
             </div>

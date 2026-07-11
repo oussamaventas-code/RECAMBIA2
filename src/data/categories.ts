@@ -49,4 +49,10 @@ export const categories: Category[] = [
     description: "Compresores, radiadores y condensadores",
     refCount: 4870,
   },
+  {
+    slug: "aceites",
+    name: "Aceites y líquidos",
+    description: "Aceite de motor, líquido de frenos y refrigerante",
+    refCount: 3120,
+  },
 ];

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { reviews } from "@/data/reviews";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
 
 const containerVariants = {
@@ -18,26 +17,22 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
-function StarRating({ rating }: { rating: number }) {
-  return (
-    <div className="flex gap-0.5">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <svg
-          key={star}
-          className={`h-4 w-4 ${star <= rating ? "text-accent" : "text-line-strong"}`}
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
-      ))}
-    </div>
-  );
-}
+const TRUST_POINTS = [
+  {
+    title: "Somos profesionales del recambio",
+    text: "No es un dropshipping: llevamos años en el sector y conocemos la pieza que vendemos.",
+  },
+  {
+    title: "Reparto propio",
+    text: "El equipo que entrega es el mismo que confirma tu pedido. Sin mensajería externa de por medio.",
+  },
+  {
+    title: "Te atiende una persona",
+    text: "Escribes por WhatsApp y te responde alguien del equipo, no un bot ni un asistente automático.",
+  },
+];
 
 export function CounterNotes() {
-  const quotes = reviews.slice(0, 2);
-
   return (
     <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
       <motion.div
@@ -99,51 +94,33 @@ export function CounterNotes() {
           </div>
         </motion.div>
 
-        {/* Reviews Card */}
+        {/* Trust Card */}
         <motion.div
           variants={itemVariants}
           className="rounded-2xl border border-line bg-surface-1 p-6 sm:p-8"
         >
           <div className="flex items-center justify-between mb-6">
-            <h2 className="font-display text-2xl text-ink">Lo que dicen</h2>
-            <span className="text-[10px] text-ink-faint">
-              Opiniones del mostrador
-            </span>
+            <h2 className="font-display text-2xl text-ink">¿Por qué RECAMBIA?</h2>
           </div>
 
           <ul className="flex flex-col gap-5">
-            {quotes.map((review, idx) => (
+            {TRUST_POINTS.map((point, idx) => (
               <motion.li
-                key={review.id}
+                key={point.title}
                 initial={{ opacity: 0, x: -10 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.15 }}
-                className="rounded-xl bg-surface-2 p-4 border border-line/50"
+                className="flex items-start gap-3 rounded-xl bg-surface-2 p-4 border border-line/50"
               >
-                <div className="flex items-start gap-3">
-                  {/* Avatar */}
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/15 text-sm font-bold text-accent">
-                    {review.author
-                      .split(" ")
-                      .map((w) => w[0])
-                      .join("")
-                      .slice(0, 2)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-semibold text-ink">
-                        {review.author}
-                      </span>
-                      <StarRating rating={review.rating} />
-                    </div>
-                    <p className="text-sm text-ink-muted leading-relaxed">
-                      &ldquo;{review.text}&rdquo;
-                    </p>
-                    <p className="mt-2 font-mono-num text-xs text-ink-faint">
-                      {review.vehicle} — {review.part}
-                    </p>
-                  </div>
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-ink">{point.title}</p>
+                  <p className="text-sm text-ink-muted leading-relaxed">{point.text}</p>
                 </div>
               </motion.li>
             ))}

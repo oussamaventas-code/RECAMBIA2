@@ -4,9 +4,9 @@ import { useRouter } from "next/navigation";
 import { useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { formatPlateInput, isPlateComplete } from "./plate-format";
-import { identifyVehicle, vehicleLabel } from "@/data/vehicles";
+import { whatsappPlateUrl } from "@/lib/whatsapp";
 
-type Status = "idle" | "scanning" | "identifying" | "identified";
+type Status = "idle" | "sending" | "ready";
 
 interface PlateSearchProps {
   variant?: "hero" | "compact";
@@ -42,14 +42,11 @@ export function PlateSearch({
     timers.current = [];
   }
 
-  function runIdentification() {
+  function runSearch() {
     if (!complete || status !== "idle") return;
     clearTimers();
-    setStatus("scanning");
-    timers.current.push(
-      setTimeout(() => setStatus("identifying"), 900),
-      setTimeout(() => setStatus("identified"), 2000),
-    );
+    setStatus("sending");
+    timers.current.push(setTimeout(() => setStatus("ready"), 800));
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -59,14 +56,12 @@ export function PlateSearch({
       router.push(`/resultados?matricula=${encodeURIComponent(value)}`);
       return;
     }
-    runIdentification();
+    runSearch();
   }
 
-  function handleVerPiezas() {
+  function handleVerCatalogo() {
     router.push(`/resultados?matricula=${encodeURIComponent(value)}`);
   }
-
-  const vehicle = complete ? identifyVehicle(value) : null;
 
   return (
     <div className={className}>
@@ -141,11 +136,11 @@ export function PlateSearch({
           />
 
           {/* Scan animation */}
-          {isHero && status === "scanning" && (
+          {isHero && status === "sending" && (
             <motion.div
               initial={{ x: "-100%" }}
               animate={{ x: "200%" }}
-              transition={{ duration: 0.9, ease: "linear" }}
+              transition={{ duration: 0.8, ease: "linear" }}
               className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-accent/50 to-transparent"
               aria-hidden="true"
             />
@@ -189,9 +184,9 @@ export function PlateSearch({
       {/* Status feedback */}
       {isHero && (
         <AnimatePresence mode="wait">
-          {status === "identifying" && (
+          {status === "sending" && (
             <motion.div
-              key="identifying"
+              key="sending"
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
@@ -200,16 +195,16 @@ export function PlateSearch({
               <span className="h-2.5 w-2.5 flex-shrink-0 animate-pulse-led rounded-full bg-accent shadow-sm shadow-accent/50" />
               <div className="flex-1">
                 <p className="font-mono-num text-sm text-ink-muted">
-                  Identificando vehículo…
+                  Buscando en el catálogo…
                 </p>
                 <div className="mt-2 h-2 w-2/3 animate-pulse rounded-full bg-line" />
               </div>
             </motion.div>
           )}
 
-          {status === "identified" && vehicle && (
+          {status === "ready" && (
             <motion.div
-              key="identified"
+              key="ready"
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
@@ -222,16 +217,29 @@ export function PlateSearch({
                   </svg>
                 </span>
                 <p className="text-sm text-ink">
-                  <span className="font-semibold">{vehicleLabel(vehicle)}</span>{" "}
-                  <span className="text-success">verificado</span>
+                  Matrícula <span className="font-semibold">{value}</span>{" "}
+                  <span className="text-ink-muted">lista para consultar</span>
                 </p>
               </div>
-              <button
-                onClick={handleVerPiezas}
-                className="rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-accent-dark hover:shadow-lg hover:shadow-accent/20 active:scale-95"
-              >
-                Ver piezas compatibles →
-              </button>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={handleVerCatalogo}
+                  className="rounded-xl border border-line-strong bg-surface-1 px-4 py-2.5 text-xs font-semibold text-ink-muted transition-all hover:border-ink-faint hover:text-ink"
+                >
+                  Ver catálogo
+                </button>
+                <a
+                  href={whatsappPlateUrl(value)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-success px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-success-glow hover:shadow-lg hover:shadow-success/20 active:scale-95"
+                >
+                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                  </svg>
+                  Preguntar por WhatsApp
+                </a>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
