@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { whatsappOrderUrl } from "@/lib/whatsapp";
+import { categoryImage } from "@/lib/category-image";
+import { ProcessStrip } from "@/components/shared/ProcessStrip";
 import Link from "next/link";
+import Image from "next/image";
 import { Metadata } from "next";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -11,8 +14,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const product = getProductBySlug(resolvedParams.slug);
   if (!product) return { title: "No encontrado" };
   return {
-    title: `${product.name} ${product.brand} - RECAMBIA`,
-    description: `Compra ${product.name} de ${product.brand} al mejor precio. Compatible con: ${product.compatibleWith?.join(", ")}`,
+    title: `${product.name} ${product.brand}`,
+    description: `Consulta disponibilidad de ${product.name} de ${product.brand} por WhatsApp. Compatible con: ${product.compatibleWith?.join(", ")}`,
   };
 }
 
@@ -30,16 +33,10 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
     notFound();
   }
 
-  const stockBadge =
-    product.stock === "alto"
-      ? { color: "bg-success", text: "En stock", bg: "bg-success/10", border: "border-success/20" }
-      : product.stock === "bajo"
-      ? { color: "bg-warning", text: "Últimas unidades", bg: "bg-warning/10", border: "border-warning/20" }
-      : { color: "bg-danger", text: "Agotado", bg: "bg-danger/10", border: "border-danger/20" };
-
-  // Datos estructurados para Google (rich results / Shopping).
-  // Sin aggregateRating a propósito: no enviamos valoraciones a Google
-  // hasta tener reseñas reales.
+  // Datos estructurados para Google (rich results).
+  // Sin "offers" a propósito: no hay precio ni stock en tiempo real que
+  // publicar, se confirman por WhatsApp. Un Offer con datos inventados
+  // incumple las políticas de datos estructurados de Google.
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -47,17 +44,6 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
     sku: product.oemRef,
     brand: { "@type": "Brand", name: product.brand },
     description: `${product.name} de ${product.brand}. Compatible con: ${product.compatibleWith?.join(", ")}`,
-    offers: {
-      "@type": "Offer",
-      url: `https://recambia.es/producto/${product.slug}`,
-      priceCurrency: "EUR",
-      price: product.price.toFixed(2),
-      availability:
-        product.stock === "agotado"
-          ? "https://schema.org/OutOfStock"
-          : "https://schema.org/InStock",
-      itemCondition: "https://schema.org/NewCondition",
-    },
   };
 
   return (
@@ -82,13 +68,30 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             {/* Left: Images */}
             <div className="lg:col-span-5">
-              <div className="rounded-2xl border border-line bg-surface-1 p-8 sticky top-24 shadow-sm flex items-center justify-center min-h-[400px]">
+              <div className="rounded-2xl border border-line bg-surface-1 p-8 sticky top-24 shadow-sm flex items-center justify-center min-h-[400px] relative">
                 {product.images[0] ? (
-                  <img
+                  <Image
                     src={product.images[0]}
                     alt={product.name}
-                    className="w-full h-auto object-contain mix-blend-multiply"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 500px"
+                    className="object-contain p-8 mix-blend-multiply"
                   />
+                ) : categoryImage(product.category) ? (
+                  <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
+                    <div className="relative h-64 w-64">
+                      <Image
+                        src={categoryImage(product.category)!}
+                        alt={product.name}
+                        fill
+                        sizes="256px"
+                        className="object-contain"
+                      />
+                    </div>
+                    <p className="text-xs text-ink-faint">
+                      Imagen ilustrativa — foto real del producto por WhatsApp
+                    </p>
+                  </div>
                 ) : (
                   <div className="flex flex-col items-center gap-4">
                     <div className="flex h-32 w-32 items-center justify-center rounded-3xl bg-surface-2 border border-line">
@@ -116,37 +119,10 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
                 {product.name}
               </h1>
 
-              {/* Price & Stock card */}
+              <ProcessStrip className="mb-6" />
+
+              {/* Consulta card */}
               <div className="rounded-2xl border border-line bg-surface-1 p-6 mb-8 shadow-sm">
-                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-6">
-                  <div>
-                    {product.compareAtPrice && (
-                      <span className="block text-sm text-ink-faint line-through mb-1">
-                        {product.compareAtPrice.toFixed(2)} €
-                      </span>
-                    )}
-                    <span className="font-mono-num text-4xl font-extrabold text-ink tracking-tight">
-                      {product.price.toFixed(2)} <span className="text-xl font-normal text-ink-muted">€</span>
-                    </span>
-                    <p className="text-xs text-ink-muted mt-1">IVA incluido. Envío gratis +60€</p>
-                  </div>
-
-                  <div className="flex flex-col items-end gap-2">
-                     <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold text-ink border ${stockBadge.bg} ${stockBadge.border}`}>
-                        <span className={`h-2.5 w-2.5 rounded-full ${stockBadge.color} ${product.stock !== "agotado" ? "animate-pulse-led" : ""}`} />
-                        {stockBadge.text}
-                     </span>
-                     {product.deliveryTomorrow && (
-                       <span className="text-sm font-medium text-success flex items-center gap-1.5">
-                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                         </svg>
-                         Recíbelo mañana
-                       </span>
-                     )}
-                  </div>
-                </div>
-
                 {/* Installation Badge */}
                 <div className="mb-6 flex items-center gap-3 rounded-xl bg-surface-2 p-4 border border-line">
                   <svg className="h-6 w-6 shrink-0 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -154,11 +130,17 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-ink">Instalación en taller asociado desde 30€</p>
-                    <p className="text-xs text-ink-muted mt-0.5">Te enviamos la pieza al taller y solo pagas el montaje. <Link href="/talleres-asociados" className="text-accent hover:underline">Saber más</Link></p>
+                    <p className="text-sm font-medium text-ink">¿Prefieres que te la monten?</p>
+                    <p className="text-xs text-ink-muted mt-0.5">Te proponemos un taller de confianza cercano y le enviamos la pieza. <Link href="/talleres-asociados" className="text-accent hover:underline">Saber más</Link></p>
                   </div>
                 </div>
 
+                <p className="flex items-center justify-center gap-1.5 text-center text-sm text-ink-muted mb-3">
+                  <svg className="h-4 w-4 shrink-0 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Sin compra ni pago aquí: un recambista te confirma precio, disponibilidad y compatibilidad por WhatsApp.
+                </p>
                 <a
                   href={whatsappOrderUrl(product, matricula)}
                   target="_blank"
@@ -168,9 +150,8 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
                   </svg>
-                  Comprar por WhatsApp
+                  Consultar precio y disponibilidad
                 </a>
-                <p className="text-center text-xs text-ink-faint mt-4">Nuestros expertos revisarán tu bastidor para confirmar 100% de compatibilidad antes del cobro.</p>
               </div>
 
               {/* Tecnical Details Grid */}

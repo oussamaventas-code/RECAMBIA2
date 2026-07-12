@@ -6,7 +6,7 @@ import { whatsappGenericUrl } from "@/lib/whatsapp";
 export function WhatsAppFloat() {
   return (
     <motion.a
-      href={whatsappGenericUrl("Hola, quiero información sobre una pieza.")}
+      href={whatsappGenericUrl("¡Hola! Vengo de la web y necesito ayuda para encontrar un recambio.")}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Escríbenos por WhatsApp"

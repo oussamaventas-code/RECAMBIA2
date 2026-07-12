@@ -20,7 +20,7 @@ export default function TalleresAsociadosPage() {
                 La red de talleres de confianza de RECAMBIA.
               </h1>
               <p className="text-lg text-ink-muted leading-relaxed max-w-2xl mb-8">
-                Compra tus piezas online al mejor precio y envíalas directamente a uno de nuestros más de 500 talleres asociados en toda España para que te las monten. Sin complicaciones.
+                Compra tus piezas al mejor precio y te decimos dónde montarlas: trabajamos con talleres de confianza a los que podemos enviar la pieza directamente. Sin complicaciones.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
@@ -58,7 +58,7 @@ export default function TalleresAsociadosPage() {
                 </div>
                 <h3 className="font-display text-xl text-ink mb-3">Encuentra tu pieza</h3>
                 <p className="text-sm text-ink-muted">
-                  Introduce tu matrícula en RECAMBIA y añade al carrito los recambios exactos que necesita tu coche al mejor precio del mercado.
+                  Escríbenos por WhatsApp con tu matrícula y la pieza que necesitas. Te confirmamos referencia exacta y precio al momento.
                 </p>
               </div>
 
@@ -70,7 +70,7 @@ export default function TalleresAsociadosPage() {
                 </div>
                 <h3 className="font-display text-xl text-ink mb-3">Elige tu taller</h3>
                 <p className="text-sm text-ink-muted">
-                  Durante el proceso de pago, introduce tu código postal y selecciona el taller de nuestra red que más te convenga por cercanía y precio.
+                  Dinos tu código postal y te proponemos un taller de confianza cercano. Tú eliges si te llevamos la pieza a casa o directamente al taller.
                 </p>
               </div>
 

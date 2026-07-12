@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/mi-garaje"],
+      disallow: ["/presupuesto"],
     },
     sitemap: "https://recambia.es/sitemap.xml",
   };

@@ -1,89 +1,43 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { categories } from "@/data/categories";
 
-/* ─── SVG icons (32×32, stroke-based, currentColor) ─── */
-const categoryIcons: Record<string, React.ReactNode> = {
-  frenos: (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="16" cy="16" r="12" />
-      <circle cx="16" cy="16" r="5" />
-      <circle cx="16" cy="16" r="2" />
-      <line x1="16" y1="4" x2="16" y2="8" />
-      <line x1="16" y1="24" x2="16" y2="28" />
-      <line x1="4" y1="16" x2="8" y2="16" />
-      <line x1="24" y1="16" x2="28" y2="16" />
-    </svg>
-  ),
-  filtros: (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="4,5 28,5 18,18 18,27 14,27 14,18" />
-    </svg>
-  ),
-  suspension: (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M10 4 L10 8 L6 11 L10 14 L6 17 L10 20 L6 23 L10 26 L10 28" />
-      <line x1="22" y1="4" x2="22" y2="12" />
-      <rect x="18" y="12" width="8" height="12" rx="1" />
-      <line x1="22" y1="24" x2="22" y2="28" />
-    </svg>
-  ),
-  motor: (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="16" cy="16" r="10" />
-      <circle cx="16" cy="16" r="4" />
-      <path d="M16 2 L16 6" />
-      <path d="M16 26 L16 30" />
-      <path d="M2 16 L6 16" />
-      <path d="M26 16 L30 16" />
-      <path d="M5.9 5.9 L8.7 8.7" />
-      <path d="M23.3 23.3 L26.1 26.1" />
-      <path d="M26.1 5.9 L23.3 8.7" />
-      <path d="M8.7 23.3 L5.9 26.1" />
-    </svg>
-  ),
-  electrico: (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="18,3 10,17 16,17 14,29 22,15 16,15 18,3" />
-    </svg>
-  ),
-  transmision: (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="11" cy="11" r="7" />
-      <circle cx="11" cy="11" r="2.5" />
-      <circle cx="23" cy="21" r="5" />
-      <circle cx="23" cy="21" r="2" />
-      <path d="M11 4 L11 7" />
-      <path d="M11 15 L11 18" />
-      <path d="M4 11 L7 11" />
-      <path d="M15 11 L18 11" />
-    </svg>
-  ),
-  carroceria: (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 20 L6 12 L12 8 L22 8 L27 12 L29 20" />
-      <line x1="2" y1="20" x2="30" y2="20" />
-      <circle cx="9" cy="23" r="3" />
-      <circle cx="23" cy="23" r="3" />
-      <line x1="12" y1="20" x2="12" y2="23" />
-      <line x1="20" y1="20" x2="20" y2="23" />
-    </svg>
-  ),
-  climatizacion: (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="16" y1="3" x2="16" y2="29" />
-      <polyline points="10,9 16,3 22,9" />
-      <path d="M16 9 L22 12" />
-      <path d="M16 15 L10 12" />
-      <path d="M16 15 L22 18" />
-      <path d="M16 21 L10 18" />
-      <path d="M16 21 L22 24" />
-      <path d="M16 27 L10 24" />
-    </svg>
-  ),
+/* ─── Premium category images (PNG for categories with photos, SVG fallback) ─── */
+const categoryImages: Record<string, { src: string; isPng: boolean }> = {
+  frenos: { src: "/images/categorias/frenos.png", isPng: true },
+  filtros: { src: "/images/categorias/filtros.png", isPng: true },
+  suspension: { src: "/images/categorias/suspension.png", isPng: true },
+  motor: { src: "/images/categorias/motor.png", isPng: true },
+  electrico: { src: "/images/categorias/electrico.png", isPng: true },
+  transmision: { src: "/images/categorias/transmision.png", isPng: true },
+  carroceria: { src: "/images/categorias/carroceria.png", isPng: true },
+  climatizacion: { src: "/images/categorias/climatizacion.png", isPng: true },
+  aceites: { src: "/images/categorias/aceites.png", isPng: true },
 };
+
+/* ─── Fallback SVG icon for categories without image ─── */
+function FallbackIcon() {
+  return (
+    <svg
+      width="48"
+      height="48"
+      viewBox="0 0 32 32"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="text-ink-faint"
+    >
+      <rect x="6" y="6" width="20" height="20" rx="3" />
+      <line x1="6" y1="16" x2="26" y2="16" />
+      <line x1="16" y1="6" x2="16" y2="26" />
+    </svg>
+  );
+}
 
 /* ─── Animation variants ─── */
 const containerVariants = {
@@ -115,12 +69,14 @@ export function CategoryIndex() {
         viewport={{ once: true }}
         className="flex items-baseline justify-between mb-10"
       >
-        <h2 className="font-display text-3xl sm:text-4xl text-ink">
-          Catálogo
-        </h2>
-        <span className="font-mono-num text-sm text-accent font-semibold">
-          +500.000 referencias
-        </span>
+        <div>
+          <h2 className="font-display text-3xl sm:text-4xl text-ink">
+            Piezas destacadas
+          </h2>
+          <p className="mt-2 text-sm text-ink-muted">
+            Filtros, aceites, frenos y todo lo que tu coche necesite.
+          </p>
+        </div>
       </motion.div>
 
       {/* Grid */}
@@ -129,51 +85,82 @@ export function CategoryIndex() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-60px" }}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
       >
-        {categories.map((category) => (
-          <motion.li key={category.slug} variants={itemVariants}>
-            <Link
-              href={`/resultados?categoria=${category.slug}`}
-              className="group relative flex flex-col gap-3 rounded-xl border border-line bg-surface-1 p-5 transition-all duration-300 hover:glow-border hover:shadow-lg hover:shadow-accent/5"
-            >
-              {/* Icon */}
-              <span className="text-accent transition-transform duration-300 group-hover:scale-110 origin-top-left">
-                {categoryIcons[category.slug] ?? (
-                  <svg
-                    width="32"
-                    height="32"
-                    viewBox="0 0 32 32"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <rect x="6" y="6" width="20" height="20" rx="3" />
-                    <line x1="6" y1="16" x2="26" y2="16" />
-                    <line x1="16" y1="6" x2="16" y2="26" />
-                  </svg>
-                )}
-              </span>
+        {categories.map((category) => {
+          const image = categoryImages[category.slug];
+          return (
+            <motion.li key={category.slug} variants={itemVariants}>
+              <Link
+                href={`/resultados?categoria=${category.slug}`}
+                className="group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-surface-1 transition-all duration-300 hover:glow-border hover:shadow-lg hover:shadow-accent/5"
+              >
+                {/* Image area */}
+                <div className="relative h-44 w-full overflow-hidden bg-surface-2">
+                  {image?.isPng ? (
+                    <Image
+                      src={image.src}
+                      alt={category.name}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 384px"
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : image ? (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <Image
+                        src={image.src}
+                        alt={category.name}
+                        width={80}
+                        height={80}
+                        className="h-20 w-20 opacity-40"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <FallbackIcon />
+                    </div>
+                  )}
 
-              {/* Category name */}
-              <h3 className="font-display text-lg text-ink transition-colors group-hover:text-accent">
-                {category.name}
-              </h3>
+                  {/* Dark gradient overlay for text readability on PNG */}
+                  {image?.isPng && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                  )}
 
-              {/* Description */}
-              <p className="text-sm text-ink-muted leading-relaxed line-clamp-2">
-                {category.description}
-              </p>
+                  {/* Category name overlay on image */}
+                  {image?.isPng && (
+                    <div className="absolute inset-x-0 bottom-0 p-5">
+                      <h3 className="font-display text-xl text-white drop-shadow-lg">
+                        {category.name}
+                      </h3>
+                    </div>
+                  )}
+                </div>
 
-              {/* Ref count badge */}
-              <span className="mt-auto self-end font-mono-num text-xs text-accent font-semibold">
-                {category.refCount.toLocaleString("es-ES")} refs
-              </span>
-            </Link>
-          </motion.li>
-        ))}
+                {/* Text area */}
+                <div className="p-5">
+                  {!image?.isPng && (
+                    <h3 className="font-display text-lg text-ink mb-1 transition-colors group-hover:text-accent">
+                      {category.name}
+                    </h3>
+                  )}
+
+                  {/* Description */}
+                  <p className="text-sm text-ink-muted leading-relaxed">
+                    {category.description}
+                  </p>
+
+                  {/* CTA hint */}
+                  <span className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-accent opacity-0 transition-opacity group-hover:opacity-100">
+                    Ver piezas
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                </div>
+              </Link>
+            </motion.li>
+          );
+        })}
       </motion.ul>
     </section>
   );

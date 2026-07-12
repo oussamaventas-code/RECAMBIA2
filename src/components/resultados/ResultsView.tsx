@@ -12,48 +12,25 @@ interface ResultsViewProps {
   initialCategory?: string;
 }
 
-const PRICE_RANGES = [
-  { label: "Todos los precios", min: 0, max: Infinity },
-  { label: "Hasta 25 €", min: 0, max: 25 },
-  { label: "25 – 100 €", min: 25, max: 100 },
-  { label: "Más de 100 €", min: 100, max: Infinity },
-];
-
 export function ResultsView({ products, plate, initialCategory }: ResultsViewProps) {
   const [category, setCategory] = useState(initialCategory ?? "");
   const [brand, setBrand] = useState("");
-  const [priceRange, setPriceRange] = useState(0);
-  const [onlyTomorrow, setOnlyTomorrow] = useState(false);
-  const [sortBy, setSortBy] = useState("recommended"); // recommended, priceAsc, priceDesc
 
   const brands = useMemo(
     () => [...new Set(products.map((p) => p.brand))].sort(),
     [products],
   );
 
-  const filtered = useMemo(() => {
-    const range = PRICE_RANGES[priceRange];
-    const result = products.filter(
-      (p) =>
-        (!category || p.category === category) &&
-        (!brand || p.brand === brand) &&
-        p.price >= range.min &&
-        p.price < range.max &&
-        (!onlyTomorrow || p.deliveryTomorrow),
-    );
-
-    if (sortBy === "priceAsc") {
-      result.sort((a, b) => a.price - b.price);
-    } else if (sortBy === "priceDesc") {
-      result.sort((a, b) => b.price - a.price);
-    }
-    // "recommended" mantiene el orden curado del catálogo.
-
-    return result;
-  }, [products, category, brand, priceRange, onlyTomorrow, sortBy]);
+  const filtered = useMemo(
+    () =>
+      products.filter(
+        (p) => (!category || p.category === category) && (!brand || p.brand === brand),
+      ),
+    [products, category, brand],
+  );
 
   return (
-    <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[280px_1fr]">
+    <div className="mx-auto flex max-w-7xl flex-col-reverse gap-8 px-4 py-8 sm:px-6 lg:grid lg:grid-cols-[280px_1fr]">
       {/* Sidebar Filters */}
       <aside aria-label="Filtros" className="lg:sticky lg:top-24 lg:self-start">
         <div className="glass-card flex flex-col gap-6 rounded-2xl p-6">
@@ -63,8 +40,6 @@ export function ResultsView({ products, plate, initialCategory }: ResultsViewPro
               onClick={() => {
                 setCategory("");
                 setBrand("");
-                setPriceRange(0);
-                setOnlyTomorrow(false);
               }}
               className="text-xs font-medium text-accent hover:text-accent-light transition-colors"
             >
@@ -108,73 +83,18 @@ export function ResultsView({ products, plate, initialCategory }: ResultsViewPro
             </div>
           </fieldset>
 
-          <fieldset className="border-t border-line/50 pt-6">
-            <legend className="mb-3 text-xs font-semibold uppercase tracking-wider text-ink-muted">
-              Precio
-            </legend>
-            <div className="flex flex-col gap-1.5">
-              {PRICE_RANGES.map((r, i) => (
-                <FilterButton
-                  key={r.label}
-                  active={priceRange === i}
-                  onClick={() => setPriceRange(i)}
-                >
-                  {r.label}
-                </FilterButton>
-              ))}
-            </div>
-          </fieldset>
-
-          <div className="border-t border-line/50 pt-6">
-            <label className="group flex cursor-pointer items-center gap-3 text-sm text-ink hover:text-accent transition-colors">
-              <div className={`flex h-5 w-5 items-center justify-center rounded border transition-colors ${
-                onlyTomorrow ? "border-accent bg-accent text-white" : "border-line-strong bg-surface-2"
-              }`}>
-                {onlyTomorrow && (
-                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                )}
-              </div>
-              <input
-                type="checkbox"
-                checked={onlyTomorrow}
-                onChange={(e) => setOnlyTomorrow(e.target.checked)}
-                className="hidden"
-              />
-              <span className="flex items-center gap-1.5">
-                <span className="text-accent">⚡</span> Entrega mañana
-              </span>
-            </label>
-          </div>
         </div>
       </aside>
 
       {/* Main Results Area */}
       <div>
-        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="mb-6">
           <p className="font-mono-num text-sm text-ink-muted" role="status">
             <span className="rounded-md bg-accent/15 px-2 py-1 text-accent font-bold border border-accent/20">
               {filtered.length}
             </span>{" "}
             {filtered.length === 1 ? "pieza encontrada" : "piezas encontradas"}
           </p>
-
-          <div className="flex items-center gap-2">
-            <label htmlFor="sort" className="text-xs text-ink-muted uppercase tracking-wider font-semibold">
-              Ordenar por:
-            </label>
-            <select
-              id="sort"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="rounded-lg border border-line bg-surface-2 px-3 py-1.5 text-sm text-ink outline-none hover:border-line-strong focus:border-accent focus:ring-1 focus:ring-accent"
-            >
-              <option value="recommended">Recomendados</option>
-              <option value="priceAsc">Precio: menor a mayor</option>
-              <option value="priceDesc">Precio: mayor a menor</option>
-            </select>
-          </div>
         </div>
 
         {filtered.length === 0 ? (
@@ -196,8 +116,6 @@ export function ResultsView({ products, plate, initialCategory }: ResultsViewPro
               onClick={() => {
                 setCategory("");
                 setBrand("");
-                setPriceRange(0);
-                setOnlyTomorrow(false);
               }}
               className="mt-6 rounded-xl bg-surface-3 px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-line-strong"
             >

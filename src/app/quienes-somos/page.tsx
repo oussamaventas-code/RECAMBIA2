@@ -35,7 +35,7 @@ export default function QuienesSomosPage() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="rounded-2xl border border-line bg-surface-1 p-5 text-center">
             <p className="font-mono-num text-2xl font-bold text-accent">+500.000</p>
-            <p className="mt-1 text-xs">referencias en catálogo</p>
+            <p className="mt-1 text-xs">referencias a nuestro alcance</p>
           </div>
           <div className="rounded-2xl border border-line bg-surface-1 p-5 text-center">
             <p className="font-mono-num text-2xl font-bold text-accent">+500</p>

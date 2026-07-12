@@ -1,16 +1,13 @@
 import type { Product } from "@/types";
 
-// Referencia, marca y descripción reales, extraídas del catálogo del
-// proveedor ("Consulta Producto.xlsx", 524.623 referencias, no se toca /
-// no se borra ese archivo — esto es solo una muestra representativa para
-// la demo). El Excel de origen NO trae precio, stock en vivo, specs ni
-// compatibilidad por matrícula: esos campos siguen siendo marcadores de
-// demo hasta que conectéis el feed real de precio/stock y TecDoc.
+// Escaparate de productos: selección estratégica de piezas reales (marca,
+// referencia y descripción del catálogo del proveedor) pensada para atraer
+// al cliente desde los anuncios. El objetivo NO es mostrar todo el stock,
+// sino provocar que el usuario consulte por WhatsApp.
 //
 // Los productos con isPack:true (al final del array) son packs/kits
-// genéricos de mantenimiento: no llevan referencia OEM exacta ni encaje
-// verificado, se venden igual en la mayoría de turismos y la compatibilidad
-// final se confirma por WhatsApp como con el resto del catálogo.
+// genéricos de mantenimiento. La compatibilidad final se confirma
+// siempre por WhatsApp con el recambista.
 export const products: Product[] = [
   // ---- FRENOS ----
   {

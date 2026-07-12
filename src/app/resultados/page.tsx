@@ -3,6 +3,7 @@ import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { VehicleBanner } from "@/components/resultados/VehicleBanner";
 import { ResultsView } from "@/components/resultados/ResultsView";
+import { ProcessStrip } from "@/components/shared/ProcessStrip";
 import { products } from "@/data/products";
 
 export const metadata: Metadata = {
@@ -24,6 +25,9 @@ export default async function ResultadosPage({ searchParams }: ResultadosPagePro
       <Nav showPlate />
       <main className="flex-1">
         <VehicleBanner plate={plate} />
+        <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6">
+          <ProcessStrip />
+        </div>
         <ResultsView
           products={products}
           plate={plate}

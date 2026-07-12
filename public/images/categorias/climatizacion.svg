@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <rect width="200" height="200" rx="24" fill="#f1f5f9"/>
+  <!-- Radiador -->
+  <rect x="46" y="62" width="108" height="76" rx="8" fill="#e2e8f0" stroke="#475569" stroke-width="3"/>
+  <!-- Aletas -->
+  <g stroke="#94a3b8" stroke-width="2.5">
+    <line x1="58" y1="70" x2="58" y2="130"/>
+    <line x1="70" y1="70" x2="70" y2="130"/>
+    <line x1="82" y1="70" x2="82" y2="130"/>
+    <line x1="94" y1="70" x2="94" y2="130"/>
+    <line x1="106" y1="70" x2="106" y2="130"/>
+    <line x1="118" y1="70" x2="118" y2="130"/>
+    <line x1="130" y1="70" x2="130" y2="130"/>
+    <line x1="142" y1="70" x2="142" y2="130"/>
+  </g>
+  <!-- Tubos -->
+  <rect x="36" y="70" width="10" height="16" rx="4" fill="#64748b"/>
+  <rect x="154" y="114" width="10" height="16" rx="4" fill="#64748b"/>
+  <!-- Copo de frío -->
+  <g stroke="#2563eb" stroke-width="4" stroke-linecap="round">
+    <line x1="100" y1="146" x2="100" y2="174"/>
+    <line x1="88" y1="153" x2="112" y2="167"/>
+    <line x1="88" y1="167" x2="112" y2="153"/>
+  </g>
+</svg>

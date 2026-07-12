@@ -17,7 +17,8 @@ export async function POST(request: NextRequest) {
   try {
     event = getStripe().webhooks.constructEvent(rawBody, signature, webhookSecret);
   } catch (err) {
-    return NextResponse.json({ error: `Firma inválida: ${(err as Error).message}` }, { status: 400 });
+    console.error("Error validando firma de webhook de Stripe:", err);
+    return NextResponse.json({ error: "Firma inválida" }, { status: 400 });
   }
 
   if (event.type === "checkout.session.completed") {

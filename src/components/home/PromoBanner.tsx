@@ -19,7 +19,7 @@ export function PromoBanner() {
           <div
             className="relative w-full py-3 px-4"
             style={{
-              background: "linear-gradient(135deg, #0066ff 0%, #43aaff 100%)",
+              background: "linear-gradient(135deg, #16a34a 0%, #22c55e 100%)",
             }}
           >
             {/* ── Shimmer overlay ── */}
@@ -37,11 +37,11 @@ export function PromoBanner() {
             {/* ── Content ── */}
             <div className="relative flex items-center justify-center">
               <p className="text-sm font-semibold text-white text-center pr-8 sm:pr-0">
-                🚚 Envío GRATIS en pedidos +60€ —{" "}
+                🔧 Compra tu pieza y llévate{" "}
                 <span className="font-extrabold tracking-wide">
-                  entrega 24h
+                  asesoramiento mecánico GRATIS
                 </span>{" "}
-                en península
+                por WhatsApp
               </p>
 
               {/* ── Close button ── */}

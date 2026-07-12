@@ -1,14 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import type { Product } from "@/types";
-
-const STOCK_LABEL: Record<Product["stock"], { text: string; color: string; glow: string }> = {
-  alto: { text: "En stock", color: "bg-success", glow: "shadow-success/30" },
-  bajo: { text: "Últimas unidades", color: "bg-warning", glow: "shadow-warning/30" },
-  agotado: { text: "Bajo pedido", color: "bg-danger", glow: "shadow-danger/30" },
-};
+import { categoryImage } from "@/lib/category-image";
 
 interface ProductCardProps {
   product: Product;
@@ -16,7 +12,6 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, plate }: ProductCardProps) {
-  const stock = STOCK_LABEL[product.stock];
   const productHref = plate
     ? `/producto/${product.slug}?matricula=${encodeURIComponent(plate)}`
     : `/producto/${product.slug}`;
@@ -27,40 +22,40 @@ export function ProductCard({ product, plate }: ProductCardProps) {
       transition={{ duration: 0.25, ease: "easeOut" }}
       className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-surface-1 transition-all duration-300 hover:border-accent/50 hover:shadow-xl hover:shadow-accent/5"
     >
-      {/* Image / Brand Placeholder */}
+      {/* Image */}
       <Link
         href={productHref}
         className="relative flex h-52 items-center justify-center bg-gradient-to-br from-surface-2 via-surface-1 to-surface-2 overflow-hidden"
       >
-        {/* Brand initial with glow */}
-        <motion.div
-          whileHover={{ scale: 1.1, rotate: 5 }}
-          className="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-surface-2 border border-line group-hover:border-accent/30 transition-all"
-        >
-          <span className="font-display text-4xl text-ink-faint/50 group-hover:text-accent/40 transition-colors">
-            {product.brand.charAt(0)}
-          </span>
-        </motion.div>
-
-        {/* Delivery badge */}
-        {product.deliveryTomorrow && (
-          <span className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-success/15 px-3 py-1.5 text-xs font-semibold text-success border border-success/20 backdrop-blur-sm">
-            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-            24h
-          </span>
-        )}
-
-        {/* Discount badge */}
-        {product.compareAtPrice && (
-          <span className="absolute right-3 top-3 rounded-full bg-danger/15 px-3 py-1.5 font-mono-num text-xs font-bold text-danger border border-danger/20 backdrop-blur-sm">
-            −{Math.round((1 - product.price / product.compareAtPrice) * 100)}%
-          </span>
+        {product.images[0] ? (
+          <Image
+            src={product.images[0]}
+            alt={product.name}
+            fill
+            sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 300px"
+            className="object-contain p-4 mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : categoryImage(product.category) ? (
+          <Image
+            src={categoryImage(product.category)!}
+            alt={product.name}
+            fill
+            sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 300px"
+            className="object-contain p-6 opacity-80 mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <motion.div
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            className="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-surface-2 border border-line group-hover:border-accent/30 transition-all"
+          >
+            <span className="font-display text-4xl text-ink-faint/50 group-hover:text-accent/40 transition-colors">
+              {product.brand.charAt(0)}
+            </span>
+          </motion.div>
         )}
 
         {/* Shimmer on hover */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-gradient-to-r from-transparent via-accent/5 to-transparent" />
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-gradient-to-r from-transparent via-accent/5 to-transparent z-10" />
       </Link>
 
       {/* Content */}
@@ -105,31 +100,7 @@ export function ProductCard({ product, plate }: ProductCardProps) {
           </motion.div>
         )}
 
-        {/* Price + Stock */}
         <div className="mt-auto pt-4">
-          {/* Price */}
-          <div className="flex items-baseline gap-2 mb-3">
-            <span className="font-mono-num text-2xl font-extrabold text-ink">
-              {product.price.toFixed(2).replace(".", ",")}
-              <span className="text-base ml-0.5">€</span>
-            </span>
-            {product.compareAtPrice && (
-              <span className="font-mono-num text-xs text-ink-faint line-through">
-                {product.compareAtPrice.toFixed(2).replace(".", ",")} €
-              </span>
-            )}
-          </div>
-
-          {/* Stock row */}
-          <div className="mb-4 flex items-center gap-2 text-xs">
-            <span
-              className={`h-2 w-2 rounded-full ${stock.color} ${
-                product.stock !== "agotado" ? "animate-pulse-led" : ""
-              }`}
-            />
-            <span className="text-ink-muted">{stock.text}</span>
-          </div>
-
           {/* Installation Badge */}
           <Link href={productHref} className="mb-4 flex items-center gap-2 rounded-lg bg-surface-2 p-2 border border-line hover:border-accent transition-colors">
             <svg className="h-4 w-4 shrink-0 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -137,7 +108,7 @@ export function ProductCard({ product, plate }: ProductCardProps) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
             <span className="text-[11px] text-ink-muted">
-              Montaje disponible desde <strong className="text-ink">30€</strong>
+              Montaje en taller disponible — <strong className="text-ink">pregúntanos</strong>
             </span>
           </Link>
 
@@ -149,7 +120,7 @@ export function ProductCard({ product, plate }: ProductCardProps) {
             Ver Ficha Técnica
           </Link>
           <p className="mt-2 text-center text-[10px] text-ink-faint">
-            Confirmación en &lt;2h por WhatsApp
+            Precio y disponibilidad, en &lt;2h por WhatsApp
           </p>
         </div>
       </div>

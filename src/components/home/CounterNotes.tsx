@@ -23,12 +23,16 @@ const TRUST_POINTS = [
     text: "No es un dropshipping: llevamos años en el sector y conocemos la pieza que vendemos.",
   },
   {
-    title: "Reparto propio",
-    text: "El equipo que entrega es el mismo que confirma tu pedido. Sin mensajería externa de por medio.",
+    title: "Te atiende una persona, siempre",
+    text: "Escribes por WhatsApp y te responde un recambista real. Sin bots, sin respuestas automáticas.",
   },
   {
-    title: "Te atiende una persona",
-    text: "Escribes por WhatsApp y te responde alguien del equipo, no un bot ni un asistente automático.",
+    title: "Asesoramiento mecánico incluido",
+    text: "Nuestro mecánico te orienta con el montaje, te avisa de precauciones y resuelve tus dudas post-compra.",
+  },
+  {
+    title: "Reparto propio en 24h",
+    text: "El equipo que entrega es el mismo que confirma tu pedido. Sin mensajería externa de por medio.",
   },
 ];
 
@@ -103,7 +107,7 @@ export function CounterNotes() {
             <h2 className="font-display text-2xl text-ink">¿Por qué RECAMBIA?</h2>
           </div>
 
-          <ul className="flex flex-col gap-5">
+          <ul className="flex flex-col gap-4">
             {TRUST_POINTS.map((point, idx) => (
               <motion.li
                 key={point.title}

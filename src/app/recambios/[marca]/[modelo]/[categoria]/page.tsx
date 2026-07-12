@@ -9,8 +9,8 @@ export async function generateMetadata({ params }: { params: Promise<{ marca: st
   const resolvedParams = await params;
   const categoriaCapitalized = resolvedParams.categoria.charAt(0).toUpperCase() + resolvedParams.categoria.slice(1);
   return {
-    title: `Recambios de ${categoriaCapitalized} para ${resolvedParams.marca} ${resolvedParams.modelo} - RECAMBIA`,
-    description: `Catálogo de ${categoriaCapitalized} para ${resolvedParams.marca} ${resolvedParams.modelo}. Los mejores precios con envío en 24h y montaje en red de talleres.`,
+    title: `Recambios de ${categoriaCapitalized} para ${resolvedParams.marca} ${resolvedParams.modelo}`,
+    description: `Recambios de ${categoriaCapitalized} para ${resolvedParams.marca} ${resolvedParams.modelo}. Los mejores precios con envío en 24h y montaje en red de talleres.`,
   };
 }
 

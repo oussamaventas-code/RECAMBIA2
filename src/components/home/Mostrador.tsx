@@ -65,9 +65,9 @@ function useCountUp(target: number, duration = 2000, active = false) {
 
 /* ── feature pills ── */
 const features = [
+  { icon: "💬", label: "Atención 1 a 1" },
+  { icon: "🔧", label: "Asesoramiento mecánico" },
   { icon: "⚡", label: "Entrega 24h" },
-  { icon: "💬", label: "Respuesta <2h" },
-  { icon: "↩", label: "Recogida gratis" },
 ];
 
 /* ══════════════════════════════════════════════ */
@@ -77,9 +77,9 @@ export function Mostrador() {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.15 });
 
-  // Cifras reales del catálogo del proveedor (Consulta Producto.xlsx)
-  const refTotal = useCountUp(524623, 2200, isInView);
-  const refBrands = useCountUp(539, 1800, isInView);
+  // Valores clave del servicio humano (no del catálogo)
+  const refYears = useCountUp(15, 1400, isInView);
+  const refTeam = useCountUp(4, 1200, isInView);
   const ref24 = useCountUp(24, 1400, isInView);
 
   return (
@@ -94,6 +94,8 @@ export function Mostrador() {
           loop
           muted
           playsInline
+          preload="metadata"
+          poster="/hero/hero-poster.jpg"
           className="absolute inset-0 h-full w-full object-cover object-center opacity-90"
         >
           <source src="/hero/hero-video.mp4" type="video/mp4" />
@@ -131,7 +133,7 @@ export function Mostrador() {
             <motion.div variants={fadeUp}>
               <span className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-4 py-1.5 text-xs font-semibold tracking-wide text-accent-dark">
                 <span className="inline-block h-1.5 w-1.5 animate-pulse-led rounded-full bg-accent" />
-                Stock real en España · Atención humana
+                Equipo de 4 expertos · Asesoramiento incluido
               </span>
             </motion.div>
 
@@ -151,14 +153,27 @@ export function Mostrador() {
               variants={fadeUp}
               className="mt-5 max-w-lg text-base leading-relaxed text-ink-muted sm:text-lg"
             >
-              Escribe tu matrícula y te decimos qué encaja en tu coche.
+              Escribe tu matrícula y un recambista te confirma pieza,
+              precio y disponibilidad al momento.
               <br className="hidden sm:block" />{" "}
-              Te confirma una persona, no un algoritmo.
+              Te atiende una persona, no un bot.
             </motion.p>
 
             {/* PlateSearch */}
             <motion.div variants={fadeUp} className="mt-8 max-w-md">
               <PlateSearch variant="hero" />
+              <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-sm">
+                <a href="/resultados" className="text-ink-muted underline decoration-line transition-colors hover:text-ink hover:decoration-ink-faint">
+                  ¿No te sabes la matrícula?
+                </a>
+                <span className="flex items-center gap-1.5 font-medium text-accent-dark">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75"></span>
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-accent"></span>
+                  </span>
+                  Pide antes de las 18:00h para envío hoy
+                </span>
+              </div>
             </motion.div>
 
             {/* Feature Pills */}
@@ -191,28 +206,28 @@ export function Mostrador() {
             animate={isInView ? "visible" : "hidden"}
             className="flex flex-col gap-6 py-6 sm:flex-row sm:items-center sm:gap-0 sm:divide-x sm:divide-line/50"
           >
-            {/* Stat: referencias en catálogo */}
+            {/* Stat: años de experiencia */}
             <motion.div
               variants={fadeIn}
               className="flex items-baseline gap-2 sm:pr-8"
             >
               <span className="font-mono-num text-2xl font-bold text-ink sm:text-3xl">
-                {refTotal.toLocaleString("es-ES")}
+                {refYears}
                 <span className="text-accent">+</span>
               </span>
-              <span className="text-sm text-ink-muted">referencias</span>
+              <span className="text-sm text-ink-muted">años de experiencia</span>
             </motion.div>
 
-            {/* Stat: marcas de fabricante */}
+            {/* Stat: personas en el equipo */}
             <motion.div
               variants={fadeIn}
               className="flex items-baseline gap-2 sm:px-8"
             >
               <span className="font-mono-num text-2xl font-bold text-ink sm:text-3xl">
-                {refBrands}
-                <span className="text-accent">+</span>
+                {refTeam}
+                <span className="text-accent"> </span>
               </span>
-              <span className="text-sm text-ink-muted">marcas de fabricante</span>
+              <span className="text-sm text-ink-muted">expertos a tu servicio</span>
             </motion.div>
 
             {/* Stat: 24h */}

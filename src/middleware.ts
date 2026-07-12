@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ADMIN_COOKIE } from "@/lib/site-config";
+import { verifySession } from "@/lib/session";
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const cookie = request.cookies.get(ADMIN_COOKIE)?.value;
-  const expected = process.env.ADMIN_PASSWORD;
 
-  if (!expected || cookie !== expected) {
+  let isAuthenticated = false;
+  if (cookie) {
+    const payload = await verifySession(cookie);
+    if (payload === "admin_auth") {
+      isAuthenticated = true;
+    }
+  }
+
+  if (!isAuthenticated) {
     if (request.nextUrl.pathname.startsWith("/api/")) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
@@ -19,5 +27,10 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/presupuesto/nuevo", "/api/presupuesto/firmar"],
+  matcher: [
+    "/presupuesto/nuevo",
+    "/presupuesto/nuevo/:path*",
+    "/api/presupuesto/firmar",
+    "/api/presupuesto/firmar/:path*",
+  ],
 };

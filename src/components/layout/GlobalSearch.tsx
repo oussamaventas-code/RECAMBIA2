@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { searchProducts } from "@/data/products";
 import type { Product } from "@/types";
+import { categoryImage } from "@/lib/category-image";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function GlobalSearch() {
@@ -88,8 +89,12 @@ export function GlobalSearch() {
                       className="flex items-center gap-4 rounded-xl p-3 hover:bg-surface-2 transition-colors"
                     >
                       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-surface-2 p-1 border border-line">
-                        {product.images[0] ? (
-                          <img src={product.images[0]} alt={product.name} className="h-full w-full object-contain mix-blend-multiply" />
+                        {product.images[0] || categoryImage(product.category) ? (
+                          <img
+                            src={product.images[0] ?? categoryImage(product.category)!}
+                            alt={product.name}
+                            className="h-full w-full object-contain"
+                          />
                         ) : (
                           <span className="font-display text-lg text-ink-faint/60" aria-hidden="true">
                             {product.brand.charAt(0)}
@@ -103,9 +108,9 @@ export function GlobalSearch() {
                           <span className="truncate">{product.category}</span>
                         </div>
                       </div>
-                      <div className="text-right shrink-0">
-                        <span className="block text-sm font-bold text-accent">{product.price.toFixed(2)}€</span>
-                      </div>
+                      <svg className="h-4 w-4 shrink-0 text-ink-faint" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
                     </Link>
                   </li>
                 ))}

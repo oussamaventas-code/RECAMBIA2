@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <rect width="200" height="200" rx="24" fill="#f1f5f9"/>
+  <!-- Garrafa de aceite -->
+  <path d="M70 74 L70 62 Q70 56 76 56 L104 56 Q110 56 110 62 L110 72 L126 84 Q132 89 132 96 L132 148 Q132 158 122 158 L74 158 Q64 158 64 148 L64 84 Q64 77 70 74 Z"
+        fill="#e2e8f0" stroke="#475569" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Tapón -->
+  <rect x="78" y="42" width="24" height="16" rx="4" fill="#2563eb" stroke="#1d4ed8" stroke-width="2.5"/>
+  <!-- Asa -->
+  <path d="M110 76 L122 86 Q126 89 126 94 L126 104 L112 104 L112 82 Z" fill="#cbd5e1"/>
+  <!-- Etiqueta -->
+  <rect x="74" y="100" width="46" height="40" rx="6" fill="#f8fafc" stroke="#64748b" stroke-width="2"/>
+  <text x="97" y="122" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#475569" text-anchor="middle">5W30</text>
+  <line x1="82" y1="130" x2="112" y2="130" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round"/>
+  <!-- Gota -->
+  <path d="M148 118 Q158 132 158 140 A10 10 0 0 1 138 140 Q138 132 148 118 Z" fill="#2563eb"/>
+</svg>

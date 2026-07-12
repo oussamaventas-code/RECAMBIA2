@@ -3,16 +3,15 @@ import { WHATSAPP_NUMBER } from "@/lib/site-config";
 
 export function buildOrderMessage(product: Product, plate?: string | null): string {
   const lines = [
-    "Hola, quiero pedir esta pieza:",
+    "Hola, quiero información sobre esta pieza:",
     "",
     `• ${product.name} — ${product.brand}`,
     `• REF OEM: ${product.oemRef}`,
-    `• Precio web: ${product.price.toFixed(2).replace(".", ",")} €`,
   ];
   if (plate) {
     lines.push(`• Mi matrícula: ${plate}`);
   }
-  lines.push("", "¿Me confirmáis disponibilidad y entrega?");
+  lines.push("", "¿Me confirmáis precio, disponibilidad y entrega?");
   return lines.join("\n");
 }
 
@@ -28,6 +27,6 @@ export function whatsappGenericUrl(message: string): string {
 
 export function whatsappPlateUrl(plate: string): string {
   return whatsappGenericUrl(
-    `Hola, mi matrícula es ${plate}. ¿Qué piezas tenéis disponibles para mi coche?`,
+    `¡Hola! Mi matrícula es ${plate} y busco un recambio rápido. ¿Me podéis ayudar?`,
   );
 }

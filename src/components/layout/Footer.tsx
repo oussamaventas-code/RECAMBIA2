@@ -3,16 +3,17 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { BUSINESS_HOURS, PHONE_DISPLAY, PHONE_TEL } from "@/lib/site-config";
+import { whatsappGenericUrl } from "@/lib/whatsapp";
 
 const COLUMNS = [
   {
-    title: "Catálogo",
+    title: "Piezas",
     links: [
       { href: "/resultados?categoria=frenos", label: "Frenos" },
       { href: "/resultados?categoria=filtros", label: "Filtros" },
       { href: "/resultados?categoria=motor", label: "Motor" },
       { href: "/resultados?categoria=suspension", label: "Suspensión" },
-      { href: "/resultados", label: "Ver todo el catálogo" },
+      { href: "/resultados", label: "Ver todas las piezas" },
     ],
   },
   {
@@ -51,35 +52,30 @@ const itemVariants = {
 export function Footer() {
   return (
     <footer className="border-t border-line bg-surface-1">
-      {/* Newsletter Section */}
+      {/* WhatsApp CTA Section */}
       <div className="border-b border-line bg-surface-2/50">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:flex lg:items-center lg:justify-between">
           <div className="mb-6 lg:mb-0">
             <h3 className="font-display text-xl text-ink">
-              Únete a nuestra newsletter
+              ¿No encuentras tu pieza?
             </h3>
             <p className="mt-2 text-sm text-ink-muted max-w-md">
-              Recibe ofertas exclusivas, consejos de mantenimiento y novedades
-              directamente en tu correo. Sin spam, prometido.
+              La web es solo nuestro escaparate. Si tu pieza se vende en el
+              mercado de recambio, la conseguimos: mándanos tu matrícula y te
+              la buscamos.
             </p>
           </div>
-          <form
-            className="flex w-full max-w-md items-center gap-3"
-            onSubmit={(e) => e.preventDefault()}
+          <a
+            href={whatsappGenericUrl("Hola, busco una pieza que no encuentro en la web. Mi matrícula es: ")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-xl bg-success px-6 py-3 font-semibold text-white transition-all hover:bg-success-glow hover:shadow-lg hover:shadow-success/20 active:scale-95"
           >
-            <input
-              type="email"
-              placeholder="Tu email..."
-              className="w-full rounded-xl border border-line bg-surface-1 px-4 py-3 text-sm text-ink outline-none transition-colors focus:border-accent focus:ring-1 focus:ring-accent placeholder:text-ink-faint"
-              required
-            />
-            <button
-              type="submit"
-              className="shrink-0 rounded-xl bg-accent px-6 py-3 font-semibold text-white transition-all hover:bg-accent-dark hover:shadow-lg hover:shadow-accent/20 active:scale-95"
-            >
-              Suscribirme
-            </button>
-          </form>
+            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+            </svg>
+            Preguntar por WhatsApp
+          </a>
         </div>
       </div>
 
@@ -159,39 +155,42 @@ export function Footer() {
               Pago 100% Seguro
             </span>
             {/* Visa */}
-            <div className="flex h-8 w-12 items-center justify-center rounded bg-white px-2">
-              <svg viewBox="0 0 38 12" className="w-full text-[#1A1F71]" fill="currentColor">
-                <path d="M14.3 11.5l2.2-11.2H13l-1.7 7.7-2-7.7H6L3 7.8 2.2.3H0l1.1 11.2h3.4l2.8-8 2 8h5zm8.9-11.1c-1.8-.4-3.6-.3-5 .4l.9 3.2c1.2-.5 2.5-.7 3.5-.3.6.2.8.6.7 1.2-.2 1.4-3.3 1.5-3.6 4-.2 1.8 1.4 3 3.6 3 1.9 0 3.7-.5 4.6-1.1l-.9-3.2c-1.3.7-2.7 1-3.6.8-.7-.2-.9-.7-.8-1.3.1-1.4 3.4-1.5 3.6-4.1.2-1.9-1.3-3.1-3-3.1zm11.2 7.7c-.1-1.1-1.1-1.8-2.6-1.9-1.7-.2-2-.8-1.9-1.4.1-.7 1.1-1.2 2.7-1 .9.1 1.9.4 2.5.7l.6-2.9c-1.2-.5-2.6-.7-4.1-.6-3.1.2-4.9 2-4.6 4.2.3 2 2.1 2.8 4 3 1.4.2 1.7.9 1.6 1.6-.1.8-1.2 1.4-3 1.1-1.2-.2-2.5-.6-3.3-1.1l-.6 3c1.3.7 3.1 1 4.7.9 3.3-.2 5-2.1 4.7-4.5zm-5-7.6h-3l-4.5 11.2h3.5l.7-2h4.3l.4 2h3.4L29.4.5zm-2.4 6.7l1.3-3.8.7 3.8h-2z"/>
+            <div className="flex h-8 w-12 items-center justify-center rounded bg-white px-2 border border-line shadow-sm">
+              <svg viewBox="0 0 256 83" fill="none" className="h-3 w-auto">
+                <path d="M112.56 80.892l-14.792-78.69H74.32l-14.774 78.69h23.498l2.955-16.155h28.618l2.81 16.155h28.163zM89.702 46.852l7.466-39.774 10.366 39.774H89.702zM151.763 80.892l14.774-78.69h-23.497l-14.775 78.69h23.498z" fill="#1434CB"/>
+                <path d="M205.82 2.202c-15.656 0-26.657 8.358-26.749 20.323-.11 8.847 7.915 13.782 13.974 16.732 6.223 3.033 8.318 4.975 8.298 7.697-.035 4.15-5.011 6.064-9.645 6.064-6.425 0-9.883-.993-15.228-3.376l-2.128-.992-3.34 20.785c3.81 1.764 10.871 3.284 18.281 3.378 16.634 0 27.468-8.232 27.596-20.947.129-7.037-3.957-12.39-13.348-16.936-5.525-2.83-8.908-4.72-8.89-7.587.018-2.61 2.923-5.385 9.167-5.385 5.16 0 8.946.993 11.905 2.372l1.636.75 3.19-20.088c-3.14-1.12-8.083-2.793-14.93-2.793zM67.31 2.202h-18.06c-4.485 0-7.896 1.25-9.697 5.753L.2 80.892H24.81l4.89-13.438h30.298l14.72-65.253H67.31zm-24.81 48.77l10.33-28.536 5.86 28.536H42.5z" fill="#1434CB"/>
               </svg>
             </div>
             {/* Mastercard */}
-            <div className="flex h-8 w-12 items-center justify-center rounded bg-white px-2">
-              <svg viewBox="0 0 36 22" className="w-full">
-                <circle cx="11" cy="11" r="11" fill="#EB001B"/>
-                <circle cx="25" cy="11" r="11" fill="#F79E1B"/>
-                <path d="M18 20.3a11 11 0 000-18.6 11 11 0 000 18.6z" fill="#FF5F00"/>
+            <div className="flex h-8 w-12 items-center justify-center rounded bg-white px-2 border border-line shadow-sm">
+              <svg viewBox="0 0 44 26" className="h-4 w-auto">
+                <circle cx="13" cy="13" r="13" fill="#EB001B"/>
+                <circle cx="31" cy="13" r="13" fill="#F79E1B"/>
+                <path d="M22 24.3a12.9 12.9 0 000-22.6 12.9 12.9 0 000 22.6z" fill="#FF5F00"/>
               </svg>
             </div>
-            {/* PayPal */}
-            <div className="flex h-8 w-12 items-center justify-center rounded bg-white px-2">
-              <svg viewBox="0 0 100 26" className="w-full text-[#003087]" fill="currentColor">
-                <path d="M12.9 0H3.8c-.5 0-.9.4-1 .9l-2.6 16.4c-.1.5.3 1 .8 1h3.6c.4 0 .7-.3.8-.7l.9-5.4h3c4 0 6.1-2 6.7-5.9.3-1.9 0-3.6-1.1-4.8C13.8.4 12 0 12.9 0zm.4 7.6c-.2 1.3-1.2 1.3-2.6 1.3H8.3l.5-3h1.9c1 0 1.7 0 2 .4.3.3.4.8.2 1.3z"/>
-                <path d="M29.5 7h-2.5c-.3 0-.6.2-.7.4l-4.2 6-1.8-5.6c-.1-.4-.5-.7-.9-.7h-2.7c-.5 0-.8.5-.7 1l2.8 8-3.1 4.5c-.3.4.1 1 .6 1h2.5c.3 0 .6-.2.7-.4l8.3-11.8c.2-.6-.2-1.4-.8-1.4z" fill="#0079C1"/>
+            {/* Apple Pay */}
+            <div className="flex h-8 w-12 items-center justify-center rounded bg-black px-2 shadow-sm">
+              <svg viewBox="0 0 100 40" className="h-3 w-auto" fill="white">
+                <path d="M42.7 18.5v11.7h-3V11.2h4.5c2 0 3.7.6 5 1.7 1.3 1.1 2 2.6 2 4.4 0 1.8-.7 3.3-2 4.4-1.3 1.1-3 1.7-5 1.7h-1.5zm0-2.3h1.7c1.2 0 2.1-.3 2.8-1 .7-.7 1-1.5 1-2.6 0-1-.3-1.9-1-2.6-.7-.7-1.6-1-2.8-1h-1.7v7.2zM63.7 26.6c-1.2 1.3-2.8 2-4.7 2-2.1 0-3.8-.7-4.9-2.2-1.2-1.5-1.8-3.4-1.8-5.8 0-2.3.6-4.2 1.8-5.8 1.2-1.5 2.9-2.3 4.9-2.3 2.1 0 3.7.7 4.8 2 1.1 1.3 1.7 3.1 1.7 5.4v.9h-10c.1 1.4.5 2.5 1.3 3.3.8.8 1.8 1.2 2.9 1.2 1.5 0 2.7-.6 3.4-1.9l2.6.9c-.6.9-1.2 1.5-2 2.3zm-6.5-7.5h7c-.1-1.1-.4-2-1-2.6-.7-.6-1.5-.9-2.5-.9-1.1 0-1.9.3-2.6.9-.6.7-1 1.6-1 2.6zM77.2 36.4c-1.3.9-2.8 1.4-4.5 1.4-1.6 0-3-.5-4.1-1.4l1-2.5c1 .7 2.1 1.1 3.2 1.1 1.5 0 2.2-.6 2.2-1.7v-1.1l-5.7-14.7h3.3l3.9 11 3.8-11h3.1l-6.2 17v1.9z"/>
+                <path d="M23.1 23.3c0-3.7 3.1-5.5 8.6-5.5v-.5c0-1.4-.4-2.5-1.1-3.2-.8-.7-2-.1-3.5-.1-1.3 0-2.7.3-4.1.9l-1.3-3c1.6-.7 3.5-1.1 5.8-1.1 2.5 0 4.4.7 5.6 2s1.8 3.3 1.8 5.8v11.7h-2.9v-2c-.9 1.6-2.5 2.5-4.7 2.5-1.9 0-3.5-.6-4.6-1.8-1.1-1.3-1.6-2.8-1.6-4.5zm11.3 1.4v-2c-4 0-6 .9-6 2.8 0 .8.3 1.5.8 2 .5.5 1.2.7 2.1.7 1 .0 1.9-.3 2.7-.9.8-.6 1.3-1.5 1.4-2.6z"/>
+                <path d="M12.9 19.4c0-.3 0-.6.1-.8-1.1 1.6-2.9 2.5-5 2.5-1.6 0-2.8-.5-3.8-1.4C3.1 18.7 2.6 17.5 2.6 16c0-1.6.5-3 1.6-3.9 1.1-.9 2.7-1.4 4.8-1.4 2 0 3.7.4 5.1 1.3v-1.2C14.1 8 11.2 5.6 7 5.6c-2.3 0-4.6.6-6.6 1.8V4.3C2.8 3 5.4 2.3 7.8 2.3c6 0 10 3.6 10 9.8v16.1h-4.9v-8.8zM12.9 15c-1.3-1-3-1.4-4.8-1.4-2.7 0-4.1 1-4.1 2.9 0 .8.3 1.5 1 2 1.3.9 3.2.9 4.8.4 2-.5 3-2 3.1-3.9z"/>
+                <path d="M17.4.2C17.4.2 16.3.1 15 1c-1.1.7-1.9 1.9-2 3.2 0 0 1.2.1 2.3-.6.9-.6 1.5-1.5 1.6-2.6.1-.1.4-.7.5-.8z"/>
+              </svg>
+            </div>
+            {/* Google Pay */}
+            <div className="flex h-8 w-12 items-center justify-center rounded bg-white px-2 border border-line shadow-sm">
+              <svg viewBox="0 0 100 40" className="h-3 w-auto">
+                <path fill="#5F6368" d="M37.8 23.3V11.2h3.2v12.1h-3.2zm6.6-9.6c-.6-.7-1.1-1-1.9-1-1.1 0-2.1.5-2.8 1.4-.7.9-1 2-1 3.2s.3 2.3 1 3.2c.7.9 1.6 1.4 2.8 1.4 1 0 1.8-.4 2.4-1.2v.9c0 1.1-.4 2-1 2.6-.7.6-1.5.9-2.5.9-1.2 0-2.2-.6-2.7-1.7l-2.8 1.1c.8 1.9 2.7 2.9 5.5 2.9 1.8 0 3.3-.6 4.4-1.7 1.1-1.2 1.7-2.6 1.7-4.5v-7.8h-3v1zm-1.8 8c-.6 0-1.1-.2-1.5-.6-.4-.4-.7-.9-.7-1.6s.2-1.2.7-1.6c.4-.4.9-.6 1.5-.6.6 0 1.1.2 1.5.6.4.4.7.9.7 1.6s-.2 1.2-.7 1.6c-.4.4-.9.6-1.5.6zm10.7-10.5c-2 0-3.6.7-4.8 2-1.1 1.3-1.7 3-1.7 5.1s.6 3.8 1.7 5.1c1.2 1.3 2.7 2 4.8 2 2.1 0 3.7-.7 4.8-2 1.1-1.3 1.7-3 1.7-5.1s-.6-3.8-1.7-5.1c-1.2-1.3-2.8-2-4.8-2zm0 11.5c-.9 0-1.7-.3-2.3-1-.6-.7-.9-1.6-.9-2.7 0-1.1.3-2.1.9-2.8.6-.7 1.4-1 2.3-1s1.7.3 2.3 1c.6.7.9 1.6.9 2.8s-.3 2.1-.9 2.8c-.6.7-1.4 1-2.3 1zm11.2-11.5c-2 0-3.6.7-4.8 2-1.1 1.3-1.7 3-1.7 5.1s.6 3.8 1.7 5.1c1.2 1.3 2.7 2 4.8 2 2.1 0 3.7-.7 4.8-2 1.1-1.3 1.7-3 1.7-5.1s-.6-3.8-1.7-5.1c-1.2-1.3-2.8-2-4.8-2zm0 11.5c-.9 0-1.7-.3-2.3-1-.6-.7-.9-1.6-.9-2.7 0-1.1.3-2.1.9-2.8.6-.7 1.4-1 2.3-1s1.7.3 2.3 1c.6.7.9 1.6.9 2.8s-.3 2.1-.9 2.8c-.6.7-1.4 1-2.3 1zM79.5 11.2h-3.9v16.7h3.2v-5.2h.7c2 0 3.6-.6 4.7-1.9 1.2-1.2 1.8-2.8 1.8-4.7 0-1.8-.6-3.4-1.8-4.7-1.2-1.4-2.8-2.1-4.7-2.1zm.4 9.1h-1.1v-6.3h1.1c1.1 0 1.9.3 2.6.9.6.6 1 1.4 1 2.3 0 1-.3 1.7-1 2.3-.7.5-1.5.8-2.6.8zm11.6-4.5c-.9-1.1-2.1-1.6-3.6-1.6-1.5 0-2.8.6-3.7 1.7-1 1.1-1.5 2.5-1.5 4.3 0 1.7.5 3 1.4 4s2.2 1.5 3.8 1.5c2 0 3.5-.8 4.6-2.4l-2.4-1.6c-.6.9-1.4 1.3-2.2 1.3-.7 0-1.3-.2-1.7-.7l7-2.9-.3-.8c-.3-1.1-.8-2-1.4-2.8zm-3.6 7c-1 0-1.7-.5-2.1-1.5l5.2-2.1c-.2-.7-.5-1.2-1-1.6-.4-.4-1-.7-1.6-.7-.8 0-1.5.3-2.1 1s-.9 1.5-.9 2.6c0 1.6 1.1 2.4 3.2 2.4 1.4 0 2.5-.5 3.1-1.4l-2.3-1.5c-.3.5-.8.8-1.5.8zM99.6 11.5l-3.5 9-1.2 3.1c-.5 1.3-1.1 2.2-1.7 2.8-.7.6-1.5.9-2.5.9-.3 0-.6 0-.8-.1l-.4-.1v-3c.2.1.5.2.8.2.7 0 1.2-.2 1.6-.6.4-.4.7-1.1.9-1.9l.3-.8-3.6-9.5h3.4l2.1 6.5 2-6.5h3.4z"/>
+                <path fill="#4285F4" d="M19 16c0-.8-.1-1.6-.2-2.3H9.8v4.5h5.3c-.2 1.1-.9 2.5-2.1 3.4v2.7h3.3c2-1.8 3.1-4.5 3.1-7.5z"/>
+                <path fill="#34A853" d="M9.8 25.5c2.6 0 4.8-.8 6.4-2.2l-3.3-2.7c-.9.6-2 1-3.2 1-2.4 0-4.5-1.6-5.2-3.8H1v2.8c1.6 3.2 4.9 5.3 8.8 5.3z"/>
+                <path fill="#FBBC04" d="M4.5 17.7c-.2-.6-.3-1.2-.3-1.8 0-.6.1-1.2.3-1.8v-2.8H1c-.7 1.4-1 2.9-1 4.6 0 1.6.4 3.2 1 4.6l3.5-2.8z"/>
+                <path fill="#EA4335" d="M9.8 10.3c1.6 0 2.8.5 3.7 1.3l2.8-2.8c-1.7-1.5-3.9-2.5-6.5-2.5-3.9 0-7.2 2.1-8.8 5.3l3.5 2.8c.8-2.3 2.9-4.1 5.3-4.1z"/>
               </svg>
             </div>
           </div>
 
           <div className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-8">
-            {/* Socials */}
-            <div className="flex items-center gap-4">
-              <a href="#" className="text-ink-muted hover:text-accent transition-colors">
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
-              </a>
-              <a href="#" className="text-ink-muted hover:text-accent transition-colors">
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-              </a>
-            </div>
-            
             {/* Copyright */}
             <div className="flex flex-col gap-1 text-xs text-ink-faint text-left lg:text-right">
               <p className="font-mono-num">
