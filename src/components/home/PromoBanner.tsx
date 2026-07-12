@@ -37,11 +37,10 @@ export function PromoBanner() {
             {/* ── Content ── */}
             <div className="relative flex items-center justify-center">
               <p className="text-sm font-semibold text-white text-center pr-8 sm:pr-0">
-                🔧 Compra tu pieza y llévate{" "}
+                Te asesora un mecánico real por WhatsApp{" "}
                 <span className="font-extrabold tracking-wide">
-                  asesoramiento mecánico GRATIS
-                </span>{" "}
-                por WhatsApp
+                  incluido con tu pedido
+                </span>
               </p>
 
               {/* ── Close button ── */}

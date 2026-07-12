@@ -9,14 +9,17 @@
   --color-line: #e2e8f0;
   --color-line-strong: #cbd5e1;
   
-  --color-ink: #0f172a;
-  --color-ink-muted: #475569;
-  --color-ink-faint: #64748b;
-  
-  --color-accent: #2563eb;
-  --color-accent-dark: #1d4ed8;
-  --color-accent-light: #3b82f6;
-  --color-accent-glow: rgba(37, 99, 235, 0.15);
+  --color-ink: #14171f;
+  --color-ink-muted: #4b5261;
+  --color-ink-faint: #6b7280;
+
+  --color-accent: #26418f;
+  --color-accent-dark: #182c66;
+  --color-accent-light: #4863ad;
+  --color-accent-glow: rgba(38, 65, 143, 0.16);
+
+  --color-copper: #b5651d;
+  --color-copper-light: #d68a3f;
   
   --color-header: #ffffff;
   
@@ -66,6 +69,7 @@
 @theme inline {
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
+  --font-display: var(--font-display);
 }
 
 /* ─── Base ─── */
@@ -92,9 +96,9 @@ body {
 
 /* ─── Typography Utilities ─── */
 .font-display {
-  font-family: var(--font-sans);
+  font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .font-mono-num {

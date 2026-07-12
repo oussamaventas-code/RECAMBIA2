@@ -10,11 +10,12 @@ interface ResultsViewProps {
   products: Product[];
   plate: string | null;
   initialCategory?: string;
+  initialBrand?: string;
 }
 
-export function ResultsView({ products, plate, initialCategory }: ResultsViewProps) {
+export function ResultsView({ products, plate, initialCategory, initialBrand }: ResultsViewProps) {
   const [category, setCategory] = useState(initialCategory ?? "");
-  const [brand, setBrand] = useState("");
+  const [brand, setBrand] = useState(initialBrand ?? "");
 
   const brands = useMemo(
     () => [...new Set(products.map((p) => p.brand))].sort(),

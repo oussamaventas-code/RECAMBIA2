@@ -28,12 +28,12 @@ export function DeliveryServices() {
             <p className="text-ink-muted leading-relaxed mb-6 flex-1">
               Trabajamos con las mejores agencias de paquetería para llegar a cualquier punto de la península en tiempo récord.
             </p>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <span className="inline-flex items-center rounded-md bg-surface-2 border border-line px-3 py-1.5 text-sm font-semibold text-ink">
-                Servicio 24H
+                24h si está en stock
               </span>
               <span className="inline-flex items-center rounded-md bg-surface-2 border border-line px-3 py-1.5 text-sm font-semibold text-ink">
-                Servicio 48H
+                48h si la traemos del proveedor
               </span>
             </div>
           </div>
@@ -54,7 +54,7 @@ export function DeliveryServices() {
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                Antes de las 10:00 AM
+                Antes de las 10:00
               </span>
             </div>
           </div>

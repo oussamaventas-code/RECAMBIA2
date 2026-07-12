@@ -30,7 +30,7 @@ const EXAMPLES = [
   "«Me chirrían los frenos al frenar en frío»",
   "«Se enciende el testigo de la batería a ratos»",
   "«El aire acondicionado ya no enfría»",
-  "«Noto un golpeteo en la rueda delantera derecha»",
+  "«No sé cómo se llama esta pieza, te mando una foto»",
 ];
 
 export default function DiagnosticoPage() {

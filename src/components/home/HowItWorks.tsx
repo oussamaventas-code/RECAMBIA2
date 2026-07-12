@@ -8,7 +8,7 @@ const steps = [
     number: "01",
     title: "Dinos qué necesitas",
     description:
-      "Escríbenos tu matrícula y la pieza que buscas. Sin formularios, sin registro.",
+      "Escríbenos tu matrícula y la pieza que buscas. Sin cuentas, sin carritos: nos escribes y ya.",
     icon: (
       <svg
         className="h-7 w-7"
@@ -50,7 +50,7 @@ const steps = [
     number: "03",
     title: "Recíbelo en 24h",
     description:
-      "Pagas de forma segura con Stripe y te llega a casa o al taller. Sin sorpresas.",
+      "Pagas con tarjeta por enlace seguro y te llega a casa o al taller. Sin sorpresas.",
     icon: (
       <svg
         className="h-7 w-7"

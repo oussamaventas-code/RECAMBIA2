@@ -5,6 +5,7 @@ import { VehicleBanner } from "@/components/resultados/VehicleBanner";
 import { ResultsView } from "@/components/resultados/ResultsView";
 import { ProcessStrip } from "@/components/shared/ProcessStrip";
 import { products } from "@/data/products";
+import { brands } from "@/data/brands";
 
 export const metadata: Metadata = {
   title: "Resultados de búsqueda",
@@ -13,12 +14,15 @@ export const metadata: Metadata = {
 };
 
 interface ResultadosPageProps {
-  searchParams: Promise<{ matricula?: string; categoria?: string }>;
+  searchParams: Promise<{ matricula?: string; categoria?: string; marca?: string }>;
 }
 
 export default async function ResultadosPage({ searchParams }: ResultadosPageProps) {
-  const { matricula, categoria } = await searchParams;
+  const { matricula, categoria, marca } = await searchParams;
   const plate = matricula ?? null;
+  // El enlace de marca llega como slug (BrandIndex); el filtro de la lista
+  // compara por el nombre real que llevan los productos (product.brand).
+  const initialBrand = marca ? brands.find((b) => b.slug === marca)?.name : undefined;
 
   return (
     <>
@@ -32,6 +36,7 @@ export default async function ResultadosPage({ searchParams }: ResultadosPagePro
           products={products}
           plate={plate}
           initialCategory={categoria}
+          initialBrand={initialBrand}
         />
       </main>
       <Footer />

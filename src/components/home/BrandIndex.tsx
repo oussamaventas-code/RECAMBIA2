@@ -38,7 +38,7 @@ export function BrandIndex() {
             Marcas que trabajamos
           </h2>
           <p className="mt-2 text-sm text-ink-muted">
-            Solo distribuimos recambio original y primeras marcas de confianza.
+            Solo primeras marcas del mercado de recambio: Bosch, TRW, Valeo y más.
           </p>
         </div>
       </motion.div>
@@ -73,7 +73,7 @@ export function BrandIndex() {
           href="/resultados"
           className="inline-flex items-center gap-2 text-sm font-semibold text-accent hover:text-accent-dark transition-colors"
         >
-          Ver catálogo completo
+          Ver todas las piezas
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
           </svg>

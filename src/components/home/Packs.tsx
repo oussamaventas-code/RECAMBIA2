@@ -7,12 +7,9 @@ import { useGSAP } from "@gsap/react";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
 import { formatPlateInput } from "@/components/matricula/plate-format";
 
-gsap.registerPlugin(ScrollTrigger, useGSAP);
-
 import Image from "next/image";
 
-// ... [we need to keep imports untouched] ...
-// I will only replace the specific lines needed
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 /* ─── Packs habituales — solo informativo, sin precio ni SKU ─── */
 const PACKS = [

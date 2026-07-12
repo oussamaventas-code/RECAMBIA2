@@ -3,8 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, useInView, type Variants } from "framer-motion";
+import gsap from "gsap";
+import { SplitText } from "gsap/SplitText";
+import { useGSAP } from "@gsap/react";
 import { PlateSearch } from "@/components/matricula/PlateSearch";
 import { brands } from "@/data/brands";
+import { whatsappGenericUrl } from "@/lib/whatsapp";
+
+gsap.registerPlugin(SplitText, useGSAP);
 
 /* ── animation orchestration ── */
 const stagger: Variants = {
@@ -75,12 +81,36 @@ const features = [
 /* ══════════════════════════════════════════════ */
 export function Mostrador() {
   const sectionRef = useRef<HTMLElement>(null);
+  const h1Ref = useRef<HTMLHeadingElement>(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.15 });
 
   // Valores clave del servicio humano (no del catálogo)
   const refYears = useCountUp(15, 1400, isInView);
   const refTeam = useCountUp(4, 1200, isInView);
   const ref24 = useCountUp(24, 1400, isInView);
+
+  // Reveal del titular palabra a palabra, en vez de un fundido en bloque
+  useGSAP(
+    () => {
+      if (!isInView || !h1Ref.current) return;
+      const split = new SplitText(h1Ref.current, { type: "words", wordsClass: "inline-block" });
+      gsap.fromTo(
+        split.words,
+        { opacity: 0, y: 28, rotateX: -35 },
+        {
+          opacity: 1,
+          y: 0,
+          rotateX: 0,
+          duration: 0.7,
+          stagger: 0.045,
+          ease: "power3.out",
+          delay: 0.15,
+        },
+      );
+      return () => split.revert();
+    },
+    { scope: h1Ref, dependencies: [isInView] },
+  );
 
   return (
     <section
@@ -138,15 +168,16 @@ export function Mostrador() {
             </motion.div>
 
             {/* H1 */}
-            <motion.h1
-              variants={fadeUp}
+            <h1
+              ref={h1Ref}
+              style={{ perspective: 500 }}
               className="mt-6 font-display text-4xl leading-[1.08] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
             >
               <span className="block text-ink">Tu pieza,</span>
               <span className="block text-accent">
                 mañana en tu puerta.
               </span>
-            </motion.h1>
+            </h1>
 
             {/* Subtitle */}
             <motion.p
@@ -162,16 +193,28 @@ export function Mostrador() {
             {/* PlateSearch */}
             <motion.div variants={fadeUp} className="mt-8 max-w-md">
               <PlateSearch variant="hero" />
-              <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-sm">
-                <a href="/resultados" className="text-ink-muted underline decoration-line transition-colors hover:text-ink hover:decoration-ink-faint">
-                  ¿No te sabes la matrícula?
-                </a>
+              <div className="mt-4 flex flex-col gap-2 text-sm">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+                  <a href="/resultados" className="text-ink-muted underline decoration-line transition-colors hover:text-ink hover:decoration-ink-faint">
+                    ¿No te sabes la matrícula?
+                  </a>
+                  <a
+                    href={whatsappGenericUrl(
+                      "Hola, no sé cómo se llama la pieza que necesito. Os mando una foto:",
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-ink-muted underline decoration-line transition-colors hover:text-ink hover:decoration-ink-faint"
+                  >
+                    ¿No sabes cómo se llama? Mándanos una foto
+                  </a>
+                </div>
                 <span className="flex items-center gap-1.5 font-medium text-accent-dark">
                   <span className="relative flex h-2 w-2">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75"></span>
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-accent"></span>
                   </span>
-                  Pide antes de las 18:00h para envío hoy
+                  Pide antes de las 17:00h para envío hoy
                 </span>
               </div>
             </motion.div>

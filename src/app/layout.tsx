@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { inter, jetbrainsMono } from "@/lib/fonts";
+import { inter, jetbrainsMono, spaceGrotesk } from "@/lib/fonts";
 import { WhatsAppFloat } from "@/components/layout/WhatsAppFloat";
 import "./globals.css";
 
@@ -49,7 +49,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
       <head>
         {/* Meta Pixel Code */}
@@ -88,7 +88,7 @@ export default function RootLayout({
                 "@type": "OpeningHoursSpecification",
                 dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
                 opens: "09:00",
-                closes: "18:00",
+                closes: "18:30",
               },
             }),
           }}
