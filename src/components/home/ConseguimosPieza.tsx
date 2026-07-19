@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { Reveal } from "@/components/shared/Reveal";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
 
 /* ─── Reglas claras: qué podemos conseguir y qué no ─── */
@@ -34,12 +34,7 @@ export function ConseguimosPieza() {
 
         <div className="relative p-8 sm:p-12 lg:p-16">
           {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="max-w-2xl"
-          >
+          <Reveal className="max-w-2xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-4 py-1.5 text-xs font-semibold tracking-wide text-accent-dark mb-4">
               ¿No ves tu pieza en la web?
             </span>
@@ -52,16 +47,10 @@ export function ConseguimosPieza() {
               Dinos tu matrícula y la pieza que necesitas, y nos ponemos a
               buscarla en el momento.
             </p>
-          </motion.div>
+          </Reveal>
 
           {/* Rules */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.15 }}
-            className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2"
-          >
+          <Reveal delay={0.05} className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2">
             {rules.map((rule) => (
               <div
                 key={rule.title}
@@ -96,16 +85,10 @@ export function ConseguimosPieza() {
                 </div>
               </div>
             ))}
-          </motion.div>
+          </Reveal>
 
           {/* CTA */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-            className="mt-10 flex flex-col items-start gap-3 sm:flex-row sm:items-center"
-          >
+          <Reveal delay={0.1} className="mt-10 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
             <a
               href={whatsappGenericUrl(
                 "Hola, busco una pieza que no veo en la web. Mi matrícula y la pieza que necesito son: ",
@@ -122,7 +105,7 @@ export function ConseguimosPieza() {
             <p className="text-xs text-ink-muted">
               Respuesta de un recambista real, en horario de tienda.
             </p>
-          </motion.div>
+          </Reveal>
         </div>
       </div>
     </section>

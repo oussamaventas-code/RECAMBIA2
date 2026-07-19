@@ -2,6 +2,7 @@ import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import Link from "next/link";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
+import { WorkshopMap } from "@/components/talleres/WorkshopMap";
 
 export default function TalleresAsociadosPage() {
   return (
@@ -88,6 +89,9 @@ export default function TalleresAsociadosPage() {
             </div>
           </div>
         </section>
+
+        {/* Buscador de taller cercano */}
+        <WorkshopMap />
 
         {/* B2B Call to Action */}
         <section className="bg-surface-2 py-20 border-t border-line">

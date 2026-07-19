@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { Reveal } from "@/components/shared/Reveal";
 import { categories } from "@/data/categories";
 
 /* ─── Premium category images (PNG for categories with photos, SVG fallback) ─── */
@@ -39,36 +39,12 @@ function FallbackIcon() {
   );
 }
 
-/* ─── Animation variants ─── */
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.06, delayChildren: 0.1 },
-  },
-};
-
-const itemVariants: import("framer-motion").Variants = {
-  hidden: { opacity: 0, y: 16, scale: 0.97 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.4, ease: "easeOut" },
-  },
-};
-
 /* ─── Component ─── */
 export function CategoryIndex() {
   return (
     <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="flex items-baseline justify-between mb-10"
-      >
+      <Reveal className="flex items-baseline justify-between mb-10">
         <div>
           <h2 className="font-display text-3xl sm:text-4xl text-ink">
             Piezas destacadas
@@ -77,20 +53,15 @@ export function CategoryIndex() {
             Filtros, aceites, frenos y todo lo que tu coche necesite.
           </p>
         </div>
-      </motion.div>
+      </Reveal>
 
       {/* Grid */}
-      <motion.ul
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-60px" }}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
-      >
-        {categories.map((category) => {
+      <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {categories.map((category, i) => {
           const image = categoryImages[category.slug];
           return (
-            <motion.li key={category.slug} variants={itemVariants}>
+            <li key={category.slug}>
+              <Reveal delay={(i % 3) * 0.05}>
               <Link
                 href={`/resultados?categoria=${category.slug}`}
                 className="group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-surface-1 transition-all duration-300 hover:glow-border hover:shadow-lg hover:shadow-accent/5"
@@ -158,10 +129,11 @@ export function CategoryIndex() {
                   </span>
                 </div>
               </Link>
-            </motion.li>
+              </Reveal>
+            </li>
           );
         })}
-      </motion.ul>
+      </ul>
     </section>
   );
 }

@@ -1,7 +1,3 @@
-"use client";
-
-import { motion } from "framer-motion";
-
 /* ─── Trust items data ─── */
 const trustItems = [
   {
@@ -97,20 +93,6 @@ const trustItems = [
   },
 ];
 
-/* ─── Animation variants ─── */
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.07, delayChildren: 0.1 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.35 } },
-};
-
 /* ─── TrustItem component ─── */
 function TrustItem({
   icon,
@@ -122,10 +104,7 @@ function TrustItem({
   isLast: boolean;
 }) {
   return (
-    <motion.div
-      variants={itemVariants}
-      className="flex items-center gap-2.5 shrink-0"
-    >
+    <div className="flex items-center gap-2.5 shrink-0">
       <span className="text-accent">{icon}</span>
       <span className="text-sm text-ink whitespace-nowrap">{label}</span>
 
@@ -136,7 +115,7 @@ function TrustItem({
           className="hidden lg:block ml-5 h-4 w-px bg-line"
         />
       )}
-    </motion.div>
+    </div>
   );
 }
 
@@ -145,13 +124,7 @@ export function TrustStrip() {
   return (
     <section className="bg-surface-1 border-y border-line">
       {/* ── Desktop: centered row ── */}
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-40px" }}
-        className="hidden lg:flex items-center justify-center gap-8 py-3.5"
-      >
+      <div className="hidden lg:flex items-center justify-center gap-8 py-3.5">
         {trustItems.map((item, i) => (
           <TrustItem
             key={item.label}
@@ -160,17 +133,11 @@ export function TrustStrip() {
             isLast={i === trustItems.length - 1}
           />
         ))}
-      </motion.div>
+      </div>
 
       {/* ── Mobile / Tablet: static flex for top 3 ── */}
       <div className="lg:hidden overflow-x-auto py-3.5 no-scrollbar">
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4 }}
-          className="flex w-max items-center px-4"
-        >
+        <div className="flex w-max items-center px-4">
           {trustItems.slice(0, 3).map((item, i) => (
             <div key={item.label} className="flex items-center gap-2.5 mx-3 shrink-0">
               <span className="text-accent">{item.icon}</span>
@@ -185,7 +152,7 @@ export function TrustStrip() {
               )}
             </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

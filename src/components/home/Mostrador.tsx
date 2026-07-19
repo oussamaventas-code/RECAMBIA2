@@ -2,134 +2,81 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { motion, useInView, type Variants } from "framer-motion";
 import gsap from "gsap";
 import { SplitText } from "gsap/SplitText";
 import { useGSAP } from "@gsap/react";
 import { PlateSearch } from "@/components/matricula/PlateSearch";
-import { brands } from "@/data/brands";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
 
 gsap.registerPlugin(SplitText, useGSAP);
-
-/* ── animation orchestration ── */
-const stagger: Variants = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.12, delayChildren: 0.25 },
-  },
-};
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 28 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
-  },
-};
-
-const fadeIn: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { duration: 0.8, ease: "easeOut" },
-  },
-};
-
-const scaleIn: Variants = {
-  hidden: { opacity: 0, scale: 0.85 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
-  },
-};
-
-/* ── animated counter hook ── */
-function useCountUp(target: number, duration = 2000, active = false) {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (!active) return;
-    let start = 0;
-    const increment = target / (duration / 16);
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= target) {
-        setCount(target);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
-    }, 16);
-    return () => clearInterval(timer);
-  }, [target, duration, active]);
-
-  return count;
-}
-
-/* ── feature pills ── */
-const features = [
-  { icon: "💬", label: "Atención 1 a 1" },
-  { icon: "🔧", label: "Asesoramiento mecánico" },
-  { icon: "⚡", label: "Entrega 24h" },
-];
 
 /* ══════════════════════════════════════════════ */
 /*  MOSTRADOR — Hero Section                     */
 /* ══════════════════════════════════════════════ */
 export function Mostrador() {
-  const sectionRef = useRef<HTMLElement>(null);
   const h1Ref = useRef<HTMLHeadingElement>(null);
-  const isInView = useInView(sectionRef, { once: true, amount: 0.15 });
 
-  // Valores clave del servicio humano (no del catálogo)
-  const refYears = useCountUp(15, 1400, isInView);
-  const refTeam = useCountUp(4, 1200, isInView);
-  const ref24 = useCountUp(24, 1400, isInView);
+  // El vídeo de fondo solo se monta (y descarga) en escritorio; en móvil el
+  // poster optimizado es suficiente y ahorra el mp4 entero.
+  const [showVideo, setShowVideo] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(
+      "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
+    );
+    setShowVideo(mq.matches);
+  }, []);
 
-  // Reveal del titular palabra a palabra, en vez de un fundido en bloque
+  // Reveal del titular palabra a palabra, solo en escritorio: en móvil el
+  // titular es el LCP y debe pintarse al instante.
   useGSAP(
     () => {
-      if (!isInView || !h1Ref.current) return;
-      const split = new SplitText(h1Ref.current, { type: "words", wordsClass: "inline-block" });
-      gsap.fromTo(
-        split.words,
-        { opacity: 0, y: 28, rotateX: -35 },
-        {
-          opacity: 1,
-          y: 0,
-          rotateX: 0,
-          duration: 0.7,
-          stagger: 0.045,
-          ease: "power3.out",
-          delay: 0.15,
+      const mm = gsap.matchMedia();
+      mm.add(
+        "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
+        () => {
+          if (!h1Ref.current) return;
+          const split = new SplitText(h1Ref.current, {
+            type: "words",
+            wordsClass: "inline-block",
+          });
+          gsap.fromTo(
+            split.words,
+            { opacity: 0, y: 20 },
+            { opacity: 1, y: 0, duration: 0.5, stagger: 0.03, ease: "power3.out" },
+          );
+          return () => split.revert();
         },
       );
-      return () => split.revert();
+      return () => mm.revert();
     },
-    { scope: h1Ref, dependencies: [isInView] },
+    { scope: h1Ref },
   );
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative flex min-h-[100dvh] w-full flex-col overflow-hidden bg-paper"
-    >
-      {/* ── Background Video ── */}
+    <section className="relative flex min-h-[100svh] w-full flex-col overflow-hidden bg-paper md:min-h-[100dvh]">
+      {/* ── Fondo: poster optimizado siempre, vídeo solo en escritorio ── */}
       <div className="absolute inset-0 z-0 bg-paper">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="metadata"
-          poster="/hero/hero-poster.jpg"
-          className="absolute inset-0 h-full w-full object-cover object-center opacity-90"
-        >
-          <source src="/hero/hero-video.mp4" type="video/mp4" />
-        </video>
+        <Image
+          src="/hero/hero-poster.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center opacity-90"
+        />
+        {showVideo && (
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            poster="/hero/hero-poster.jpg"
+            className="absolute inset-0 h-full w-full object-cover object-center opacity-90"
+          >
+            <source src="/hero/hero-video.mp4" type="video/mp4" />
+          </video>
+        )}
 
         {/* Gradient overlay: light overlay to ensure text is readable */}
         <div
@@ -152,25 +99,17 @@ export function Mostrador() {
 
       {/* ── Main Content ── */}
       <div className="relative z-10 flex flex-1 items-center">
-        <div className="mx-auto w-full max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
-          <motion.div
-            variants={stagger}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-            className="max-w-2xl"
-          >
+        <div className="mx-auto w-full max-w-7xl px-4 pb-8 pt-10 sm:px-6 sm:py-24 lg:px-8">
+          <div className="max-w-2xl">
             {/* Badge */}
-            <motion.div variants={fadeUp}>
-              <span className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-4 py-1.5 text-xs font-semibold tracking-wide text-accent-dark">
-                <span className="inline-block h-1.5 w-1.5 animate-pulse-led rounded-full bg-accent" />
-                Equipo de 4 expertos · Asesoramiento incluido
-              </span>
-            </motion.div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-4 py-1.5 text-xs font-semibold tracking-wide text-accent-dark">
+              <span className="inline-block h-1.5 w-1.5 animate-pulse-led rounded-full bg-accent" />
+              Equipo de 4 expertos · Asesoramiento incluido
+            </span>
 
             {/* H1 */}
             <h1
               ref={h1Ref}
-              style={{ perspective: 500 }}
               className="mt-6 font-display text-4xl leading-[1.08] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
             >
               <span className="block text-ink">Tu pieza,</span>
@@ -180,19 +119,34 @@ export function Mostrador() {
             </h1>
 
             {/* Subtitle */}
-            <motion.p
-              variants={fadeUp}
-              className="mt-5 max-w-lg text-base leading-relaxed text-ink-muted sm:text-lg"
-            >
+            <p className="mt-5 max-w-lg text-base leading-relaxed text-ink-muted sm:text-lg">
               Escribe tu matrícula y un recambista te confirma pieza,
               precio y disponibilidad al momento.
               <br className="hidden sm:block" />{" "}
               Te atiende una persona, no un bot.
-            </motion.p>
+            </p>
 
-            {/* PlateSearch */}
-            <motion.div variants={fadeUp} className="mt-8 max-w-md">
+            {/* PlateSearch + CTA principal */}
+            <div className="mt-6 max-w-md">
               <PlateSearch variant="hero" />
+
+              <div className="mt-3">
+                <a
+                  href={whatsappGenericUrl(
+                    "¡Hola! Vengo de la web y necesito ayuda para encontrar un recambio.",
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl bg-success px-6 text-base font-semibold text-white shadow-lg shadow-success/25 transition-all hover:bg-success-glow active:scale-[0.98] sm:inline-flex sm:w-auto"
+                >
+                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                    <path d="M12 2C6.477 2 2 6.477 2 12c0 1.9.53 3.68 1.45 5.19L2 22l4.94-1.42A9.96 9.96 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18.2c-1.63 0-3.15-.46-4.44-1.25l-.32-.19-3.29.95.95-3.2-.21-.33A8.17 8.17 0 013.8 12C3.8 7.47 7.47 3.8 12 3.8s8.2 3.67 8.2 8.2-3.67 8.2-8.2 8.2z" />
+                  </svg>
+                  Hablar por WhatsApp ahora
+                </a>
+              </div>
+
               <div className="mt-4 flex flex-col gap-2 text-sm">
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
                   <a href="/resultados" className="text-ink-muted underline decoration-line transition-colors hover:text-ink hover:decoration-ink-faint">
@@ -217,105 +171,39 @@ export function Mostrador() {
                   Pide antes de las 17:00h para envío hoy
                 </span>
               </div>
-            </motion.div>
-
-            {/* Feature Pills */}
-            <motion.div
-              variants={fadeUp}
-              className="mt-6 flex flex-wrap gap-2.5"
-            >
-              {features.map((f) => (
-                <motion.span
-                  key={f.label}
-                  variants={scaleIn}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface-1/80 px-4 py-2 text-sm text-ink-muted backdrop-blur-sm transition-colors hover:border-line-strong hover:text-ink"
-                >
-                  <span aria-hidden="true">{f.icon}</span>
-                  {f.label}
-                </motion.span>
-              ))}
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* ── Bottom Bar: Stats + Brands ── */}
+      {/* ── Bottom Bar: Stats ── */}
       <div className="relative z-10 border-t border-line/50">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-          {/* Stats Row */}
-          <motion.div
-            variants={stagger}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-            className="flex flex-col gap-6 py-6 sm:flex-row sm:items-center sm:gap-0 sm:divide-x sm:divide-line/50"
-          >
+          <div className="flex flex-col gap-6 py-6 sm:flex-row sm:items-center sm:gap-0 sm:divide-x sm:divide-line/50">
             {/* Stat: años de experiencia */}
-            <motion.div
-              variants={fadeIn}
-              className="flex items-baseline gap-2 sm:pr-8"
-            >
+            <div className="flex items-baseline gap-2 sm:pr-8">
               <span className="font-mono-num text-2xl font-bold text-ink sm:text-3xl">
-                {refYears}
-                <span className="text-accent">+</span>
+                15<span className="text-accent">+</span>
               </span>
               <span className="text-sm text-ink-muted">años de experiencia</span>
-            </motion.div>
+            </div>
 
             {/* Stat: personas en el equipo */}
-            <motion.div
-              variants={fadeIn}
-              className="flex items-baseline gap-2 sm:px-8"
-            >
+            <div className="flex items-baseline gap-2 sm:px-8">
               <span className="font-mono-num text-2xl font-bold text-ink sm:text-3xl">
-                {refTeam}
-                <span className="text-accent"> </span>
+                4
               </span>
               <span className="text-sm text-ink-muted">expertos a tu servicio</span>
-            </motion.div>
+            </div>
 
             {/* Stat: 24h */}
-            <motion.div
-              variants={fadeIn}
-              className="flex items-baseline gap-2 sm:px-8"
-            >
+            <div className="flex items-baseline gap-2 sm:px-8">
               <span className="font-mono-num text-2xl font-bold text-ink sm:text-3xl">
-                {ref24}
-                <span className="text-accent">h</span>
+                24<span className="text-accent">h</span>
               </span>
               <span className="text-sm text-ink-muted">entrega en España</span>
-            </motion.div>
-          </motion.div>
-
-          {/* Brands Row */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.8, delay: 1.2 }}
-            className="flex flex-wrap items-center gap-2 border-t border-line/30 py-5"
-          >
-            <span className="mr-2 text-xs font-medium uppercase tracking-wider text-ink-faint">
-              Trabajamos con:
-            </span>
-            {brands.map((brand, i) => (
-              <motion.span
-                key={brand.slug}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={
-                  isInView
-                    ? { opacity: 1, scale: 1 }
-                    : { opacity: 0, scale: 0.8 }
-                }
-                transition={{
-                  duration: 0.35,
-                  delay: 1.3 + i * 0.05,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className="rounded-full border border-line bg-surface-2 px-3 py-1 text-xs text-ink-faint transition-colors hover:border-line-strong hover:text-ink-muted"
-              >
-                {brand.name}
-              </motion.span>
-            ))}
-          </motion.div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

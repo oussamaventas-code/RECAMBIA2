@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { Reveal } from "@/components/shared/Reveal";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
 
 const steps = [
@@ -69,33 +69,11 @@ const steps = [
   },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.15, delayChildren: 0.2 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
-  },
-};
-
 export function HowItWorks() {
   return (
     <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-14"
-      >
+      <Reveal className="text-center mb-14">
         <span className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-4 py-1.5 text-xs font-semibold tracking-wide text-accent-dark mb-4">
           Así de fácil
         </span>
@@ -103,23 +81,17 @@ export function HowItWorks() {
           Cómo funciona
         </h2>
         <p className="mt-3 text-ink-muted max-w-lg mx-auto">
-          Sin carritos, sin registro, sin complicaciones. 
+          Sin carritos, sin registro, sin complicaciones.
           Hablas con un experto y te lo resolvemos todo.
         </p>
-      </motion.div>
+      </Reveal>
 
       {/* Steps */}
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-60px" }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-8"
-      >
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {steps.map((step, i) => (
-          <motion.div
+          <Reveal
             key={step.number}
-            variants={itemVariants}
+            delay={i * 0.05}
             className="group relative rounded-2xl border border-line bg-surface-1 p-8 transition-all duration-300 hover:glow-border hover:shadow-lg hover:shadow-accent/5"
           >
             {/* Step number */}
@@ -142,18 +114,12 @@ export function HowItWorks() {
             <p className="text-sm text-ink-muted leading-relaxed">
               {step.description}
             </p>
-          </motion.div>
+          </Reveal>
         ))}
-      </motion.div>
+      </div>
 
       {/* CTA */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.5 }}
-        className="mt-12 text-center"
-      >
+      <Reveal delay={0.1} className="mt-12 text-center">
         <a
           href={whatsappGenericUrl("¡Hola! Vengo de la web y necesito ayuda para encontrar un recambio.")}
           target="_blank"
@@ -165,7 +131,7 @@ export function HowItWorks() {
           </svg>
           Hablar con un experto en recambios ahora
         </a>
-      </motion.div>
+      </Reveal>
     </section>
   );
 }

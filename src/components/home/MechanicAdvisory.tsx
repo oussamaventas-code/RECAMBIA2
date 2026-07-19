@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { Reveal } from "@/components/shared/Reveal";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
 
 const benefits = [
@@ -38,23 +38,6 @@ const benefits = [
   },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.2 },
-  },
-};
-
-const itemVariants: import("framer-motion").Variants = {
-  hidden: { opacity: 0, x: -16 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.4, ease: "easeOut" as const },
-  },
-};
-
 export function MechanicAdvisory() {
   return (
     <section className="relative overflow-hidden bg-ink py-20">
@@ -75,12 +58,7 @@ export function MechanicAdvisory() {
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left: Text content */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
+          <Reveal>
             {/* Badge */}
             <span className="inline-flex items-center gap-2 rounded-full border border-success/30 bg-success/15 px-4 py-1.5 text-xs font-semibold tracking-wide text-success mb-6">
               <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -104,17 +82,10 @@ export function MechanicAdvisory() {
             </p>
 
             {/* Benefits list */}
-            <motion.ul
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="flex flex-col gap-3.5 mb-10"
-            >
+            <ul className="flex flex-col gap-3.5 mb-10">
               {benefits.map((benefit, idx) => (
-                <motion.li
+                <li
                   key={idx}
-                  variants={itemVariants}
                   className="flex items-start gap-3"
                 >
                   <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-success/20 text-success mt-0.5">
@@ -123,9 +94,9 @@ export function MechanicAdvisory() {
                   <span className="text-sm text-white/80 leading-relaxed">
                     {benefit.text}
                   </span>
-                </motion.li>
+                </li>
               ))}
-            </motion.ul>
+            </ul>
 
             {/* CTA */}
             <a
@@ -141,16 +112,10 @@ export function MechanicAdvisory() {
               </svg>
               Consulta a nuestro mecánico
             </a>
-          </motion.div>
+          </Reveal>
 
           {/* Right: Visual card */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative"
-          >
+          <Reveal delay={0.1} className="relative">
             <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-8 sm:p-10">
               {/* Team composition */}
               <div className="mb-8">
@@ -196,7 +161,7 @@ export function MechanicAdvisory() {
                 </p>
               </div>
             </div>
-          </motion.div>
+          </Reveal>
         </div>
       </div>
     </section>
