@@ -14,7 +14,7 @@ const CHANNELS = [
     icon: "💬",
     title: "WhatsApp",
     detail: "La vía más rápida. Pedidos, dudas y diagnóstico.",
-    action: { label: "Abrir chat", href: whatsappGenericUrl("Hola, ") },
+    action: { label: "Escríbenos por WhatsApp →", href: whatsappGenericUrl("Hola, ") },
     external: true,
   },
   {

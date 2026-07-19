@@ -45,7 +45,7 @@ export function ConseguimosPieza() {
             <p className="mt-4 text-ink-muted leading-relaxed max-w-xl">
               Lo que ves aquí es nuestro escaparate, no todo lo que vendemos.
               Dinos tu matrícula y la pieza que necesitas, y nos ponemos a
-              buscarla en el momento.
+              buscarla en menos de 2 horas.
             </p>
           </Reveal>
 

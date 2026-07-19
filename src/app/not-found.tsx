@@ -30,7 +30,7 @@ export default function NotFound() {
               rel="noopener noreferrer"
               className="rounded-xl border border-line-strong px-6 py-3 text-sm font-medium text-ink transition-colors hover:border-accent hover:text-accent"
             >
-              Buscar mi pieza por WhatsApp
+              Escríbenos por WhatsApp &rarr;
             </a>
           </div>
         </div>

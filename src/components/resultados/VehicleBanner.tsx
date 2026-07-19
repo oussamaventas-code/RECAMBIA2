@@ -44,7 +44,7 @@ export function VehicleBanner({ plate }: VehicleBannerProps) {
               rel="noopener noreferrer"
               className="ml-auto flex items-center gap-2 rounded-lg bg-success px-3.5 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-success-glow"
             >
-              Confirmar por WhatsApp
+              Escríbenos por WhatsApp &rarr;
             </a>
             <Link
               href="/"

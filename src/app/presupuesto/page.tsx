@@ -55,7 +55,7 @@ export default async function PresupuestoPage({ searchParams }: PresupuestoPageP
                 rel="noopener noreferrer"
                 className="mt-6 inline-flex items-center justify-center rounded-xl bg-success px-5 py-3 text-sm font-semibold text-white hover:bg-success-glow"
               >
-                Escribir por WhatsApp
+                Escríbenos por WhatsApp &rarr;
               </a>
             </div>
           ) : (

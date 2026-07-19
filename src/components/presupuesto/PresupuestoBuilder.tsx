@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { searchProducts } from "@/data/products";
 import type { QuoteItem } from "@/lib/quote";
+import { PRICING_METHOD_LABEL, suggestPrice } from "@/lib/pricing";
 
 interface Row extends QuoteItem {
   key: string;
@@ -24,10 +25,51 @@ export function PresupuestoBuilder() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Calculadora de precio: para piezas que no están en el catálogo de la web
+  // (la mayoría — ese catálogo es solo escaparate). Se consulta el coste real
+  // al proveedor por teléfono y, si se conoce, el precio aproximado de
+  // mercado; la calculadora propone un precio de venta con margen.
+  const [calcName, setCalcName] = useState("");
+  const [calcRef, setCalcRef] = useState("");
+  const [calcCost, setCalcCost] = useState("");
+  const [calcMarket, setCalcMarket] = useState("");
+
   const catalogResults = useMemo(
     () => (catalogQuery.length > 1 ? searchProducts(catalogQuery).slice(0, 6) : []),
     [catalogQuery],
   );
+
+  const calcCostNum = Number(calcCost);
+  const calcMarketNum = Number(calcMarket);
+  const suggestion = useMemo(() => {
+    if (!calcCost || !(calcCostNum > 0)) return null;
+    try {
+      return suggestPrice({
+        cost: calcCostNum,
+        marketPrice: calcMarket && calcMarketNum > 0 ? calcMarketNum : undefined,
+      });
+    } catch {
+      return null;
+    }
+  }, [calcCost, calcCostNum, calcMarket, calcMarketNum]);
+
+  function addCalculatedRow() {
+    if (!suggestion) return;
+    setRows((prev) => [
+      ...prev,
+      {
+        key: newKey(),
+        name: calcName.trim() || "Pieza",
+        ref: calcRef.trim() || undefined,
+        qty: 1,
+        unitPrice: suggestion.price,
+      },
+    ]);
+    setCalcName("");
+    setCalcRef("");
+    setCalcCost("");
+    setCalcMarket("");
+  }
 
   const total = rows.reduce((sum, r) => sum + r.qty * r.unitPrice, 0);
 
@@ -162,6 +204,75 @@ export function PresupuestoBuilder() {
                 <span className="font-mono-num text-ink-muted shrink-0">{p.price.toFixed(2)} €</span>
               </button>
             ))}
+          </div>
+        )}
+      </div>
+
+      {/* Calculadora de precio */}
+      <div className="rounded-2xl border border-line bg-surface-1 p-4 sm:p-5">
+        <h2 className="text-sm font-semibold text-ink">Calculadora de precio</h2>
+        <p className="mt-1 text-xs text-ink-faint">
+          Para piezas fuera de catálogo: mete el coste (y el precio de mercado si lo sabes) y te
+          propone un precio de venta con margen.
+        </p>
+
+        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <input
+            value={calcName}
+            onChange={(e) => setCalcName(e.target.value)}
+            placeholder="Nombre de la pieza (opcional)"
+            className="rounded-xl border border-line bg-surface-2 px-3 py-2 text-sm text-ink outline-none focus:border-accent"
+          />
+          <input
+            value={calcRef}
+            onChange={(e) => setCalcRef(e.target.value)}
+            placeholder="Ref. OEM (opcional)"
+            className="rounded-xl border border-line bg-surface-2 px-3 py-2 text-sm text-ink outline-none focus:border-accent"
+          />
+          <div className="flex items-center gap-1">
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              value={calcCost}
+              onChange={(e) => setCalcCost(e.target.value)}
+              placeholder="Coste"
+              className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2 text-sm text-ink outline-none focus:border-accent"
+            />
+            <span className="text-xs text-ink-muted shrink-0">€ coste</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              value={calcMarket}
+              onChange={(e) => setCalcMarket(e.target.value)}
+              placeholder="Precio de mercado (opcional)"
+              className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2 text-sm text-ink outline-none focus:border-accent"
+            />
+            <span className="text-xs text-ink-muted shrink-0">€ mercado</span>
+          </div>
+        </div>
+
+        {suggestion && (
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-accent/30 bg-accent/5 p-3">
+            <div className="text-sm text-ink">
+              <span className="font-mono-num text-lg font-bold text-accent">
+                {suggestion.price.toFixed(2)} €
+              </span>
+              <span className="ml-2 text-xs text-ink-muted">
+                margen {suggestion.marginEuros.toFixed(2)} € ({suggestion.marginPercent.toFixed(0)}%)
+                {suggestion.discountPercent !== undefined && ` · -${suggestion.discountPercent.toFixed(0)}% vs. mercado`}
+              </span>
+              <div className="text-xs text-ink-faint">{PRICING_METHOD_LABEL[suggestion.method]}</div>
+            </div>
+            <button
+              onClick={addCalculatedRow}
+              className="rounded-lg bg-accent px-4 py-2 text-xs font-semibold text-white hover:bg-accent-dark"
+            >
+              + Añadir línea
+            </button>
           </div>
         )}
       </div>

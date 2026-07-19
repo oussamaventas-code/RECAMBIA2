@@ -66,7 +66,7 @@ export default async function GraciasPage({ searchParams }: GraciasPageProps) {
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center rounded-xl bg-success px-5 py-3 text-sm font-semibold text-white hover:bg-success-glow"
             >
-              Escribir por WhatsApp
+              Escríbenos por WhatsApp &rarr;
             </a>
             <Link
               href="/"
