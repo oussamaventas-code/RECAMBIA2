@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { buildSignedQuote, type Quote } from "@/lib/quote";
+import { createQuoteRecord } from "@/lib/crm-store";
 
 // Protegido por middleware (cookie de admin) — ver src/middleware.ts.
 export async function POST(request: NextRequest) {
   let quote: Quote;
+  let customerPhone: string | undefined;
   try {
-    quote = await request.json();
+    const body = await request.json();
+    // El teléfono se guarda solo en el CRM, nunca dentro del link firmado.
+    customerPhone = typeof body.customerPhone === "string" ? body.customerPhone.trim().slice(0, 30) || undefined : undefined;
+    delete body.customerPhone;
+    quote = body;
   } catch {
     return NextResponse.json({ error: "JSON inválido" }, { status: 400 });
   }
@@ -35,7 +41,18 @@ export async function POST(request: NextRequest) {
 
   try {
     const { d, s } = buildSignedQuote(quote);
-    return NextResponse.json({ d, s });
+
+    // Alta en el CRM. Si fallara el guardado, el link sigue siendo válido:
+    // no se bloquea la venta por un problema de registro.
+    let crmId: string | null = null;
+    try {
+      const record = await createQuoteRecord(quote, { d, s }, customerPhone);
+      crmId = record.id;
+    } catch (err) {
+      console.error("Error guardando presupuesto en el CRM:", err);
+    }
+
+    return NextResponse.json({ d, s, crmId });
   } catch (err) {
     console.error("Error al firmar presupuesto:", err);
     return NextResponse.json({ error: "Ha ocurrido un error al generar la firma." }, { status: 500 });

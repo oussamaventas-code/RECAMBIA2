@@ -14,3 +14,11 @@ export const BUSINESS_HOURS = "Lunes a Viernes, de 9:00 a 18:30";
 
 // Cookie que marca sesión iniciada en el creador interno de presupuestos.
 export const ADMIN_COOKIE = "recambia_admin";
+
+// Número de Bizum donde el cliente paga sus presupuestos. Configurable por
+// entorno (BIZUM_PHONE): si se deja vacío, la ficha del presupuesto solo
+// muestra la opción de pagar con tarjeta.
+export function getBizumPhone(): string | null {
+  const raw = process.env.BIZUM_PHONE;
+  return raw && raw.trim() ? raw.trim() : null;
+}

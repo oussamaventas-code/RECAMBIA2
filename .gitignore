@@ -20,6 +20,9 @@
 # production
 /build
 
+# datos del CRM (presupuestos y ventas, generados en runtime)
+/.data/
+
 # misc
 .DS_Store
 *.pem

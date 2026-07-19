@@ -30,6 +30,8 @@ export const config = {
   matcher: [
     "/presupuesto/nuevo",
     "/presupuesto/nuevo/:path*",
+    "/presupuesto/crm",
+    "/presupuesto/crm/:path*",
     "/api/presupuesto/firmar",
     "/api/presupuesto/firmar/:path*",
   ],

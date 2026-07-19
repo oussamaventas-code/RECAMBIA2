@@ -38,6 +38,13 @@ export function quoteTotal(quote: Quote): number {
   return quote.items.reduce((sum, item) => sum + item.qty * item.unitPrice, 0);
 }
 
+// Concepto automático para que el cliente lo copie tal cual en su app del
+// banco: así se identifica el Bizum al cruzarlo con el CRM.
+export function bizumConcept(quote: Quote): string {
+  const ref = quote.plate?.trim() || quote.customerName?.trim();
+  return ref ? `RECAMBIA ${ref}` : "RECAMBIA presupuesto";
+}
+
 export function encodeQuote(quote: Quote): string {
   return base64url(Buffer.from(JSON.stringify(quote), "utf-8"));
 }

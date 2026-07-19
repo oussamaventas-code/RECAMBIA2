@@ -14,6 +14,7 @@ function newKey() {
 
 export function PresupuestoBuilder() {
   const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
   const [plate, setPlate] = useState("");
   const [note, setNote] = useState("");
   const [rows, setRows] = useState<Row[]>([]);
@@ -68,6 +69,7 @@ export function PresupuestoBuilder() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           customerName: customerName.trim() || undefined,
+          customerPhone: customerPhone.trim() || undefined,
           plate: plate.trim() || undefined,
           note: note.trim() || undefined,
           items: cleanRows.map(({ name, ref, qty, unitPrice }) => ({ name, ref, qty, unitPrice })),
@@ -119,6 +121,21 @@ export function PresupuestoBuilder() {
             placeholder="1234 BCD"
             className="w-full rounded-xl border border-line bg-surface-1 px-4 py-2.5 text-sm text-ink outline-none focus:border-accent focus:ring-1 focus:ring-accent"
           />
+        </div>
+        <div className="sm:col-span-2">
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-muted">
+            Teléfono / WhatsApp del cliente (opcional)
+          </label>
+          <input
+            type="tel"
+            value={customerPhone}
+            onChange={(e) => setCustomerPhone(e.target.value)}
+            placeholder="612 34 56 78"
+            className="w-full rounded-xl border border-line bg-surface-1 px-4 py-2.5 text-sm text-ink outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+          />
+          <p className="mt-1 text-xs text-ink-faint">
+            Solo se guarda en tu CRM para el seguimiento; no aparece en el link del cliente.
+          </p>
         </div>
       </div>
 
@@ -246,7 +263,10 @@ export function PresupuestoBuilder() {
 
       {link && (
         <div className="rounded-xl border border-success/30 bg-success/5 p-4">
-          <p className="mb-2 text-sm font-semibold text-ink">Link listo — pégalo en el WhatsApp del cliente:</p>
+          <p className="mb-2 text-sm font-semibold text-ink">
+            Link listo — pégalo en el WhatsApp del cliente. Queda registrado en{" "}
+            <a href="/presupuesto/crm" className="text-accent hover:underline">tu CRM</a>:
+          </p>
           <div className="flex flex-wrap items-center gap-2">
             <input
               readOnly

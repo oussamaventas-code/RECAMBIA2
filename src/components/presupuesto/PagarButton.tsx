@@ -33,7 +33,7 @@ export function PagarButton({ d, s }: { d: string; s: string }) {
       <button
         onClick={handlePay}
         disabled={loading}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-success px-6 py-4 font-semibold text-white shadow-lg shadow-success/20 transition-all hover:bg-success-glow hover:shadow-xl active:scale-[0.98] disabled:opacity-60"
+        className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-line-strong bg-surface-1 px-6 py-3.5 font-semibold text-ink transition-all hover:border-accent hover:text-accent active:scale-[0.98] disabled:opacity-60"
       >
         {loading ? "Redirigiendo a pago seguro…" : "Pagar con tarjeta"}
       </button>

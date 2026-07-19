@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAndDecodeQuote } from "@/lib/quote";
 import { getStripe } from "@/lib/stripe";
+import { findQuoteByData } from "@/lib/crm-store";
 
 const checkoutAttempts = new Map<string, { count: number; expires: number }>();
 
@@ -39,6 +40,24 @@ export async function POST(request: NextRequest) {
 
   const origin = new URL(request.url).origin;
 
+  // Vincula el pago con la ficha del CRM para que el webhook la marque pagada,
+  // y evita cobrar dos veces un presupuesto ya pagado o cancelado.
+  let crmId = "";
+  try {
+    const record = await findQuoteByData(d);
+    if (record) {
+      if (record.status === "pagado") {
+        return NextResponse.json({ error: "Este presupuesto ya está pagado." }, { status: 409 });
+      }
+      if (record.status === "cancelado") {
+        return NextResponse.json({ error: "Este presupuesto ha sido cancelado." }, { status: 409 });
+      }
+      crmId = record.id;
+    }
+  } catch (err) {
+    console.error("CRM: no se pudo localizar la ficha del presupuesto:", err);
+  }
+
   try {
     const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
@@ -59,6 +78,7 @@ export async function POST(request: NextRequest) {
       metadata: {
         plate: plateStr,
         customerName: customerStr,
+        crmId,
       },
     });
 

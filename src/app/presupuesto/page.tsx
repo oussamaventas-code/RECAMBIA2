@@ -3,8 +3,11 @@ import Link from "next/link";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { PagarButton } from "@/components/presupuesto/PagarButton";
-import { verifyAndDecodeQuote, quoteTotal } from "@/lib/quote";
+import { BizumPayment } from "@/components/presupuesto/BizumPayment";
+import { verifyAndDecodeQuote, quoteTotal, bizumConcept } from "@/lib/quote";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
+import { getBizumPhone } from "@/lib/site-config";
+import { findQuoteByData } from "@/lib/crm-store";
 
 export const metadata: Metadata = {
   title: "Tu presupuesto",
@@ -18,6 +21,21 @@ interface PresupuestoPageProps {
 export default async function PresupuestoPage({ searchParams }: PresupuestoPageProps) {
   const { d, s } = await searchParams;
   const quote = d && s ? verifyAndDecodeQuote(d, s) : null;
+
+  // Estado real en el CRM: evita mostrar los botones de pago si el
+  // presupuesto ya está cobrado o se ha cancelado. Si la consulta falla, se
+  // trata como "desconocido" y se dejan los botones de pago disponibles.
+  let crmStatus: "enviado" | "pagado" | "cancelado" | null = null;
+  if (quote && d) {
+    try {
+      const record = await findQuoteByData(d);
+      crmStatus = record?.status ?? null;
+    } catch (err) {
+      console.error("CRM: no se pudo comprobar el estado del presupuesto:", err);
+    }
+  }
+
+  const bizumPhone = getBizumPhone();
 
   return (
     <>
@@ -98,9 +116,39 @@ export default async function PresupuestoPage({ searchParams }: PresupuestoPageP
                 </p>
               )}
 
-              <div className="mt-8">
-                <PagarButton d={d!} s={s!} />
-              </div>
+              {crmStatus === "pagado" ? (
+                <div className="mt-8 rounded-xl border border-success/30 bg-success/5 p-5 text-center">
+                  <p className="text-sm font-semibold text-success">✓ Este presupuesto ya está pagado</p>
+                  <p className="mt-1 text-xs text-ink-muted">
+                    Si tienes cualquier duda sobre tu pedido, escríbenos por WhatsApp.
+                  </p>
+                </div>
+              ) : crmStatus === "cancelado" ? (
+                <div className="mt-8 rounded-xl border border-line bg-surface-2 p-5 text-center">
+                  <p className="text-sm font-semibold text-ink">Este presupuesto ha sido cancelado</p>
+                  <p className="mt-1 text-xs text-ink-muted">
+                    Escríbenos por WhatsApp si crees que se trata de un error o quieres uno nuevo.
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-8 space-y-4">
+                  {bizumPhone && (
+                    <BizumPayment
+                      phone={bizumPhone}
+                      amount={quoteTotal(quote)}
+                      concept={bizumConcept(quote)}
+                    />
+                  )}
+                  {bizumPhone && (
+                    <div className="flex items-center gap-3">
+                      <div className="h-px flex-1 bg-line" />
+                      <span className="text-xs font-semibold uppercase tracking-wider text-ink-faint">o</span>
+                      <div className="h-px flex-1 bg-line" />
+                    </div>
+                  )}
+                  <PagarButton d={d!} s={s!} />
+                </div>
+              )}
 
               <p className="mt-4 text-center text-xs text-ink-faint">
                 ¿Prefieres pagar de otra forma?{" "}
