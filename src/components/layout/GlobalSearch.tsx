@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { searchProducts } from "@/data/products";
 import type { Product } from "@/types";
@@ -90,9 +91,11 @@ export function GlobalSearch() {
                     >
                       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-surface-2 p-1 border border-line">
                         {product.images[0] || categoryImage(product.category) ? (
-                          <img
+                          <Image
                             src={product.images[0] ?? categoryImage(product.category)!}
                             alt={product.name}
+                            width={48}
+                            height={48}
                             className="h-full w-full object-contain"
                           />
                         ) : (

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { inter, jetbrainsMono, spaceGrotesk } from "@/lib/fonts";
 import { WhatsAppFloat } from "@/components/layout/WhatsAppFloat";
 import "./globals.css";
@@ -27,6 +27,11 @@ export const metadata: Metadata = {
     description:
       "Stock real en España. Escribe tu matrícula y encuentra el recambio exacto.",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 import { Suspense } from "react";

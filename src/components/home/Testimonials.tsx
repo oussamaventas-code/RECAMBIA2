@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { testimonials } from "@/data/testimonials";
 import { Reveal } from "@/components/shared/Reveal";
 
@@ -59,9 +60,15 @@ export function Testimonials() {
               </blockquote>
               
               <div className="mt-auto flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-3 text-ink font-semibold">
+                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-3 text-ink font-semibold">
                   {testimonial.image ? (
-                    <img src={testimonial.image} alt={testimonial.name} className="h-full w-full rounded-full object-cover" />
+                    <Image
+                      src={testimonial.image}
+                      alt={testimonial.name}
+                      fill
+                      sizes="40px"
+                      className="object-cover"
+                    />
                   ) : (
                     testimonial.name.charAt(0)
                   )}

@@ -199,10 +199,11 @@ export function Nav({ showPlate = false }: { showPlate?: boolean }) {
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "100vh" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="fixed inset-x-0 top-[64px] flex flex-col border-t border-line bg-surface-1/95 backdrop-blur-xl px-6 py-4 md:hidden overflow-y-auto"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.18, ease: "easeOut" }}
+              className="fixed inset-x-0 bottom-0 top-16 flex flex-col overflow-y-auto border-t border-line bg-surface-1/95 px-6 py-4 backdrop-blur-xl md:hidden"
             >
               {LINKS.map((link) => (
                 <Link
