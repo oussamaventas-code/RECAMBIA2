@@ -76,12 +76,19 @@
 html {
   background: var(--color-paper);
   color-scheme: light;
+  /* Cortafuegos: cualquier elemento que se salga del ancho (posicionado
+     fuera de pantalla, etc.) no debe poder ensanchar la página entera y
+     provocar scroll horizontal / "formato escritorio" en móvil. Los
+     carruseles internos siguen funcionando: usan su propio overflow-x-auto. */
+  overflow-x: hidden;
 }
 
 body {
   background: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 ::selection {

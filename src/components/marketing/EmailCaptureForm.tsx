@@ -122,8 +122,14 @@ export function EmailCaptureForm({ source, onSuccess }: EmailCaptureFormProps) {
         </button>
       </div>
 
-      {/* Honeypot: oculto para humanos, los bots lo rellenan */}
-      <div className="absolute left-[-9999px]" aria-hidden="true">
+      {/* Honeypot: oculto para humanos, los bots lo rellenan. Recortado con
+          clip en vez de sacarlo de pantalla con left negativo: eso último
+          ensancha el scroll horizontal de toda la página en móvil. */}
+      <div
+        className="absolute h-px w-px overflow-hidden whitespace-nowrap"
+        style={{ clip: "rect(0 0 0 0)", clipPath: "inset(50%)" }}
+        aria-hidden="true"
+      >
         <label>
           No rellenar
           <input
