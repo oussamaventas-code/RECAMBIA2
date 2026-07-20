@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { saveLead } from "@/lib/leads-store";
 import { DISCOUNT } from "@/lib/site-config";
+import { createRateLimiter } from "@/lib/rate-limit";
 
 // Captura de email a cambio del descuento de bienvenida. Ruta pública (no pasa
 // por el middleware de admin). Guarda el lead y devuelve el código para que el
@@ -16,19 +17,12 @@ const bodySchema = z.object({
   website: z.string().max(0).optional().or(z.literal("")),
 });
 
-const attempts = new Map<string, { count: number; expires: number }>();
+const checkLeadRate = createRateLimiter(60 * 1000, 5);
 
 export async function POST(request: NextRequest) {
   const ip = request.headers.get("x-forwarded-for") || "unknown_ip";
-  const now = Date.now();
-  const a = attempts.get(ip);
-  if (a && a.expires > now) {
-    if (a.count >= 5) {
-      return NextResponse.json({ error: "Demasiados intentos. Espera un momento." }, { status: 429 });
-    }
-    a.count++;
-  } else {
-    attempts.set(ip, { count: 1, expires: now + 60 * 1000 });
+  if (!checkLeadRate.check(ip)) {
+    return NextResponse.json({ error: "Demasiados intentos. Espera un momento." }, { status: 429 });
   }
 
   let raw: unknown;

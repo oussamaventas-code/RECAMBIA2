@@ -18,21 +18,14 @@ export const metadata: Metadata = {
     locale: "es_ES",
     type: "website",
     siteName: "RECAMBIA",
-    images: [
-      {
-        url: "/images/og-recambia.png",
-        width: 1200,
-        height: 630,
-        alt: "RECAMBIA — Recambios de coche con entrega en 24h",
-      },
-    ],
+    // La imagen la genera src/app/opengraph-image.tsx (file convention de
+    // Next.js): siempre 1200x630 correctos, sin depender de un fichero suelto.
   },
   twitter: {
     card: "summary_large_image",
     title: "RECAMBIA — Tu pieza, mañana en tu puerta",
     description:
       "Stock real en España. Escribe tu matrícula y encuentra el recambio exacto.",
-    images: ["/images/og-recambia.png"],
   },
 };
 
@@ -75,7 +68,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "AutoPartsStore",
               name: "RECAMBIA",
-              image: "https://recambiax.es/images/og-recambia.png",
+              image: "https://recambiax.es/images/og-recambia.jpg",
               description:
                 "Encuentra el recambio exacto para tu coche. Stock real en España, entrega mañana.",
               url: "https://recambiax.es",

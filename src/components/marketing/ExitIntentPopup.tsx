@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { EmailCaptureForm } from "@/components/marketing/EmailCaptureForm";
 import { DISCOUNT } from "@/lib/site-config";
 
@@ -11,6 +11,8 @@ const STORAGE_KEY = "recambia_lead_popup_v1";
 
 export function ExitIntentPopup() {
   const [open, setOpen] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     // Ya visto o ya suscrito: no volver a molestar.
@@ -66,18 +68,38 @@ export function ExitIntentPopup() {
     } catch {}
   }
 
+  // Accesibilidad del modal: guarda el foco previo, lo mueve al diálogo al
+  // abrir, cierra con Escape y devuelve el foco al elemento anterior al cerrar.
+  useEffect(() => {
+    if (!open) return;
+    triggerRef.current = document.activeElement as HTMLElement | null;
+    dialogRef.current?.focus();
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") close();
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      triggerRef.current?.focus?.();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
   if (!open) return null;
 
   return (
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/50 p-4 backdrop-blur-sm"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="popup-title"
       onClick={close}
     >
       <div
-        className="relative w-full max-w-md rounded-3xl border border-line bg-surface-1 p-8 shadow-2xl"
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="popup-title"
+        tabIndex={-1}
+        className="relative w-full max-w-md rounded-3xl border border-line bg-surface-1 p-8 shadow-2xl outline-none"
         onClick={(e) => e.stopPropagation()}
       >
         <button

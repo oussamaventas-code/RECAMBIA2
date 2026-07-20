@@ -13,7 +13,14 @@ export interface Quote {
   plate?: string;
   note?: string;
   items: QuoteItem[];
+  // Momento de la firma (epoch ms). Lo añade buildSignedQuote; no lo rellena
+  // el creador del presupuesto ni se muestra en pantalla.
+  iat?: number;
 }
+
+// Los links de presupuesto caducan a los 30 días de generarse (evita que un
+// link firmado quede válido para siempre si se filtra o queda indexado).
+const QUOTE_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 
 function getQuoteSecret(): string {
   const secret = process.env.QUOTE_SIGNING_SECRET;
@@ -56,12 +63,13 @@ export function signQuoteData(data: string): string {
 
 // Construye el par (d, s) que va en la URL del presupuesto: d = datos, s = firma.
 export function buildSignedQuote(quote: Quote): { d: string; s: string } {
-  const d = encodeQuote(quote);
+  const d = encodeQuote({ ...quote, iat: Date.now() });
   return { d, s: signQuoteData(d) };
 }
 
-// Verifica la firma y decodifica. Devuelve null si la firma no coincide o el
-// payload está corrupto — así el link no se puede manipular para bajar precios.
+// Verifica la firma y decodifica. Devuelve null si la firma no coincide, el
+// payload está corrupto o el link ha caducado — así no se puede manipular
+// para bajar precios ni queda válido para siempre.
 export function verifyAndDecodeQuote(d: string, s: string): Quote | null {
   try {
     const expected = signQuoteData(d);
@@ -71,6 +79,9 @@ export function verifyAndDecodeQuote(d: string, s: string): Quote | null {
     const json = fromBase64url(d).toString("utf-8");
     const parsed = JSON.parse(json);
     if (!Array.isArray(parsed.items)) return null;
+    if (typeof parsed.iat === "number" && Date.now() - parsed.iat > QUOTE_MAX_AGE_MS) {
+      return null;
+    }
     return parsed as Quote;
   } catch {
     return null;

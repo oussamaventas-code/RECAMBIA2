@@ -4,16 +4,19 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { SplitText } from "gsap/SplitText";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { PlateSearch } from "@/components/matricula/PlateSearch";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
 
-gsap.registerPlugin(SplitText, useGSAP);
+gsap.registerPlugin(SplitText, ScrollTrigger, useGSAP);
 
 /* ══════════════════════════════════════════════ */
 /*  MOSTRADOR — Hero Section                     */
 /* ══════════════════════════════════════════════ */
 export function Mostrador() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const bgRef = useRef<HTMLDivElement>(null);
   const h1Ref = useRef<HTMLHeadingElement>(null);
 
   // El vídeo de fondo solo se monta (y descarga) en escritorio; en móvil el
@@ -52,31 +55,64 @@ export function Mostrador() {
     { scope: h1Ref },
   );
 
+  // Parallax sutil del fondo: solo escritorio y sin reduced-motion. El fondo
+  // va a escala 110% (ver className más abajo) para que el desplazamiento no
+  // deje huecos vacíos en los bordes.
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
+        if (!bgRef.current || !sectionRef.current) return;
+        const tween = gsap.to(bgRef.current, {
+          yPercent: 8,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
+        return () => {
+          tween.scrollTrigger?.kill();
+          tween.kill();
+        };
+      });
+      return () => mm.revert();
+    },
+    { scope: sectionRef },
+  );
+
   return (
-    <section className="relative flex min-h-[100svh] w-full flex-col overflow-hidden bg-paper md:min-h-[100dvh]">
+    <section
+      ref={sectionRef}
+      className="relative flex min-h-[100svh] w-full flex-col overflow-hidden bg-paper md:min-h-[100dvh]"
+    >
       {/* ── Fondo: poster optimizado siempre, vídeo solo en escritorio ── */}
-      <div className="absolute inset-0 z-0 bg-paper">
-        <Image
-          src="/hero/hero-poster.jpg"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center opacity-90"
-        />
-        {showVideo && (
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="metadata"
-            poster="/hero/hero-poster.jpg"
-            className="absolute inset-0 h-full w-full object-cover object-center opacity-90"
-          >
-            <source src="/hero/hero-video.mp4" type="video/mp4" />
-          </video>
-        )}
+      <div className="absolute inset-0 z-0 overflow-hidden bg-paper">
+        <div ref={bgRef} className="absolute inset-0 scale-110">
+          <Image
+            src="/hero/hero-poster.jpg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center opacity-90"
+          />
+          {showVideo && (
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              poster="/hero/hero-poster.jpg"
+              className="absolute inset-0 h-full w-full object-cover object-center opacity-90"
+            >
+              <source src="/hero/hero-video.mp4" type="video/mp4" />
+            </video>
+          )}
+        </div>
 
         {/* Gradient overlay: light overlay to ensure text is readable */}
         <div

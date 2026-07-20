@@ -2,20 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyAndDecodeQuote } from "@/lib/quote";
 import { getStripe } from "@/lib/stripe";
 import { findQuoteByData } from "@/lib/crm-store";
+import { createRateLimiter } from "@/lib/rate-limit";
 
-const checkoutAttempts = new Map<string, { count: number; expires: number }>();
+// 10 intentos de checkout por minuto y por IP.
+const checkCheckoutRate = createRateLimiter(60 * 1000, 10);
 
 export async function POST(request: NextRequest) {
   const ip = request.headers.get("x-forwarded-for") || "unknown_ip";
-  const now = Date.now();
-  const attempt = checkoutAttempts.get(ip);
-  if (attempt && attempt.expires > now) {
-    if (attempt.count >= 10) {
-      return NextResponse.json({ error: "Demasiados intentos. Por favor, espera un momento." }, { status: 429 });
-    }
-    attempt.count++;
-  } else {
-    checkoutAttempts.set(ip, { count: 1, expires: now + 60 * 1000 }); // 10 checkouts per min
+  if (!checkCheckoutRate.check(ip)) {
+    return NextResponse.json({ error: "Demasiados intentos. Por favor, espera un momento." }, { status: 429 });
   }
 
   let body: { d?: string; s?: string };

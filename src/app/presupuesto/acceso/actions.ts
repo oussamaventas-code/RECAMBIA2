@@ -4,26 +4,18 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { ADMIN_COOKIE } from "@/lib/site-config";
 import { signSession } from "@/lib/session";
+import { createRateLimiter } from "@/lib/rate-limit";
 import { timingSafeEqual } from "crypto";
 
-// Simple in-memory rate limit (cleared on restart / not shared across serverless instances)
-const loginAttempts = new Map<string, { count: number; expires: number }>();
+// 5 intentos cada 2 minutos por IP.
+const checkLoginRate = createRateLimiter(120 * 1000, 5);
 
 export async function loginAction(formData: FormData) {
   const headersList = await headers();
   const ip = headersList.get("x-forwarded-for") || "unknown_ip";
 
-  const now = Date.now();
-  const attempt = loginAttempts.get(ip);
-  if (attempt && attempt.expires > now) {
-    if (attempt.count >= 5) {
-      // Demasiados intentos, esperamos a que expire el bloqueo
-      redirect(`/presupuesto/acceso?error=TooManyRequests`);
-    }
-    attempt.count++;
-  } else {
-    // 5 intentos cada 2 minutos
-    loginAttempts.set(ip, { count: 1, expires: now + 120 * 1000 });
+  if (!checkLoginRate.check(ip)) {
+    redirect(`/presupuesto/acceso?error=TooManyRequests`);
   }
 
   const password = String(formData.get("password") ?? "");
@@ -41,7 +33,7 @@ export async function loginAction(formData: FormData) {
   }
 
   // Clear rate limit on success
-  loginAttempts.delete(ip);
+  checkLoginRate.reset(ip);
 
   const sessionToken = await signSession("admin_auth");
 
