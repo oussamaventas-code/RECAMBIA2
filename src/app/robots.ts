@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/presupuesto"],
     },
-    sitemap: "https://recambia.es/sitemap.xml",
+    sitemap: "https://recambiax.es/sitemap.xml",
   };
 }

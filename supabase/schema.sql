@@ -30,3 +30,22 @@ create index if not exists crm_quotes_status_idx on public.crm_quotes (status);
 -- RLS activado y SIN políticas públicas: la tabla solo es accesible con la
 -- service_role key, que vive únicamente en el servidor de la web.
 alter table public.crm_quotes enable row level security;
+
+-- ---------------------------------------------------------------------------
+-- Leads: emails captados a cambio del descuento de bienvenida.
+-- ---------------------------------------------------------------------------
+create table if not exists public.leads (
+  id text primary key,
+  created_at timestamptz not null default now(),
+  email text not null unique,
+  -- De dónde vino: 'portada' | 'popup' | otro.
+  source text,
+  discount_code text,
+  -- Consentimiento RGPD (marcó el checkbox). Guardamos también cuándo.
+  consent boolean not null default false
+);
+
+create index if not exists leads_created_at_idx on public.leads (created_at);
+
+-- Igual que crm_quotes: RLS activo, sin políticas públicas. Solo service_role.
+alter table public.leads enable row level security;

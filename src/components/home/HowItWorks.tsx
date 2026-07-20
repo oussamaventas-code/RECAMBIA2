@@ -1,7 +1,13 @@
 "use client";
 
+import { useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 import { Reveal } from "@/components/shared/Reveal";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
+
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const steps = [
   {
@@ -70,6 +76,38 @@ const steps = [
 ];
 
 export function HowItWorks() {
+  const gridRef = useRef<HTMLDivElement>(null);
+  const lineRef = useRef<HTMLDivElement>(null);
+
+  // La línea que conecta los tres pasos se dibuja de izquierda a derecha
+  // ligada al scroll. Solo en escritorio (en móvil los pasos van apilados) y
+  // solo si el usuario no pidió menos movimiento. Con reduced-motion o sin JS
+  // queda la pista estática de fondo: nunca se rompe el layout.
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
+        if (!lineRef.current || !gridRef.current) return;
+        gsap.fromTo(
+          lineRef.current,
+          { scaleX: 0, transformOrigin: "left center" },
+          {
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: gridRef.current,
+              start: "top 75%",
+              end: "bottom 65%",
+              scrub: 0.5,
+            },
+          },
+        );
+      });
+      return () => mm.revert();
+    },
+    { scope: gridRef },
+  );
+
   return (
     <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
       {/* Header */}
@@ -87,35 +125,46 @@ export function HowItWorks() {
       </Reveal>
 
       {/* Steps */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {steps.map((step, i) => (
-          <Reveal
-            key={step.number}
-            delay={i * 0.05}
-            className="group relative rounded-2xl border border-line bg-surface-1 p-8 transition-all duration-300 hover:glow-border hover:shadow-lg hover:shadow-accent/5"
-          >
-            {/* Step number */}
-            <span className="absolute -top-4 left-6 inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent text-sm font-bold text-white shadow-lg shadow-accent/30">
-              {step.number}
-            </span>
+      <div ref={gridRef} className="relative">
+        {/* Línea conectora que se dibuja al scrollear (asoma por los huecos
+            entre tarjetas). Solo escritorio. */}
+        <div
+          className="pointer-events-none absolute inset-x-8 top-1/2 hidden h-0.5 -translate-y-1/2 md:block"
+          aria-hidden="true"
+        >
+          <div className="absolute inset-0 rounded-full bg-line-strong/50" />
+          <div
+            ref={lineRef}
+            className="absolute inset-0 origin-left rounded-full bg-accent"
+            style={{ transform: "scaleX(0)" }}
+          />
+        </div>
 
-            {/* Connector line (not on last) */}
-            {i < steps.length - 1 && (
-              <div className="absolute -right-4 top-1/2 hidden h-px w-8 bg-line-strong md:block" />
-            )}
+        <div className="relative z-10 grid grid-cols-1 gap-8 md:grid-cols-3">
+          {steps.map((step, i) => (
+            <Reveal
+              key={step.number}
+              delay={i * 0.05}
+              className="group relative rounded-2xl border border-line bg-surface-1 p-8 transition-all duration-300 hover:glow-border hover:shadow-lg hover:shadow-accent/5"
+            >
+              {/* Step number */}
+              <span className="absolute -top-4 left-6 inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent text-sm font-bold text-white shadow-lg shadow-accent/30">
+                {step.number}
+              </span>
 
-            {/* Icon */}
-            <div className="mb-5 mt-2 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-accent/10 text-accent transition-transform duration-300 group-hover:scale-110">
-              {step.icon}
-            </div>
+              {/* Icon */}
+              <div className="mb-5 mt-2 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-accent/10 text-accent transition-transform duration-300 group-hover:scale-110">
+                {step.icon}
+              </div>
 
-            {/* Text */}
-            <h3 className="font-display text-xl text-ink mb-2">{step.title}</h3>
-            <p className="text-sm text-ink-muted leading-relaxed">
-              {step.description}
-            </p>
-          </Reveal>
-        ))}
+              {/* Text */}
+              <h3 className="font-display text-xl text-ink mb-2">{step.title}</h3>
+              <p className="text-sm text-ink-muted leading-relaxed">
+                {step.description}
+              </p>
+            </Reveal>
+          ))}
+        </div>
       </div>
 
       {/* CTA */}

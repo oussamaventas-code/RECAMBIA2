@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { products } from "@/data/products";
 import { categories } from "@/data/categories";
 
-const BASE = "https://recambia.es";
+const BASE = "https://recambiax.es";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [

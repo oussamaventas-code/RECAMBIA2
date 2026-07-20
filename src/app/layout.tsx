@@ -4,7 +4,7 @@ import { WhatsAppFloat } from "@/components/layout/WhatsAppFloat";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://recambia.es"),
+  metadataBase: new URL("https://recambiax.es"),
   title: {
     default: "RECAMBIA — Recambios de coche con stock real en España",
     template: "%s · RECAMBIA",
@@ -75,10 +75,10 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "AutoPartsStore",
               name: "RECAMBIA",
-              image: "https://recambia.es/images/og-recambia.png",
+              image: "https://recambiax.es/images/og-recambia.png",
               description:
                 "Encuentra el recambio exacto para tu coche. Stock real en España, entrega mañana.",
-              url: "https://recambia.es",
+              url: "https://recambiax.es",
               telephone: PHONE_TEL,
               address: {
                 "@type": "PostalAddress",

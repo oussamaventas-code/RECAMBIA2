@@ -21,8 +21,8 @@ export default function PrivacidadPage() {
           <p>
             [RAZÓN SOCIAL / NOMBRE], con NIF [NIF] y domicilio en
             [DIRECCIÓN], España. Email de contacto:{" "}
-            <a href="mailto:hola@recambia.es" className="text-accent hover:underline">
-              hola@recambia.es
+            <a href="mailto:hola@recambiax.es" className="text-accent hover:underline">
+              hola@recambiax.es
             </a>
             .
           </p>
@@ -70,8 +70,8 @@ export default function PrivacidadPage() {
           <p>
             Puedes ejercer tus derechos de acceso, rectificación, supresión,
             oposición, limitación y portabilidad escribiendo a{" "}
-            <a href="mailto:hola@recambia.es" className="text-accent hover:underline">
-              hola@recambia.es
+            <a href="mailto:hola@recambiax.es" className="text-accent hover:underline">
+              hola@recambiax.es
             </a>
             . También puedes reclamar ante la Agencia Española de Protección
             de Datos (aepd.es).

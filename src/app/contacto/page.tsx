@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { InfoPage } from "@/components/layout/InfoPage";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
-import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/site-config";
+import { PHONE_DISPLAY, PHONE_TEL, EMAIL } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "Contacto",
@@ -28,7 +28,7 @@ const CHANNELS = [
     icon: "✉️",
     title: "Email",
     detail: "Para presupuestos, facturas y temas administrativos.",
-    action: { label: "hola@recambia.es", href: "mailto:hola@recambia.es" },
+    action: { label: EMAIL, href: `mailto:${EMAIL}` },
     external: false,
   },
 ];
