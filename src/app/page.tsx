@@ -1,8 +1,6 @@
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { Mostrador } from "@/components/home/Mostrador";
-import { BrandIndex } from "@/components/home/BrandIndex";
-import { CategoryIndex } from "@/components/home/CategoryIndex";
 import { ConseguimosPieza } from "@/components/home/ConseguimosPieza";
 import { CounterNotes } from "@/components/home/CounterNotes";
 import { TrustStrip } from "@/components/home/TrustStrip";
@@ -25,8 +23,6 @@ export default function Home() {
         <PorQueRecambia />
         {/* Reseñas reales: aparece solo cuando testimonials.ts tenga datos */}
         <Testimonials />
-        <CategoryIndex />
-        <BrandIndex />
         <HowItWorks />
         <ConseguimosPieza />
         <TrustMetrics />

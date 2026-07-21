@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { formatPlateInput, isPlateComplete } from "./plate-format";
@@ -28,7 +27,6 @@ export function PlateSearch({
   className = "",
   onActivityChange,
 }: PlateSearchProps) {
-  const router = useRouter();
   const inputId = useId();
   const [value, setValue] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -53,14 +51,10 @@ export function PlateSearch({
     e.preventDefault();
     if (!complete) return;
     if (!isHero) {
-      router.push(`/resultados?matricula=${encodeURIComponent(value)}`);
+      window.open(whatsappPlateUrl(value), "_blank", "noopener,noreferrer");
       return;
     }
     runSearch();
-  }
-
-  function handleVerPiezas() {
-    router.push(`/resultados?matricula=${encodeURIComponent(value)}`);
   }
 
   return (
@@ -221,7 +215,7 @@ export function PlateSearch({
                   <span className="text-ink-muted">lista para consultar</span>
                 </p>
               </div>
-              <div className="mt-4 flex w-full flex-col items-center gap-3 sm:mt-0 sm:w-auto sm:flex-row-reverse sm:gap-2">
+              <div className="mt-4 flex w-full sm:mt-0 sm:w-auto">
                 <a
                   href={whatsappPlateUrl(value)}
                   target="_blank"
@@ -233,12 +227,6 @@ export function PlateSearch({
                   </svg>
                   Escríbenos por WhatsApp &rarr;
                 </a>
-                <button
-                  onClick={handleVerPiezas}
-                  className="px-4 py-2 text-xs font-medium text-ink-muted underline decoration-line transition-all hover:text-ink hover:decoration-ink-faint sm:no-underline sm:rounded-xl sm:border sm:border-line-strong sm:bg-surface-1 sm:py-2.5 sm:hover:border-ink-faint"
-                >
-                  o ver piezas por mi cuenta
-                </button>
               </div>
             </motion.div>
           )}

@@ -4,21 +4,17 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { PlateSearch } from "@/components/matricula/PlateSearch";
-import { categories } from "@/data/categories";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/site-config";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
-import { GlobalSearch } from "./GlobalSearch";
 
 const LINKS = [
-  { href: "/resultados", label: "Piezas", isMegaMenu: true },
-  { href: "/diagnostico", label: "Diagnóstico", isMegaMenu: false },
-  { href: "/talleres-asociados", label: "Talleres", isMegaMenu: false },
+  { href: "/diagnostico", label: "Diagnóstico" },
+  { href: "/talleres-asociados", label: "Talleres" },
 ];
 
 export function Nav({ showPlate = false }: { showPlate?: boolean }) {
   const [scrolled, setScrolled] = useState(showPlate);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [megaMenuOpen, setMegaMenuOpen] = useState(false);
 
   useEffect(() => {
     if (showPlate) return;
@@ -69,80 +65,16 @@ export function Nav({ showPlate = false }: { showPlate?: boolean }) {
 
           <ul className="hidden h-full gap-8 text-sm md:flex">
             {LINKS.map((link) => (
-              <li
-                key={link.href}
-                className="flex h-full items-center"
-                onMouseEnter={() => link.isMegaMenu && setMegaMenuOpen(true)}
-                onMouseLeave={() => link.isMegaMenu && setMegaMenuOpen(false)}
-              >
+              <li key={link.href} className="flex h-full items-center">
                 <Link
                   href={link.href}
                   className="flex h-full items-center text-ink-muted hover:text-ink transition-colors font-semibold"
                 >
                   {link.label}
-                  {link.isMegaMenu && (
-                    <svg
-                      className={`ml-1 h-3 w-3 transition-transform ${
-                        megaMenuOpen ? "rotate-180 text-accent" : ""
-                      }`}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={3}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  )}
                 </Link>
-
-                {/* Mega Menu Dropdown */}
-                {link.isMegaMenu && (
-                  <AnimatePresence>
-                    {megaMenuOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute left-0 right-0 top-full border-b border-line bg-surface-1/95 backdrop-blur-xl shadow-2xl"
-                      >
-                        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-                          <div className="grid grid-cols-4 gap-6">
-                            {categories.map((cat) => (
-                              <Link
-                                key={cat.slug}
-                                href={`/resultados?categoria=${cat.slug}`}
-                                className="group flex flex-col gap-2 rounded-xl border border-transparent p-4 hover:border-line hover:bg-surface-2 transition-colors"
-                                onClick={() => setMegaMenuOpen(false)}
-                              >
-                                <div className="flex items-center gap-3">
-                                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-3 text-accent group-hover:bg-accent/15 group-hover:shadow-lg group-hover:shadow-accent/20 transition-all">
-                                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                    </svg>
-                                  </div>
-                                  <span className="font-display font-semibold text-ink group-hover:text-accent transition-colors">
-                                    {cat.name}
-                                  </span>
-                                </div>
-                                <p className="text-xs text-ink-muted">
-                                  {cat.description}
-                                </p>
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                )}
               </li>
             ))}
           </ul>
-
-          <div className="flex-1 px-8 hidden md:block">
-            <GlobalSearch />
-          </div>
 
           <div className="ml-auto flex items-center gap-4">
             {scrolled && (
@@ -215,24 +147,6 @@ export function Nav({ showPlate = false }: { showPlate?: boolean }) {
                   {link.label}
                 </Link>
               ))}
-              {/* Categorías destacadas */}
-              <div className="mt-6">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-faint">
-                  Categorías principales
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {categories.slice(0, 4).map((cat) => (
-                    <Link
-                      key={cat.slug}
-                      href={`/resultados?categoria=${cat.slug}`}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="rounded-full border border-line bg-surface-2 px-4 py-2 text-sm font-medium text-ink-muted transition-colors hover:border-line-strong hover:text-ink"
-                    >
-                      {cat.name}
-                    </Link>
-                  ))}
-                </div>
-              </div>
 
               <div className="mt-8 flex flex-col gap-4">
                 <div className="rounded-xl border border-line bg-surface-2 p-4">

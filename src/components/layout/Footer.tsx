@@ -7,16 +7,6 @@ import { whatsappGenericUrl } from "@/lib/whatsapp";
 
 const COLUMNS = [
   {
-    title: "Piezas",
-    links: [
-      { href: "/resultados?categoria=frenos", label: "Frenos" },
-      { href: "/resultados?categoria=filtros", label: "Filtros" },
-      { href: "/resultados?categoria=motor", label: "Motor" },
-      { href: "/resultados?categoria=suspension", label: "Suspensión" },
-      { href: "/resultados", label: "Ver todas las piezas" },
-    ],
-  },
-  {
     title: "Recambia",
     links: [
       { href: "/quienes-somos", label: "Quiénes somos" },
@@ -85,7 +75,7 @@ export function Footer() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-5"
+          className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4"
         >
           {/* Logo & Info */}
           <motion.div variants={itemVariants} className="lg:col-span-2">

@@ -192,7 +192,14 @@ export function Mostrador() {
 
               <div className="mt-4 flex flex-col gap-2 text-sm">
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
-                  <a href="/resultados" className="text-ink-muted underline decoration-line transition-colors hover:text-ink hover:decoration-ink-faint">
+                  <a
+                    href={whatsappGenericUrl(
+                      "Hola, no me sé la matrícula. ¿Me ayudáis a buscar la pieza igualmente?",
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-ink-muted underline decoration-line transition-colors hover:text-ink hover:decoration-ink-faint"
+                  >
                     ¿No te sabes la matrícula?
                   </a>
                   <a

@@ -1,17 +1,5 @@
 export type StockLevel = "alto" | "bajo" | "agotado";
 
-export interface Brand {
-  slug: string;
-  name: string;
-}
-
-export interface Category {
-  slug: string;
-  name: string;
-  description: string;
-  refCount: number;
-}
-
 export interface ProductSpec {
   label: string;
   value: string;
@@ -34,6 +22,6 @@ export interface Product {
   specs: ProductSpec[];
   crossSell: string[];
   // Pack/kit genérico (no ligado a una referencia OEM exacta) en vez de
-  // pieza de encaje preciso — ver PACK_BADGE en ProductCard.
+  // pieza de encaje preciso.
   isPack?: boolean;
 }
