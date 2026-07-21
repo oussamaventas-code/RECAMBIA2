@@ -20,10 +20,11 @@ export function GarantiaVideo() {
         <Reveal>
           <div className="overflow-hidden rounded-2xl border border-line bg-ink shadow-xl shadow-ink/10">
             <video
-              className="block aspect-video w-full bg-ink object-cover"
+              className="block aspect-[3/1] w-full bg-ink object-cover object-[50%_82%]"
               src="/images/video/garantia.mp4"
               poster="/images/video/garantia-poster.jpg"
               controls
+              loop
               playsInline
               preload="none"
             >
