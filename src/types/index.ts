@@ -1,5 +1,10 @@
 export type StockLevel = "alto" | "bajo" | "agotado";
 
+export interface Brand {
+  slug: string;
+  name: string;
+}
+
 export interface Category {
   slug: string;
   name: string;
