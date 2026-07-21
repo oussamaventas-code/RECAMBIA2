@@ -1,8 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { trackEvent } from "@/lib/analytics";
 
-export function PagarButton({ d, s }: { d: string; s: string }) {
+interface PagarButtonProps {
+  d: string;
+  s: string;
+  // Para el evento InitiateCheckout. Opcional: si no llega, el evento
+  // sencillamente no incluye importe.
+  amount?: number;
+}
+
+export function PagarButton({ d, s, amount }: PagarButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,6 +30,7 @@ export function PagarButton({ d, s }: { d: string; s: string }) {
         setLoading(false);
         return;
       }
+      trackEvent("InitiateCheckout", { value: amount, currency: "EUR" });
       window.location.href = data.url;
     } catch {
       setError("Error de red. Inténtalo de nuevo o escríbenos por WhatsApp.");

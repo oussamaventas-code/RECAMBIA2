@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { BUSINESS_HOURS, PHONE_DISPLAY, PHONE_TEL, EMAIL } from "@/lib/site-config";
+import { BUSINESS_HOURS, PHONE_DISPLAY, PHONE_TEL, EMAIL, LEGAL } from "@/lib/site-config";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
 
 const COLUMNS = [
@@ -208,6 +208,7 @@ export function Footer() {
               <p className="font-mono-num">
                 © {new Date().getFullYear()} RECAMBIA. Todos los derechos reservados.
               </p>
+              <p>{LEGAL.businessName} · NIF {LEGAL.nif}</p>
               <p>
                 Diseñado para profesionales y apasionados del motor en España 🇪🇸
               </p>

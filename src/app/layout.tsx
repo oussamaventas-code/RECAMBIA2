@@ -36,8 +36,9 @@ export const viewport: Viewport = {
 
 import { Suspense } from "react";
 import { Tracker } from "@/components/layout/Tracker";
-import { META_PIXEL_ID, PHONE_TEL } from "@/lib/site-config";
-import Script from "next/script";
+import { PHONE_TEL } from "@/lib/site-config";
+import { MetaPixel } from "@/components/layout/MetaPixel";
+import { CookieConsent } from "@/components/layout/CookieConsent";
 
 export default function RootLayout({
   children,
@@ -50,21 +51,6 @@ export default function RootLayout({
       className={`${inter.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
       <head>
-        {/* Meta Pixel Code */}
-        <Script id="meta-pixel" strategy="afterInteractive">
-          {`
-            !function(f,b,e,v,n,t,s)
-            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-            n.queue=[];t=b.createElement(e);t.async=!0;
-            t.src=v;s=b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t,s)}(window, document,'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '${META_PIXEL_ID}');
-            fbq('track', 'PageView');
-          `}
-        </Script>
         {/* Schema.org JSON-LD */}
         <script
           type="application/ld+json"
@@ -96,8 +82,10 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <Tracker />
         </Suspense>
+        <MetaPixel />
         {children}
         <WhatsAppFloat />
+        <CookieConsent />
       </body>
     </html>
   );

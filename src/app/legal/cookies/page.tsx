@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { InfoPage } from "@/components/layout/InfoPage";
+import { CookiePreferencesButton } from "@/components/layout/CookiePreferencesButton";
 
 export const metadata: Metadata = {
   title: "Política de cookies",
@@ -7,8 +8,7 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-// BORRADOR: actualizar cuando se instalen analytics/píxeles publicitarios.
-// En ese momento será obligatorio añadir además un banner de consentimiento.
+// BORRADOR: pendiente de revisión legal.
 export default function CookiesPage() {
   return (
     <InfoPage
@@ -24,27 +24,32 @@ export default function CookiesPage() {
           </p>
         </section>
         <section>
-          <h2 className="font-display text-lg text-ink mb-2">2. Cookies que usamos actualmente</h2>
+          <h2 className="font-display text-lg text-ink mb-2">2. Cookies que usamos</h2>
           <p>
-            En este momento la web solo utiliza cookies técnicas
-            imprescindibles para su funcionamiento (por ejemplo, recordar tu
-            preferencia al cerrar avisos). Estas cookies no requieren
-            consentimiento según la normativa vigente.
+            <strong className="font-semibold text-ink">Técnicas (siempre activas):</strong>{" "}
+            imprescindibles para el funcionamiento de la web — por ejemplo, recordar tu decisión
+            de cookies o mantener tu sesión al crear un presupuesto. No requieren consentimiento
+            según la normativa vigente.
           </p>
           <p className="mt-2">
-            Si en el futuro incorporamos cookies de análisis o publicidad
-            (Google Analytics, píxel de TikTok/Meta), esta política se
-            actualizará y se te pedirá consentimiento expreso mediante un
-            banner antes de activarlas.
+            <strong className="font-semibold text-ink">
+              Publicitarias (solo si las aceptas):
+            </strong>{" "}
+            usamos el píxel de Meta (Facebook/Instagram) para medir la eficacia de nuestros
+            anuncios y mostrarte publicidad más relevante. Este píxel solo se carga después de que
+            aceptes expresamente el banner de cookies — si lo rechazas o no decides, no se carga.
           </p>
         </section>
         <section>
-          <h2 className="font-display text-lg text-ink mb-2">3. Cómo desactivarlas</h2>
+          <h2 className="font-display text-lg text-ink mb-2">3. Cómo cambiar tu decisión</h2>
           <p>
-            Puedes configurar tu navegador para bloquear o eliminar cookies
-            desde sus ajustes de privacidad. Ten en cuenta que bloquear las
-            cookies técnicas puede afectar al funcionamiento de la web.
+            Puedes revocar o volver a dar tu consentimiento cuando quieras con este botón, o
+            configurando tu navegador para bloquear cookies desde sus ajustes de privacidad. Ten en
+            cuenta que bloquear las cookies técnicas puede afectar al funcionamiento de la web.
           </p>
+          <div className="mt-4">
+            <CookiePreferencesButton />
+          </div>
         </section>
       </div>
     </InfoPage>

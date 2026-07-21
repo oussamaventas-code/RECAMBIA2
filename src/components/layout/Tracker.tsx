@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { trackEvent } from "@/lib/analytics";
 
 /**
  * Componente invisible que captura los parámetros de seguimiento de la URL
@@ -40,11 +41,9 @@ export function Tracker() {
       if (href && href.startsWith("https://wa.me")) {
         e.preventDefault(); // Detenemos la navegación por defecto
 
-        // Disparar evento de Meta Pixel
-        const win = window as unknown as { fbq?: (type: string, event: string) => void };
-        if (typeof window !== "undefined" && win.fbq) {
-          win.fbq("track", "Contact");
-        }
+        // Eventos de Meta Pixel (no hacen nada sin consentimiento aceptado).
+        trackEvent("Contact");
+        trackEvent("Lead");
 
         // Añadir referencia de tracking si existe
         const trackingRef = sessionStorage.getItem("tracking_ref");

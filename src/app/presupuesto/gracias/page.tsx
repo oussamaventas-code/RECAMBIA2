@@ -4,6 +4,7 @@ import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { getStripe } from "@/lib/stripe";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
+import { PurchaseTracker } from "@/components/presupuesto/PurchaseTracker";
 
 export const metadata: Metadata = {
   title: "Pago confirmado",
@@ -35,6 +36,9 @@ export default async function GraciasPage({ searchParams }: GraciasPageProps) {
       <Nav />
       <main className="flex-1 bg-paper py-16">
         <div className="mx-auto max-w-lg px-4 text-center sm:px-6">
+          {paid && amountTotal !== null && session_id && (
+            <PurchaseTracker amount={amountTotal} eventId={session_id} />
+          )}
           {paid ? (
             <>
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-success/15 text-success">

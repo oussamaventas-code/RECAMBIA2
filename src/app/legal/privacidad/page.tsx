@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { InfoPage } from "@/components/layout/InfoPage";
+import { LEGAL } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "Política de privacidad",
@@ -19,8 +20,8 @@ export default function PrivacidadPage() {
         <section>
           <h2 className="font-display text-lg text-ink mb-2">1. Responsable del tratamiento</h2>
           <p>
-            [RAZÓN SOCIAL / NOMBRE], con NIF [NIF] y domicilio en
-            [DIRECCIÓN], España. Email de contacto:{" "}
+            {LEGAL.businessName}, con NIF {LEGAL.nif} y domicilio en{" "}
+            {LEGAL.address}, España. Email de contacto:{" "}
             <a href="mailto:hola@recambiax.es" className="text-accent hover:underline">
               hola@recambiax.es
             </a>

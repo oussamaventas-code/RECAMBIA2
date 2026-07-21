@@ -7,7 +7,7 @@ import { BizumPayment } from "@/components/presupuesto/BizumPayment";
 import { verifyAndDecodeQuote, quoteTotal, bizumConcept } from "@/lib/quote";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
 import { getBizumPhone } from "@/lib/site-config";
-import { findQuoteByData } from "@/lib/crm-store";
+import { findQuoteByData, type QuoteStatus } from "@/lib/crm-store";
 
 export const metadata: Metadata = {
   title: "Tu presupuesto",
@@ -23,9 +23,9 @@ export default async function PresupuestoPage({ searchParams }: PresupuestoPageP
   const quote = d && s ? verifyAndDecodeQuote(d, s) : null;
 
   // Estado real en el CRM: evita mostrar los botones de pago si el
-  // presupuesto ya está cobrado o se ha cancelado. Si la consulta falla, se
-  // trata como "desconocido" y se dejan los botones de pago disponibles.
-  let crmStatus: "enviado" | "pagado" | "cancelado" | null = null;
+  // presupuesto ya está cobrado, perdido o cancelado. Si la consulta falla,
+  // se trata como "desconocido" y se dejan los botones de pago disponibles.
+  let crmStatus: QuoteStatus | null = null;
   if (quote && d) {
     try {
       const record = await findQuoteByData(d);
@@ -123,7 +123,7 @@ export default async function PresupuestoPage({ searchParams }: PresupuestoPageP
                     Si tienes cualquier duda sobre tu pedido, escríbenos por WhatsApp.
                   </p>
                 </div>
-              ) : crmStatus === "cancelado" ? (
+              ) : crmStatus === "cancelado" || crmStatus === "perdido" ? (
                 <div className="mt-8 rounded-xl border border-line bg-surface-2 p-5 text-center">
                   <p className="text-sm font-semibold text-ink">Este presupuesto ha sido cancelado</p>
                   <p className="mt-1 text-xs text-ink-muted">
@@ -146,7 +146,7 @@ export default async function PresupuestoPage({ searchParams }: PresupuestoPageP
                       <div className="h-px flex-1 bg-line" />
                     </div>
                   )}
-                  <PagarButton d={d!} s={s!} />
+                  <PagarButton d={d!} s={s!} amount={quoteTotal(quote)} />
                 </div>
               )}
 

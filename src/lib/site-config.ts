@@ -2,10 +2,13 @@
 // definitivo, la zona de reparto real y el horario, se actualizan aquí y
 // se propagan a toda la web (Nav, Footer, Contacto, WhatsApp).
 
-// TODO: 🔴 CRÍTICO - REEMPLAZAR ESTE DATO ANTES DE LANZAR CAMPAÑAS DE PAGO 🔴
-// Sin un Píxel real, perderás el tracking.
 export const WHATSAPP_NUMBER = "34632334756";
-export const META_PIXEL_ID = "PIXEL_ID_HERE"; // Tu ID del Píxel de Meta, ej: "123456789012345"
+
+// El ID del Píxel de Meta ya NO se pone aquí a mano: se lee de la variable
+// de entorno NEXT_PUBLIC_META_PIXEL_ID (ver .env.example y MetaPixel.tsx).
+// Sin esa variable, el píxel sencillamente no se carga — antes se
+// inicializaba siempre con el placeholder "PIXEL_ID_HERE", que estaba roto,
+// no ausente.
 
 export const PHONE_DISPLAY = "632 33 47 56";
 export const PHONE_TEL = "+34632334756";
@@ -34,4 +37,14 @@ export const DISCOUNT = {
   // Texto corto para titulares y texto largo para el cuerpo.
   short: "5% de descuento",
   long: "5% de descuento en tu primer pedido",
+} as const;
+
+// Identificación legal del vendedor (LSSI-CE art. 10 exige mostrarla en la
+// web). Único sitio donde rellenar estos datos: se propagan a las 3 páginas
+// legales y al footer. Mientras sigan entre corchetes, la web no puede
+// lanzarse legalmente — no se deben inventar, hace falta el dato real.
+export const LEGAL = {
+  businessName: "[RAZÓN SOCIAL / NOMBRE]",
+  nif: "[NIF]",
+  address: "[DIRECCIÓN]",
 } as const;

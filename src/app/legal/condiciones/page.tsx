@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { InfoPage } from "@/components/layout/InfoPage";
+import { LEGAL } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "Condiciones de compra",
@@ -21,7 +22,7 @@ export default function CondicionesPage() {
         <section>
           <h2 className="font-display text-lg text-ink mb-2">1. Identificación del vendedor</h2>
           <p>
-            [RAZÓN SOCIAL / NOMBRE], NIF [NIF], domicilio en [DIRECCIÓN],
+            {LEGAL.businessName}, NIF {LEGAL.nif}, domicilio en {LEGAL.address},
             España (en adelante, «RECAMBIA»).
           </p>
         </section>

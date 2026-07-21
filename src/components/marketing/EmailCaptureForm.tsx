@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { DISCOUNT } from "@/lib/site-config";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
+import { trackEvent } from "@/lib/analytics";
 
 interface EmailCaptureFormProps {
   source: "portada" | "popup";
@@ -44,6 +45,7 @@ export function EmailCaptureForm({ source, onSuccess }: EmailCaptureFormProps) {
         return;
       }
       setStatus("done");
+      trackEvent("Lead", { content_name: source });
       onSuccess?.();
     } catch {
       setError("Problema de conexión. Inténtalo de nuevo.");
