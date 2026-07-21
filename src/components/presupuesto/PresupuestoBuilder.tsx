@@ -13,11 +13,28 @@ function newKey() {
   return Math.random().toString(36).slice(2);
 }
 
-export function PresupuestoBuilder() {
-  const [customerName, setCustomerName] = useState("");
-  const [customerPhone, setCustomerPhone] = useState("");
-  const [plate, setPlate] = useState("");
-  const [note, setNote] = useState("");
+interface PresupuestoBuilderProps {
+  // Al llegar desde "Montar presupuesto →" de un lead del CRM: precarga los
+  // datos de contacto y hace que /api/presupuesto/firmar actualice esa misma
+  // ficha en vez de crear una duplicada.
+  leadId?: string;
+  initialName?: string;
+  initialPhone?: string;
+  initialPlate?: string;
+  initialNote?: string;
+}
+
+export function PresupuestoBuilder({
+  leadId,
+  initialName = "",
+  initialPhone = "",
+  initialPlate = "",
+  initialNote = "",
+}: PresupuestoBuilderProps) {
+  const [customerName, setCustomerName] = useState(initialName);
+  const [customerPhone, setCustomerPhone] = useState(initialPhone);
+  const [plate, setPlate] = useState(initialPlate);
+  const [note, setNote] = useState(initialNote);
   const [rows, setRows] = useState<Row[]>([]);
   const [catalogQuery, setCatalogQuery] = useState("");
   const [link, setLink] = useState<string | null>(null);
@@ -110,6 +127,7 @@ export function PresupuestoBuilder() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          leadId,
           customerName: customerName.trim() || undefined,
           customerPhone: customerPhone.trim() || undefined,
           plate: plate.trim() || undefined,

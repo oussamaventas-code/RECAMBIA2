@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { listQuotes, type CrmRecord, type QuoteStatus } from "@/lib/crm-store";
 import { QuoteActions } from "@/components/crm/QuoteActions";
+import { NuevoLeadForm } from "@/components/crm/NuevoLeadForm";
 
 export const metadata: Metadata = {
   title: "CRM — Presupuestos y ventas",
@@ -28,6 +29,15 @@ const METHOD_LABEL: Record<string, string> = {
   otro: "Otro",
 };
 
+const LOST_REASON_LABEL: Record<string, string> = {
+  precio: "Precio",
+  no_contesta: "No contesta",
+  compro_otro_sitio: "Compró en otro sitio",
+  pieza_no_disponible: "Pieza no disponible",
+  solo_consultaba: "Solo consultaba",
+  otro: "Otro",
+};
+
 function waLink(phone: string): string | null {
   const digits = phone.replace(/\D/g, "");
   if (digits.length < 9) return null;
@@ -36,10 +46,24 @@ function waLink(phone: string): string | null {
 }
 
 function StatusBadge({ record }: { record: CrmRecord }) {
+  if (record.status === "lead") {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2.5 py-1 text-xs font-semibold text-accent">
+        ● Lead
+      </span>
+    );
+  }
   if (record.status === "pagado") {
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-1 text-xs font-semibold text-success">
         ● Pagado{record.paymentMethod ? ` · ${METHOD_LABEL[record.paymentMethod]}` : ""}
+      </span>
+    );
+  }
+  if (record.status === "perdido") {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-danger/10 px-2.5 py-1 text-xs font-semibold text-danger">
+        ● Perdido{record.lostReason ? ` · ${LOST_REASON_LABEL[record.lostReason]}` : ""}
       </span>
     );
   }
@@ -65,8 +89,10 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
   const { estado, q } = await searchParams;
   const all = await listQuotes();
 
+  const leads = all.filter((r) => r.status === "lead");
   const pagados = all.filter((r) => r.status === "pagado");
   const enviados = all.filter((r) => r.status === "enviado");
+  const perdidos = all.filter((r) => r.status === "perdido");
   const cancelados = all.filter((r) => r.status === "cancelado");
 
   const now = new Date();
@@ -74,16 +100,26 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
   const pagadosMes = pagados.filter((r) => (r.paidAt ?? r.updatedAt).startsWith(mesActual));
 
   const sum = (rs: CrmRecord[]) => rs.reduce((acc, r) => acc + r.total, 0);
-  const conversion = all.length > 0 ? Math.round((pagados.length / all.length) * 100) : null;
+
+  // Dos conversiones distintas, a propósito: la de presupuesto→venta mide si
+  // el precio y la propuesta cierran; la de lead→venta mide todo el embudo,
+  // incluyendo a quien escribe y nunca llega a recibir un presupuesto. Los
+  // cancelados no cuentan como resultado de venta real, se excluyen de ambas.
+  const presupuestados = pagados.length + enviados.length + perdidos.length;
+  const conversionPresupuesto =
+    presupuestados > 0 ? Math.round((pagados.length / presupuestados) * 100) : null;
+  const conversionLead = all.length > 0 ? Math.round((pagados.length / all.length) * 100) : null;
 
   const filtro: QuoteStatus | null =
-    estado === "enviado" || estado === "pagado" || estado === "cancelado" ? estado : null;
+    estado === "lead" || estado === "enviado" || estado === "pagado" || estado === "perdido" || estado === "cancelado"
+      ? estado
+      : null;
   const porEstado = filtro ? all.filter((r) => r.status === filtro) : all;
 
   const query = q?.trim().toLowerCase() ?? "";
   const visibles = query
     ? porEstado.filter((r) =>
-        [r.customerName, r.plate, r.customerPhone].some((v) => v?.toLowerCase().includes(query)),
+        [r.customerName, r.plate, r.customerPhone, r.owner].some((v) => v?.toLowerCase().includes(query)),
       )
     : porEstado;
 
@@ -91,13 +127,17 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
     { label: "Ventas cobradas", value: eur.format(sum(pagados)), sub: `${pagados.length} venta${pagados.length === 1 ? "" : "s"}` },
     { label: "Ventas este mes", value: eur.format(sum(pagadosMes)), sub: `${pagadosMes.length} venta${pagadosMes.length === 1 ? "" : "s"}` },
     { label: "Pendiente de cobro", value: eur.format(sum(enviados)), sub: `${enviados.length} presupuesto${enviados.length === 1 ? "" : "s"} enviado${enviados.length === 1 ? "" : "s"}` },
-    { label: "Conversión", value: conversion === null ? "—" : `${conversion} %`, sub: `${pagados.length} de ${all.length} presupuestos` },
+    { label: "Leads sin presupuestar", value: String(leads.length), sub: leads.length === 0 ? "Al día" : "Pendientes de montar presupuesto" },
+    { label: "Conversión presupuesto→venta", value: conversionPresupuesto === null ? "—" : `${conversionPresupuesto} %`, sub: `${pagados.length} de ${presupuestados} presupuestados` },
+    { label: "Conversión lead→venta", value: conversionLead === null ? "—" : `${conversionLead} %`, sub: `${pagados.length} de ${all.length} contactos` },
   ];
 
   const filtros: { label: string; value: QuoteStatus | null; count: number }[] = [
     { label: "Todos", value: null, count: all.length },
+    { label: "Leads", value: "lead", count: leads.length },
     { label: "Enviados", value: "enviado", count: enviados.length },
     { label: "Pagados", value: "pagado", count: pagados.length },
+    { label: "Perdidos", value: "perdido", count: perdidos.length },
     { label: "Cancelados", value: "cancelado", count: cancelados.length },
   ];
 
@@ -108,8 +148,9 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
           <div>
             <h1 className="font-display text-2xl text-ink sm:text-3xl">CRM · Presupuestos y ventas</h1>
             <p className="mt-2 text-sm text-ink-muted">
-              Cada link de presupuesto que generas queda registrado aquí. Los pagos por Stripe se
-              marcan solos; los cobros por WhatsApp (efectivo, Bizum…) los marcas tú con un clic.
+              Registra cada contacto de WhatsApp aunque todavía no tenga presupuesto: así no se
+              pierde ningún lead. Los pagos por Stripe se marcan solos; los cobros por WhatsApp
+              (efectivo, Bizum…) los marcas tú con un clic.
             </p>
           </div>
           <div className="flex gap-2">
@@ -122,8 +163,13 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
           </div>
         </div>
 
+        {/* Alta rápida de contacto de WhatsApp */}
+        <div className="mt-6">
+          <NuevoLeadForm />
+        </div>
+
         {/* Resumen */}
-        <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {tiles.map((t) => (
             <div key={t.label} className="rounded-2xl border border-line bg-surface-1 p-4">
               <p className="text-xs font-semibold uppercase tracking-wider text-ink-faint">{t.label}</p>
@@ -179,10 +225,10 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
             <div className="p-10 text-center">
               <p className="text-sm text-ink-muted">
                 {all.length === 0
-                  ? "Todavía no hay presupuestos registrados."
+                  ? "Todavía no hay contactos ni presupuestos registrados."
                   : query
-                    ? "Ningún presupuesto coincide con la búsqueda."
-                    : "No hay presupuestos con este estado."}
+                    ? "Ningún registro coincide con la búsqueda."
+                    : "No hay registros con este estado."}
               </p>
               {all.length === 0 && (
                 <Link
@@ -210,9 +256,11 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
                 {visibles.map((r) => {
                   const wa = r.customerPhone ? waLink(r.customerPhone) : null;
                   const resumen =
-                    r.items.length === 1
-                      ? r.items[0].name
-                      : `${r.items[0].name} +${r.items.length - 1} más`;
+                    r.items.length === 0
+                      ? "Sin presupuesto todavía"
+                      : r.items.length === 1
+                        ? r.items[0].name
+                        : `${r.items[0].name} +${r.items.length - 1} más`;
                   return (
                     <tr key={r.id} className="border-t border-line align-top even:bg-surface-2/40">
                       <td className="whitespace-nowrap px-4 py-3 text-ink-muted">
@@ -238,6 +286,11 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
                           ) : (
                             <p className="font-mono-num text-xs text-ink-faint">{r.customerPhone}</p>
                           ))}
+                        {(r.owner || r.source) && (
+                          <p className="mt-0.5 text-xs text-ink-faint">
+                            {[r.owner, r.source].filter(Boolean).join(" · ")}
+                          </p>
+                        )}
                       </td>
                       <td className="whitespace-nowrap px-4 py-3">
                         <span className="font-mono-num text-ink-muted">{r.plate || "—"}</span>
@@ -248,7 +301,11 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
                         </p>
                       </td>
                       <td className="whitespace-nowrap px-4 py-3 text-right">
-                        <span className="font-mono-num font-semibold text-ink">{eur.format(r.total)}</span>
+                        {r.status === "lead" ? (
+                          <span className="text-ink-faint">—</span>
+                        ) : (
+                          <span className="font-mono-num font-semibold text-ink">{eur.format(r.total)}</span>
+                        )}
                       </td>
                       <td className="whitespace-nowrap px-4 py-3">
                         <StatusBadge record={r} />

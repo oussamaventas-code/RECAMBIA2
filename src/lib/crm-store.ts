@@ -11,8 +11,21 @@ import type { Quote, QuoteItem } from "@/lib/quote";
 //    sin credenciales.
 // El resto de la web solo usa las funciones exportadas al final.
 
-export type QuoteStatus = "enviado" | "pagado" | "cancelado";
+// lead      = contacto por WhatsApp, aún sin presupuesto montado
+// enviado   = presupuesto generado y mandado
+// pagado    = cobrado
+// perdido   = presupuesto o lead que no cerró (ver lostReason)
+// cancelado = anulado por el equipo
+export type QuoteStatus = "lead" | "enviado" | "pagado" | "perdido" | "cancelado";
 export type PaymentMethod = "stripe" | "efectivo" | "bizum" | "transferencia" | "otro";
+// Lista cerrada (no texto libre) para que el motivo de pérdida sea analizable.
+export type LostReason =
+  | "precio"
+  | "no_contesta"
+  | "compro_otro_sitio"
+  | "pieza_no_disponible"
+  | "solo_consultaba"
+  | "otro";
 
 export interface CrmRecord {
   id: string;
@@ -25,12 +38,20 @@ export interface CrmRecord {
   note?: string;
   items: QuoteItem[];
   total: number;
-  // Par firmado del link (/presupuesto?d=...&s=...) para reconstruirlo siempre.
-  d: string;
-  s: string;
+  // Par firmado del link (/presupuesto?d=...&s=...). Un lead sin presupuesto
+  // todavía no lo tiene.
+  d?: string;
+  s?: string;
   paidAt?: string;
   paymentMethod?: PaymentMethod;
   stripeSessionId?: string;
+  // Pipeline: quién atiende la conversación, de dónde vino y cuándo fue el
+  // primer contacto real (puede ser anterior a createdAt si el lead se
+  // convierte más tarde en presupuesto).
+  owner?: string;
+  source?: string;
+  firstContactAt?: string;
+  lostReason?: LostReason;
 }
 
 type CrmPatch = Partial<Omit<CrmRecord, "id" | "createdAt">>;
@@ -57,13 +78,18 @@ interface DbRow {
   customer_phone: string | null;
   plate: string | null;
   note: string | null;
-  items: QuoteItem[];
-  total: number | string;
-  d: string;
-  s: string;
+  // Un lead recién creado aún no tiene líneas de presupuesto ni link firmado.
+  items: QuoteItem[] | null;
+  total: number | string | null;
+  d: string | null;
+  s: string | null;
   paid_at: string | null;
   payment_method: PaymentMethod | null;
   stripe_session_id: string | null;
+  owner: string | null;
+  source: string | null;
+  first_contact_at: string | null;
+  lost_reason: LostReason | null;
 }
 
 let supabaseClient: SupabaseClient | null = null;
@@ -89,13 +115,17 @@ function fromRow(row: DbRow): CrmRecord {
     customerPhone: row.customer_phone ?? undefined,
     plate: row.plate ?? undefined,
     note: row.note ?? undefined,
-    items: row.items,
-    total: Number(row.total),
-    d: row.d,
-    s: row.s,
+    items: row.items ?? [],
+    total: row.total != null ? Number(row.total) : 0,
+    d: row.d ?? undefined,
+    s: row.s ?? undefined,
     paidAt: row.paid_at ?? undefined,
     paymentMethod: row.payment_method ?? undefined,
     stripeSessionId: row.stripe_session_id ?? undefined,
+    owner: row.owner ?? undefined,
+    source: row.source ?? undefined,
+    firstContactAt: row.first_contact_at ?? undefined,
+    lostReason: row.lost_reason ?? undefined,
   };
 }
 
@@ -111,9 +141,15 @@ function patchToRow(patch: CrmPatch): Record<string, unknown> {
   if ("note" in patch) row.note = patch.note ?? null;
   if ("items" in patch) row.items = patch.items;
   if ("total" in patch) row.total = patch.total;
+  if ("d" in patch) row.d = patch.d ?? null;
+  if ("s" in patch) row.s = patch.s ?? null;
   if ("paidAt" in patch) row.paid_at = patch.paidAt ?? null;
   if ("paymentMethod" in patch) row.payment_method = patch.paymentMethod ?? null;
   if ("stripeSessionId" in patch) row.stripe_session_id = patch.stripeSessionId ?? null;
+  if ("owner" in patch) row.owner = patch.owner ?? null;
+  if ("source" in patch) row.source = patch.source ?? null;
+  if ("firstContactAt" in patch) row.first_contact_at = patch.firstContactAt ?? null;
+  if ("lostReason" in patch) row.lost_reason = patch.lostReason ?? null;
   return row;
 }
 
@@ -163,8 +199,12 @@ const supabaseDriver: CrmDriver = {
         note: record.note ?? null,
         items: record.items,
         total: record.total,
-        d: record.d,
-        s: record.s,
+        d: record.d ?? null,
+        s: record.s ?? null,
+        owner: record.owner ?? null,
+        source: record.source ?? null,
+        first_contact_at: record.firstContactAt ?? null,
+        lost_reason: record.lostReason ?? null,
       })
       .select()
       .single();
@@ -329,6 +369,38 @@ export async function createQuoteRecord(
     total: quote.items.reduce((sum, i) => sum + i.qty * i.unitPrice, 0),
     d: signed.d,
     s: signed.s,
+    firstContactAt: now,
+  };
+  return driver().create(record);
+}
+
+// Alta de un contacto de WhatsApp que todavía no tiene presupuesto montado.
+// Se rellena a mano en el CRM en los primeros segundos de la conversación —
+// sin esto, todo lead que no llega a presupuesto queda invisible y no se
+// puede medir la tasa real lead→venta.
+export async function createLeadRecord(input: {
+  customerName?: string;
+  customerPhone?: string;
+  plate?: string;
+  note?: string;
+  source?: string;
+  owner?: string;
+}): Promise<CrmRecord> {
+  const now = new Date().toISOString();
+  const record: CrmRecord = {
+    id: newId(),
+    createdAt: now,
+    updatedAt: now,
+    status: "lead",
+    customerName: input.customerName,
+    customerPhone: input.customerPhone,
+    plate: input.plate,
+    note: input.note,
+    items: [],
+    total: 0,
+    source: input.source,
+    owner: input.owner,
+    firstContactAt: now,
   };
   return driver().create(record);
 }

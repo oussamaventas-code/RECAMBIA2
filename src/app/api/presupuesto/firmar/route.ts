@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { buildSignedQuote, type Quote } from "@/lib/quote";
-import { createQuoteRecord } from "@/lib/crm-store";
+import { createQuoteRecord, getQuote, updateQuoteRecord } from "@/lib/crm-store";
 
 // Protegido por middleware (cookie de admin) — ver src/middleware.ts.
 export async function POST(request: NextRequest) {
   let quote: Quote;
   let customerPhone: string | undefined;
+  let leadId: string | undefined;
   try {
     const body = await request.json();
-    // El teléfono se guarda solo en el CRM, nunca dentro del link firmado.
+    // El teléfono y el id del lead se guardan solo en el CRM, nunca dentro
+    // del link firmado que ve el cliente.
     customerPhone = typeof body.customerPhone === "string" ? body.customerPhone.trim().slice(0, 30) || undefined : undefined;
+    leadId = typeof body.leadId === "string" ? body.leadId.trim() || undefined : undefined;
     delete body.customerPhone;
+    delete body.leadId;
     quote = body;
   } catch {
     return NextResponse.json({ error: "JSON inválido" }, { status: 400 });
@@ -42,12 +46,33 @@ export async function POST(request: NextRequest) {
   try {
     const { d, s } = buildSignedQuote(quote);
 
-    // Alta en el CRM. Si fallara el guardado, el link sigue siendo válido:
-    // no se bloquea la venta por un problema de registro.
+    // Alta o actualización en el CRM. Si fallara el guardado, el link sigue
+    // siendo válido: no se bloquea la venta por un problema de registro.
     let crmId: string | null = null;
     try {
-      const record = await createQuoteRecord(quote, { d, s }, customerPhone);
-      crmId = record.id;
+      // Si el presupuesto viene de "Montar presupuesto →" sobre un lead ya
+      // registrado, se actualiza esa misma ficha en vez de crear una nueva:
+      // así se conserva first_contact_at y no aparecen fichas duplicadas
+      // para el mismo cliente.
+      const leadRecord = leadId ? await getQuote(leadId) : null;
+      if (leadRecord && leadRecord.status === "lead") {
+        const total = quote.items.reduce((sum, i) => sum + i.qty * i.unitPrice, 0);
+        const updated = await updateQuoteRecord(leadRecord.id, {
+          status: "enviado",
+          customerName: quote.customerName,
+          customerPhone: customerPhone ?? leadRecord.customerPhone,
+          plate: quote.plate,
+          note: quote.note,
+          items: quote.items,
+          total,
+          d,
+          s,
+        });
+        crmId = updated?.id ?? null;
+      } else {
+        const record = await createQuoteRecord(quote, { d, s }, customerPhone);
+        crmId = record.id;
+      }
     } catch (err) {
       console.error("Error guardando presupuesto en el CRM:", err);
     }
