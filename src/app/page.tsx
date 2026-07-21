@@ -12,6 +12,7 @@ import { PorQueRecambia } from "@/components/home/PorQueRecambia";
 import { Testimonials } from "@/components/home/Testimonials";
 import { TrustMetrics } from "@/components/home/TrustMetrics";
 import { DescuentoEmail } from "@/components/home/DescuentoEmail";
+import { GarantiaVideo } from "@/components/home/GarantiaVideo";
 import { ExitIntentPopup } from "@/components/marketing/ExitIntentPopup";
 
 export default function Home() {
@@ -31,6 +32,7 @@ export default function Home() {
         <TrustMetrics />
         <MechanicAdvisory />
         <DescuentoEmail />
+        <GarantiaVideo />
         <CounterNotes />
       </main>
       <Footer />

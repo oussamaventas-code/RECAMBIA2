@@ -23,6 +23,9 @@
 # datos del CRM (presupuestos y ventas, generados en runtime)
 /.data/
 
+# originales de vídeo sin comprimir (fuente para reencodar; no se despliegan)
+/assets-source/
+
 # misc
 .DS_Store
 *.pem
