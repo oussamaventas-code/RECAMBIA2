@@ -4,10 +4,23 @@ import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { PagarButton } from "@/components/presupuesto/PagarButton";
 import { BizumPayment } from "@/components/presupuesto/BizumPayment";
-import { verifyAndDecodeQuote, quoteTotal, bizumConcept } from "@/lib/quote";
+import { verifyAndDecodeQuote, quoteTotal, quoteVatBreakdown, quoteValidUntil, bizumConcept } from "@/lib/quote";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
-import { getBizumPhone } from "@/lib/site-config";
+import { getBizumPhone, LEGAL } from "@/lib/site-config";
 import { findQuoteByData, type QuoteStatus } from "@/lib/crm-store";
+import { DescargarPresupuestoButton } from "@/components/presupuesto/DescargarPresupuestoButton";
+
+const fechaLarga = new Intl.DateTimeFormat("es-ES", {
+  day: "2-digit",
+  month: "long",
+  year: "numeric",
+  timeZone: "Europe/Madrid",
+});
+
+// Mientras los datos legales sigan sin rellenar (placeholders entre
+// corchetes), no se muestran al cliente: es peor enseñar "[NIF]" en un
+// presupuesto real que no enseñar nada.
+const legalConfigurado = !LEGAL.businessName.startsWith("[");
 
 export const metadata: Metadata = {
   title: "Tu presupuesto",
@@ -39,9 +52,11 @@ export default async function PresupuestoPage({ searchParams }: PresupuestoPageP
 
   return (
     <>
-      <Nav />
-      <main className="flex-1 bg-paper py-10">
-        <div className="mx-auto max-w-2xl px-4 sm:px-6">
+      <div className="print:hidden">
+        <Nav />
+      </div>
+      <main className="flex-1 bg-paper py-10 print:bg-white print:py-0">
+        <div className="mx-auto max-w-2xl px-4 sm:px-6 print:max-w-none print:px-0">
           {!quote ? (
             <div className="rounded-2xl border border-line bg-surface-1 p-8 text-center shadow-sm">
               <h1 className="font-display text-2xl text-ink">Presupuesto no válido</h1>
@@ -59,8 +74,13 @@ export default async function PresupuestoPage({ searchParams }: PresupuestoPageP
               </a>
             </div>
           ) : (
-            <div className="rounded-2xl border border-line bg-surface-1 p-6 sm:p-8 shadow-sm">
-              <h1 className="font-display text-2xl text-ink sm:text-3xl">Tu presupuesto</h1>
+            <div className="rounded-2xl border border-line bg-surface-1 p-6 shadow-sm sm:p-8 print:border-0 print:p-0 print:shadow-none">
+              <div className="flex items-start justify-between gap-4">
+                <h1 className="font-display text-2xl text-ink sm:text-3xl">Tu presupuesto</h1>
+                <div className="print:hidden">
+                  <DescargarPresupuestoButton />
+                </div>
+              </div>
               {quote.customerName && (
                 <p className="mt-1 text-sm text-ink-muted">Para {quote.customerName}</p>
               )}
@@ -68,6 +88,22 @@ export default async function PresupuestoPage({ searchParams }: PresupuestoPageP
                 <p className="mt-1 text-sm text-ink-muted">
                   Matrícula:{" "}
                   <span className="font-mono-num font-semibold text-ink">{quote.plate}</span>
+                </p>
+              )}
+              {(() => {
+                const validUntil = quoteValidUntil(quote);
+                return (
+                  validUntil && (
+                    <p className="mt-1 text-sm text-ink-muted">
+                      Válido hasta el{" "}
+                      <span className="font-semibold text-ink">{fechaLarga.format(validUntil)}</span>
+                    </p>
+                  )
+                );
+              })()}
+              {legalConfigurado && (
+                <p className="mt-3 text-xs text-ink-faint">
+                  Emitido por {LEGAL.businessName} · NIF {LEGAL.nif} · {LEGAL.address}
                 </p>
               )}
 
@@ -103,12 +139,27 @@ export default async function PresupuestoPage({ searchParams }: PresupuestoPageP
                 </table>
               </div>
 
-              <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
-                <span className="text-sm text-ink-muted">Total (IVA incluido)</span>
-                <span className="font-mono-num text-2xl font-extrabold text-ink">
-                  {quoteTotal(quote).toFixed(2)} €
-                </span>
-              </div>
+              {(() => {
+                const { base, vat, total } = quoteVatBreakdown(quote);
+                return (
+                  <div className="mt-4 space-y-1.5 border-t border-line pt-4">
+                    <div className="flex items-center justify-between text-sm text-ink-muted">
+                      <span>Base imponible</span>
+                      <span className="font-mono-num">{base.toFixed(2)} €</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm text-ink-muted">
+                      <span>IVA (21%)</span>
+                      <span className="font-mono-num">{vat.toFixed(2)} €</span>
+                    </div>
+                    <div className="flex items-center justify-between pt-1.5">
+                      <span className="text-sm font-semibold text-ink">Total (IVA incluido)</span>
+                      <span className="font-mono-num text-2xl font-extrabold text-ink">
+                        {total.toFixed(2)} €
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {quote.note && (
                 <p className="mt-4 rounded-lg bg-surface-2 p-3 text-sm text-ink-muted">
@@ -117,21 +168,21 @@ export default async function PresupuestoPage({ searchParams }: PresupuestoPageP
               )}
 
               {crmStatus === "pagado" ? (
-                <div className="mt-8 rounded-xl border border-success/30 bg-success/5 p-5 text-center">
+                <div className="mt-8 rounded-xl border border-success/30 bg-success/5 p-5 text-center print:hidden">
                   <p className="text-sm font-semibold text-success">✓ Este presupuesto ya está pagado</p>
                   <p className="mt-1 text-xs text-ink-muted">
                     Si tienes cualquier duda sobre tu pedido, escríbenos por WhatsApp.
                   </p>
                 </div>
               ) : crmStatus === "cancelado" || crmStatus === "perdido" ? (
-                <div className="mt-8 rounded-xl border border-line bg-surface-2 p-5 text-center">
+                <div className="mt-8 rounded-xl border border-line bg-surface-2 p-5 text-center print:hidden">
                   <p className="text-sm font-semibold text-ink">Este presupuesto ha sido cancelado</p>
                   <p className="mt-1 text-xs text-ink-muted">
                     Escríbenos por WhatsApp si crees que se trata de un error o quieres uno nuevo.
                   </p>
                 </div>
               ) : (
-                <div className="mt-8 space-y-4">
+                <div className="mt-8 space-y-4 print:hidden">
                   {bizumPhone && (
                     <BizumPayment
                       phone={bizumPhone}
@@ -150,7 +201,7 @@ export default async function PresupuestoPage({ searchParams }: PresupuestoPageP
                 </div>
               )}
 
-              <p className="mt-4 text-center text-xs text-ink-faint">
+              <p className="mt-4 text-center text-xs text-ink-faint print:hidden">
                 ¿Prefieres pagar de otra forma?{" "}
                 <a
                   href={whatsappGenericUrl(`Hola, quiero pagar mi presupuesto de otra forma (matrícula: ${quote.plate ?? "-"}).`)}
@@ -164,12 +215,14 @@ export default async function PresupuestoPage({ searchParams }: PresupuestoPageP
             </div>
           )}
 
-          <p className="mt-6 text-center text-xs text-ink-faint">
+          <p className="mt-6 text-center text-xs text-ink-faint print:hidden">
             <Link href="/" className="hover:text-ink">Volver a RECAMBIA</Link>
           </p>
         </div>
       </main>
-      <Footer />
+      <div className="print:hidden">
+        <Footer />
+      </div>
     </>
   );
 }

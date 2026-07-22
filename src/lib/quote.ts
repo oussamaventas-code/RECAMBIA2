@@ -45,6 +45,24 @@ export function quoteTotal(quote: Quote): number {
   return quote.items.reduce((sum, item) => sum + item.qty * item.unitPrice, 0);
 }
 
+const VAT_RATE = 0.21;
+
+// Los precios ya se guardan con IVA incluido (mismo criterio que el resto de
+// la web): aquí solo se desglosa hacia atrás para mostrarlo en el presupuesto.
+export function quoteVatBreakdown(quote: Quote): { base: number; vat: number; total: number } {
+  const total = quoteTotal(quote);
+  const base = total / (1 + VAT_RATE);
+  return { base, vat: total - base, total };
+}
+
+// Fecha de caducidad real del link firmado (mismo plazo que verifyAndDecodeQuote
+// usa para invalidarlo). Sin iat (presupuestos antiguos sin firmar todavía con
+// esta versión) no hay fecha que mostrar.
+export function quoteValidUntil(quote: Quote): Date | null {
+  if (typeof quote.iat !== "number") return null;
+  return new Date(quote.iat + QUOTE_MAX_AGE_MS);
+}
+
 // Concepto automático para que el cliente lo copie tal cual en su app del
 // banco: así se identifica el Bizum al cruzarlo con el CRM.
 export function bizumConcept(quote: Quote): string {
