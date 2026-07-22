@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { searchProducts } from "@/data/products";
 import type { QuoteItem } from "@/lib/quote";
 import { PRICING_METHOD_LABEL, suggestPrice } from "@/lib/pricing";
@@ -394,7 +395,7 @@ export function PresupuestoBuilder({
         <div className="rounded-xl border border-success/30 bg-success/5 p-4">
           <p className="mb-2 text-sm font-semibold text-ink">
             Link listo — pégalo en el WhatsApp del cliente. Queda registrado en{" "}
-            <a href="/presupuesto/crm" className="text-accent hover:underline">tu CRM</a>:
+            <Link href="/presupuesto/crm" className="text-accent hover:underline">tu CRM</Link>:
           </p>
           <div className="flex flex-wrap items-center gap-2">
             <input
