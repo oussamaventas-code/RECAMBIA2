@@ -35,6 +35,10 @@ export interface CrmRecord {
   customerName?: string;
   customerPhone?: string;
   plate?: string;
+  // Datos básicos del vehículo (un solo vehículo por cliente, de momento).
+  vin?: string;
+  brand?: string;
+  model?: string;
   note?: string;
   items: QuoteItem[];
   total: number;
@@ -77,6 +81,9 @@ interface DbRow {
   customer_name: string | null;
   customer_phone: string | null;
   plate: string | null;
+  vin: string | null;
+  brand: string | null;
+  model: string | null;
   note: string | null;
   // Un lead recién creado aún no tiene líneas de presupuesto ni link firmado.
   items: QuoteItem[] | null;
@@ -114,6 +121,9 @@ function fromRow(row: DbRow): CrmRecord {
     customerName: row.customer_name ?? undefined,
     customerPhone: row.customer_phone ?? undefined,
     plate: row.plate ?? undefined,
+    vin: row.vin ?? undefined,
+    brand: row.brand ?? undefined,
+    model: row.model ?? undefined,
     note: row.note ?? undefined,
     items: row.items ?? [],
     total: row.total != null ? Number(row.total) : 0,
@@ -138,6 +148,9 @@ function patchToRow(patch: CrmPatch): Record<string, unknown> {
   if ("customerName" in patch) row.customer_name = patch.customerName ?? null;
   if ("customerPhone" in patch) row.customer_phone = patch.customerPhone ?? null;
   if ("plate" in patch) row.plate = patch.plate ?? null;
+  if ("vin" in patch) row.vin = patch.vin ?? null;
+  if ("brand" in patch) row.brand = patch.brand ?? null;
+  if ("model" in patch) row.model = patch.model ?? null;
   if ("note" in patch) row.note = patch.note ?? null;
   if ("items" in patch) row.items = patch.items;
   if ("total" in patch) row.total = patch.total;
@@ -196,6 +209,9 @@ const supabaseDriver: CrmDriver = {
         customer_name: record.customerName ?? null,
         customer_phone: record.customerPhone ?? null,
         plate: record.plate ?? null,
+        vin: record.vin ?? null,
+        brand: record.brand ?? null,
+        model: record.model ?? null,
         note: record.note ?? null,
         items: record.items,
         total: record.total,
@@ -382,6 +398,9 @@ export async function createLeadRecord(input: {
   customerName?: string;
   customerPhone?: string;
   plate?: string;
+  vin?: string;
+  brand?: string;
+  model?: string;
   note?: string;
   source?: string;
   owner?: string;
@@ -395,6 +414,9 @@ export async function createLeadRecord(input: {
     customerName: input.customerName,
     customerPhone: input.customerPhone,
     plate: input.plate,
+    vin: input.vin,
+    brand: input.brand,
+    model: input.model,
     note: input.note,
     items: [],
     total: 0,

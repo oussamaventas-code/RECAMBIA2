@@ -68,6 +68,21 @@ export function NuevoLeadForm() {
           placeholder="Matrícula (opcional)"
           className="rounded-xl border border-line bg-surface-2 px-3.5 py-2 text-sm text-ink outline-none focus:border-accent"
         />
+        <input
+          name="vin"
+          placeholder="Bastidor / VIN (opcional)"
+          className="rounded-xl border border-line bg-surface-2 px-3.5 py-2 text-sm text-ink outline-none focus:border-accent"
+        />
+        <input
+          name="brand"
+          placeholder="Marca (opcional)"
+          className="rounded-xl border border-line bg-surface-2 px-3.5 py-2 text-sm text-ink outline-none focus:border-accent"
+        />
+        <input
+          name="model"
+          placeholder="Modelo (opcional)"
+          className="rounded-xl border border-line bg-surface-2 px-3.5 py-2 text-sm text-ink outline-none focus:border-accent"
+        />
         <select
           name="source"
           defaultValue=""

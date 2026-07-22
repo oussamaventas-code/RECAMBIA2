@@ -2,7 +2,8 @@
 -- Cómo aplicarlo: Supabase Dashboard → SQL Editor → pegar este archivo → Run.
 -- Solo hace falta ejecutarlo una vez por proyecto (instalación nueva).
 -- Si ya tenías el esquema anterior aplicado, usa en su lugar
--- supabase/migrations/002-crm-pipeline.sql.
+-- supabase/migrations/002-crm-pipeline.sql y
+-- supabase/migrations/003-vehiculo-basico.sql.
 
 create table if not exists public.crm_quotes (
   id text primary key,
@@ -18,6 +19,10 @@ create table if not exists public.crm_quotes (
   customer_name text,
   customer_phone text,
   plate text,
+  -- Datos básicos del vehículo asociado al cliente (uno solo, de momento).
+  vin text,
+  brand text,
+  model text,
   note text,
   -- Un lead recién creado aún no tiene líneas de presupuesto ni link firmado.
   items jsonb,

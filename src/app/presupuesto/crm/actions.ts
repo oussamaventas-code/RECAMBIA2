@@ -8,8 +8,10 @@ import {
   createLeadRecord,
   deleteQuoteRecord,
   getQuote,
+  listQuotes,
   markQuotePaid,
   updateQuoteRecord,
+  type CrmRecord,
   type LostReason,
   type PaymentMethod,
 } from "@/lib/crm-store";
@@ -47,11 +49,34 @@ export async function crearLeadAction(formData: FormData): Promise<void> {
     customerName: str("customerName"),
     customerPhone: str("customerPhone"),
     plate: str("plate"),
+    vin: str("vin"),
+    brand: str("brand"),
+    model: str("model"),
     note: str("note"),
     source: str("source"),
     owner: str("owner"),
   });
   revalidatePath("/presupuesto/crm");
+}
+
+// Ficha del cliente: datos básicos del vehículo asociado (uno solo por
+// cliente, de momento). Reutiliza el registro existente, sin tabla nueva.
+export async function actualizarVehiculoAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+  const str = (key: string) => {
+    const v = String(formData.get(key) ?? "").trim();
+    return v || undefined;
+  };
+  await updateQuoteRecord(id, {
+    plate: str("plate"),
+    vin: str("vin"),
+    brand: str("brand"),
+    model: str("model"),
+  });
+  revalidatePath("/presupuesto/crm");
+  revalidatePath(`/presupuesto/crm/${id}`);
 }
 
 export async function marcarPagadoAction(formData: FormData): Promise<void> {
@@ -112,4 +137,58 @@ export async function borrarAction(formData: FormData): Promise<void> {
   if (!id) return;
   await deleteQuoteRecord(id);
   revalidatePath("/presupuesto/crm");
+}
+
+function csvCell(value: unknown): string {
+  const str = value == null ? "" : String(value);
+  // Excel/Sheets: comillas dobles si hay coma, comilla o salto de línea.
+  return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
+}
+
+const CSV_HEADERS = [
+  "Fecha",
+  "Cliente",
+  "Teléfono",
+  "Matrícula",
+  "Bastidor",
+  "Marca",
+  "Modelo",
+  "Piezas",
+  "Total",
+  "Estado",
+  "Recambista",
+  "Origen",
+  "Motivo pérdida",
+  "Fecha de cobro",
+];
+
+function toCsvRow(r: CrmRecord): string {
+  return [
+    r.createdAt,
+    r.customerName,
+    r.customerPhone,
+    r.plate,
+    r.vin,
+    r.brand,
+    r.model,
+    r.items.map((i) => `${i.qty}x ${i.name}`).join("; "),
+    r.total,
+    r.status,
+    r.owner,
+    r.source,
+    r.lostReason,
+    r.paidAt,
+  ]
+    .map(csvCell)
+    .join(",");
+}
+
+// Backup manual + análisis en Excel: mientras no haya export automático, esto
+// evita que todo el histórico del CRM viva únicamente en una tabla remota.
+export async function exportCsvAction(): Promise<string> {
+  await requireAdmin();
+  const all = await listQuotes();
+  const rows = all.map(toCsvRow);
+  // BOM inicial para que Excel abra los acentos en UTF-8 sin corromperlos.
+  return "﻿" + [CSV_HEADERS.join(","), ...rows].join("\n");
 }

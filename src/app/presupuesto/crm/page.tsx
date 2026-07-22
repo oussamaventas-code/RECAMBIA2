@@ -3,6 +3,7 @@ import Link from "next/link";
 import { listQuotes, type CrmRecord, type QuoteStatus } from "@/lib/crm-store";
 import { QuoteActions } from "@/components/crm/QuoteActions";
 import { NuevoLeadForm } from "@/components/crm/NuevoLeadForm";
+import { ExportCsvButton } from "@/components/crm/ExportCsvButton";
 
 export const metadata: Metadata = {
   title: "CRM — Presupuestos y ventas",
@@ -110,6 +111,25 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
     presupuestados > 0 ? Math.round((pagados.length / presupuestados) * 100) : null;
   const conversionLead = all.length > 0 ? Math.round((pagados.length / all.length) * 100) : null;
 
+  // "Para hoy": sin esto, un lead o un presupuesto se olvida en cuanto sale
+  // de la primera pantalla. Mismo dato que ya se guarda (createdAt/updatedAt),
+  // solo se resalta lo que lleva esperando más de la cuenta.
+  const HOUR_MS = 60 * 60 * 1000;
+  const leadsSinRespuesta = leads
+    .filter((r) => now.getTime() - new Date(r.createdAt).getTime() > 48 * HOUR_MS)
+    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+  const presupuestosSinCobrar = enviados
+    .filter((r) => now.getTime() - new Date(r.updatedAt).getTime() > 24 * HOUR_MS)
+    .sort((a, b) => new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime());
+
+  function tiempoEsperando(iso: string): string {
+    const ms = now.getTime() - new Date(iso).getTime();
+    const dias = Math.floor(ms / (24 * HOUR_MS));
+    if (dias >= 1) return `${dias} día${dias === 1 ? "" : "s"}`;
+    const horas = Math.floor(ms / HOUR_MS);
+    return `${horas}h`;
+  }
+
   const filtro: QuoteStatus | null =
     estado === "lead" || estado === "enviado" || estado === "pagado" || estado === "perdido" || estado === "cancelado"
       ? estado
@@ -131,6 +151,33 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
     { label: "Conversión presupuesto→venta", value: conversionPresupuesto === null ? "—" : `${conversionPresupuesto} %`, sub: `${pagados.length} de ${presupuestados} presupuestados` },
     { label: "Conversión lead→venta", value: conversionLead === null ? "—" : `${conversionLead} %`, sub: `${pagados.length} de ${all.length} contactos` },
   ];
+
+  // Métricas por recambista: mismo dato que ya se guarda (owner), agrupado
+  // para ver quién cierra más y con qué conversión, sin tabla nueva.
+  const porRecambista = Object.entries(
+    all.reduce<Record<string, CrmRecord[]>>((acc, r) => {
+      const key = r.owner?.trim() || "Sin asignar";
+      (acc[key] ??= []).push(r);
+      return acc;
+    }, {}),
+  )
+    .map(([owner, registros]) => {
+      const ventas = registros.filter((r) => r.status === "pagado");
+      const presupuestadosOwner = registros.filter((r) =>
+        ["pagado", "enviado", "perdido"].includes(r.status),
+      );
+      return {
+        owner,
+        contactos: registros.length,
+        ventas: ventas.length,
+        importe: sum(ventas),
+        conversion:
+          presupuestadosOwner.length > 0
+            ? Math.round((ventas.length / presupuestadosOwner.length) * 100)
+            : null,
+      };
+    })
+    .sort((a, b) => b.importe - a.importe);
 
   const filtros: { label: string; value: QuoteStatus | null; count: number }[] = [
     { label: "Todos", value: null, count: all.length },
@@ -154,6 +201,7 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
             </p>
           </div>
           <div className="flex gap-2">
+            <ExportCsvButton />
             <Link
               href="/presupuesto/nuevo"
               className="rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:bg-accent-dark"
@@ -162,6 +210,72 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
             </Link>
           </div>
         </div>
+
+        {/* Para hoy: a quién perseguir antes de nada más */}
+        {(leadsSinRespuesta.length > 0 || presupuestosSinCobrar.length > 0) && (
+          <div className="mt-6 rounded-2xl border border-warning/30 bg-warning/5 p-5">
+            <h2 className="text-sm font-semibold text-warning">
+              Para hoy · {leadsSinRespuesta.length + presupuestosSinCobrar.length} pendiente
+              {leadsSinRespuesta.length + presupuestosSinCobrar.length === 1 ? "" : "s"}
+            </h2>
+            <ul className="mt-3 space-y-2">
+              {leadsSinRespuesta.map((r) => {
+                const wa = r.customerPhone ? waLink(r.customerPhone) : null;
+                return (
+                  <li
+                    key={r.id}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-line bg-surface-1 px-3.5 py-2.5"
+                  >
+                    <span className="text-sm text-ink">
+                      <strong className="font-semibold">{r.customerName || r.plate || "Lead sin nombre"}</strong>
+                      {" — "}
+                      <span className="text-ink-muted">
+                        lead sin presupuestar, esperando {tiempoEsperando(r.createdAt)}
+                      </span>
+                    </span>
+                    {wa && (
+                      <a
+                        href={wa}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-lg bg-success px-3 py-1.5 text-xs font-semibold text-white hover:bg-success-glow"
+                      >
+                        Escribir por WhatsApp
+                      </a>
+                    )}
+                  </li>
+                );
+              })}
+              {presupuestosSinCobrar.map((r) => {
+                const wa = r.customerPhone ? waLink(r.customerPhone) : null;
+                return (
+                  <li
+                    key={r.id}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-line bg-surface-1 px-3.5 py-2.5"
+                  >
+                    <span className="text-sm text-ink">
+                      <strong className="font-semibold">{r.customerName || r.plate || "Cliente"}</strong>
+                      {" — "}
+                      <span className="text-ink-muted">
+                        presupuesto de {eur.format(r.total)} enviado, sin cobrar hace {tiempoEsperando(r.updatedAt)}
+                      </span>
+                    </span>
+                    {wa && (
+                      <a
+                        href={wa}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-lg bg-success px-3 py-1.5 text-xs font-semibold text-white hover:bg-success-glow"
+                      >
+                        Reclamar por WhatsApp
+                      </a>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
 
         {/* Alta rápida de contacto de WhatsApp */}
         <div className="mt-6">
@@ -178,6 +292,38 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
             </div>
           ))}
         </div>
+
+        {/* Por recambista: solo aporta con más de un owner registrado */}
+        {porRecambista.length > 1 && (
+          <div className="mt-4 overflow-x-auto rounded-2xl border border-line bg-surface-1">
+            <table className="w-full min-w-[480px] text-sm">
+              <thead>
+                <tr className="bg-surface-2 text-left text-xs uppercase tracking-wider text-ink-muted">
+                  <th className="px-4 py-2.5 font-semibold">Recambista</th>
+                  <th className="px-4 py-2.5 font-semibold text-right">Contactos</th>
+                  <th className="px-4 py-2.5 font-semibold text-right">Ventas</th>
+                  <th className="px-4 py-2.5 font-semibold text-right">Importe</th>
+                  <th className="px-4 py-2.5 font-semibold text-right">Conversión</th>
+                </tr>
+              </thead>
+              <tbody>
+                {porRecambista.map((r) => (
+                  <tr key={r.owner} className="border-t border-line even:bg-surface-2/40">
+                    <td className="px-4 py-2.5 font-medium text-ink">{r.owner}</td>
+                    <td className="px-4 py-2.5 text-right text-ink-muted">{r.contactos}</td>
+                    <td className="px-4 py-2.5 text-right text-ink-muted">{r.ventas}</td>
+                    <td className="px-4 py-2.5 text-right font-mono-num font-semibold text-ink">
+                      {eur.format(r.importe)}
+                    </td>
+                    <td className="px-4 py-2.5 text-right text-ink-muted">
+                      {r.conversion === null ? "—" : `${r.conversion} %`}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         {/* Filtros y búsqueda */}
         <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
@@ -272,7 +418,12 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
                         )}
                       </td>
                       <td className="px-4 py-3">
-                        <p className="font-medium text-ink">{r.customerName || "Sin nombre"}</p>
+                        <Link
+                          href={`/presupuesto/crm/${r.id}`}
+                          className="font-medium text-ink hover:text-accent hover:underline"
+                        >
+                          {r.customerName || "Sin nombre"}
+                        </Link>
                         {r.customerPhone &&
                           (wa ? (
                             <a
@@ -294,6 +445,11 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
                       </td>
                       <td className="whitespace-nowrap px-4 py-3">
                         <span className="font-mono-num text-ink-muted">{r.plate || "—"}</span>
+                        {(r.brand || r.model) && (
+                          <p className="text-xs text-ink-faint">
+                            {[r.brand, r.model].filter(Boolean).join(" ")}
+                          </p>
+                        )}
                       </td>
                       <td className="max-w-[220px] px-4 py-3">
                         <p className="truncate text-ink-muted" title={r.items.map((i) => `${i.qty}× ${i.name}`).join(", ")}>
