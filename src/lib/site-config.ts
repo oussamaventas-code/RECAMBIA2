@@ -18,6 +18,26 @@ export const EMAIL = "hola@recambiax.es";
 
 export const BUSINESS_HOURS = "Lunes a Viernes, de 9:00 a 18:30";
 
+// Compara contra la hora real de Madrid (no la del navegador del visitante,
+// que puede estar en otro huso) para no prometer "<2h" fuera de horario. Usa
+// en-US solo para parsear el weekday en ASCII fijo (Mon..Sun); no se muestra.
+export function isBusinessHours(date: Date = new Date()): boolean {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: "Europe/Madrid",
+      hour12: false,
+      weekday: "short",
+      hour: "numeric",
+      minute: "numeric",
+    })
+      .formatToParts(date)
+      .map((p) => [p.type, p.value]),
+  );
+  const isWeekday = parts.weekday !== "Sat" && parts.weekday !== "Sun";
+  const minutesOfDay = (Number(parts.hour) % 24) * 60 + Number(parts.minute);
+  return isWeekday && minutesOfDay >= 9 * 60 && minutesOfDay < 18 * 60 + 30;
+}
+
 // Cookie que marca sesión iniciada en el creador interno de presupuestos.
 export const ADMIN_COOKIE = "recambia_admin";
 

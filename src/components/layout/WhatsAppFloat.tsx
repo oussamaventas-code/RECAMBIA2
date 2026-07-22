@@ -3,12 +3,17 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
+import { isBusinessHours } from "@/lib/site-config";
 import { Magnetic } from "@/components/shared/Magnetic";
 
 export function WhatsAppFloat() {
   const [showHint, setShowHint] = useState(false);
+  // Null hasta calcularlo en cliente: evita mostrar la promesa equivocada un
+  // instante antes de conocer la hora real de Madrid.
+  const [inHours, setInHours] = useState<boolean | null>(null);
 
   useEffect(() => {
+    setInHours(isBusinessHours());
     const timer = setTimeout(() => setShowHint(true), 2500);
     return () => clearTimeout(timer);
   }, []);
@@ -16,7 +21,7 @@ export function WhatsAppFloat() {
   return (
     <div className="fixed bottom-5 right-5 z-40 flex items-center gap-2 sm:bottom-6 sm:right-6">
       <AnimatePresence>
-        {showHint && (
+        {showHint && inHours !== null && (
           <motion.button
             initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
@@ -25,7 +30,9 @@ export function WhatsAppFloat() {
             onClick={() => setShowHint(false)}
             className="hidden rounded-xl border border-line bg-surface-1 px-3 py-2 text-xs font-medium text-ink-muted shadow-lg sm:block"
           >
-            Respondemos en &lt;2h (L–V 9:00–18:30)
+            {inHours
+              ? "Respondemos en <2h (L–V 9:00–18:30)"
+              : "Fuera de horario: te contestamos mañana a primera hora"}
           </motion.button>
         )}
       </AnimatePresence>

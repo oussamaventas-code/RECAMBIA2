@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Reveal } from "@/components/shared/Reveal";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
@@ -9,10 +10,14 @@ export function CounterNotes() {
     <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
       {/* B2B Card */}
       <Reveal className="group relative mx-auto max-w-3xl overflow-hidden rounded-2xl border border-line bg-surface-1">
-        {/* Background image overlay */}
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-15 transition-opacity group-hover:opacity-20"
-          style={{ backgroundImage: "url(/images/b2b-workshop.png)" }}
+        {/* Fondo decorativo: pasa por next/image para que se sirva
+            redimensionado y en WebP en vez del PNG de 700KB tal cual. */}
+        <Image
+          src="/images/b2b-workshop.png"
+          alt=""
+          fill
+          sizes="(max-width: 768px) 100vw, 768px"
+          className="object-cover opacity-15 transition-opacity group-hover:opacity-20"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-surface-1 via-surface-1/90 to-transparent" />
 

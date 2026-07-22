@@ -3,27 +3,26 @@
 import { useEffect, useRef, useState } from "react";
 import { EmailCaptureForm } from "@/components/marketing/EmailCaptureForm";
 import { DISCOUNT } from "@/lib/site-config";
+import { hasSeenAnyPopup, markPopupSeen } from "@/lib/popup-coordination";
 
-// Popup de captación al salir. Se muestra una sola vez (guardado en
-// localStorage) cuando el usuario mueve el ratón hacia fuera (escritorio) o
-// tras un scroll significativo (móvil, donde el exit-intent no existe).
-const STORAGE_KEY = "recambia_lead_popup_v1";
-
+// Popup de captación al salir. Se muestra una sola vez por sesión —
+// coordinado con ReassurancePopup para que nunca salgan los dos: el que
+// dispare primero (aquí, por ratón/scroll de salida) se queda con el turno.
 export function ExitIntentPopup() {
   const [open, setOpen] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    // Ya visto o ya suscrito: no volver a molestar.
-    if (typeof window === "undefined") return;
-    if (localStorage.getItem(STORAGE_KEY)) return;
+    if (hasSeenAnyPopup()) return;
 
     let done = false;
     const trigger = () => {
       if (done) return;
+      if (hasSeenAnyPopup()) return; // el otro popup se adelantó
       done = true;
       setOpen(true);
+      markPopupSeen();
       cleanup();
     };
 
@@ -57,15 +56,11 @@ export function ExitIntentPopup() {
 
   function close() {
     setOpen(false);
-    try {
-      localStorage.setItem(STORAGE_KEY, "1");
-    } catch {}
+    markPopupSeen();
   }
 
   function markSeen() {
-    try {
-      localStorage.setItem(STORAGE_KEY, "1");
-    } catch {}
+    markPopupSeen();
   }
 
   // Accesibilidad del modal: guarda el foco previo, lo mueve al diálogo al

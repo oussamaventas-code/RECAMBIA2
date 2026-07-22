@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { trackEvent } from "@/lib/analytics";
+import { markPopupSeen } from "@/lib/popup-coordination";
 
 /**
  * Componente invisible que captura los parámetros de seguimiento de la URL
@@ -44,6 +45,10 @@ export function Tracker() {
         // Eventos de Meta Pixel (no hacen nada sin consentimiento aceptado).
         trackEvent("Contact");
         trackEvent("Lead");
+
+        // Ya está escribiendo por WhatsApp: no tiene sentido reasegurarlo
+        // con un popup después de esto.
+        markPopupSeen();
 
         // Añadir referencia de tracking si existe
         const trackingRef = sessionStorage.getItem("tracking_ref");

@@ -9,11 +9,13 @@ import { TrustStrip } from "@/components/home/TrustStrip";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { MechanicAdvisory } from "@/components/home/MechanicAdvisory";
 import { PorQueRecambia } from "@/components/home/PorQueRecambia";
+import { Comparativa } from "@/components/home/Comparativa";
 import { Testimonials } from "@/components/home/Testimonials";
 import { TrustMetrics } from "@/components/home/TrustMetrics";
 import { DescuentoEmail } from "@/components/home/DescuentoEmail";
 import { GarantiaVideo } from "@/components/home/GarantiaVideo";
 import { ExitIntentPopup } from "@/components/marketing/ExitIntentPopup";
+import { ReassurancePopup } from "@/components/marketing/ReassurancePopup";
 
 export default function Home() {
   return (
@@ -23,6 +25,7 @@ export default function Home() {
         <Mostrador />
         <TrustStrip />
         <PorQueRecambia />
+        <Comparativa />
         {/* Reseñas reales: aparece solo cuando testimonials.ts tenga datos */}
         <Testimonials />
         <CategoryIndex />
@@ -37,6 +40,7 @@ export default function Home() {
       </main>
       <Footer />
       <ExitIntentPopup />
+      <ReassurancePopup />
     </>
   );
 }
