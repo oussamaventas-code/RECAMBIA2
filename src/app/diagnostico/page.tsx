@@ -78,6 +78,7 @@ export default function DiagnosticoPage() {
           )}
           target="_blank"
           rel="noopener noreferrer"
+          data-origen="diagnostico"
           className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-success px-6 py-4 font-semibold text-white transition-all hover:opacity-90 active:scale-[0.98] sm:w-auto sm:px-10"
         >
           <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">

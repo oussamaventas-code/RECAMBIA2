@@ -28,6 +28,7 @@ export default function NotFound() {
               href={whatsappGenericUrl("Hola, busco una pieza: ")}
               target="_blank"
               rel="noopener noreferrer"
+              data-origen="404"
               className="rounded-xl border border-line-strong px-6 py-3 text-sm font-medium text-ink transition-colors hover:border-accent hover:text-accent"
             >
               Escríbenos por WhatsApp &rarr;

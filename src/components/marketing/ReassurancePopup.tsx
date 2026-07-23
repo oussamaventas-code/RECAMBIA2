@@ -90,6 +90,7 @@ export function ReassurancePopup() {
           target="_blank"
           rel="noopener noreferrer"
           onClick={close}
+          data-origen="popup-reassurance"
           className="mt-6 inline-flex w-full items-center justify-center gap-2.5 rounded-xl bg-success px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-success/25 transition-all hover:bg-success-glow active:scale-[0.98]"
         >
           <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">

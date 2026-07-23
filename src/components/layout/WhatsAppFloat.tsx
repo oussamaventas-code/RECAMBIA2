@@ -42,6 +42,7 @@ export function WhatsAppFloat() {
           href={whatsappGenericUrl("¡Hola! Vengo de la web y necesito ayuda para encontrar un recambio.")}
           target="_blank"
           rel="noopener noreferrer"
+          data-origen="sticky"
           aria-label={`Escríbenos por WhatsApp. ${promesaRespuesta()}`}
           initial={{ opacity: 0, scale: 0.8, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}

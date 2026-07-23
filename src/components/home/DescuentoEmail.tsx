@@ -38,6 +38,7 @@ export function DescuentoEmail() {
                 )}
                 target="_blank"
                 rel="noopener noreferrer"
+                data-origen="diagnostico-gratis"
                 className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-accent px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-accent/20 transition-all hover:bg-accent-dark hover:shadow-xl active:scale-[0.98]"
               >
                 Que me digan qué necesito &rarr;

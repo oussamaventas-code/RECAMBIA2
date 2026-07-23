@@ -50,6 +50,7 @@ export function CounterNotes() {
               )}
               target="_blank"
               rel="noopener noreferrer"
+              data-origen="b2b-talleres"
               className="inline-flex items-center justify-center gap-2 rounded-xl border border-line-strong px-5 py-3 text-sm font-medium text-ink transition-all hover:border-accent hover:text-accent hover:bg-accent-glow"
             >
               <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">

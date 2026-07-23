@@ -68,6 +68,7 @@ export default async function PresupuestoPage({ searchParams }: PresupuestoPageP
                 href={whatsappGenericUrl("Hola, mi presupuesto no me carga la página. ¿Me lo enviáis de nuevo?")}
                 target="_blank"
                 rel="noopener noreferrer"
+                data-origen="presupuesto-invalido"
                 className="mt-6 inline-flex items-center justify-center rounded-xl bg-success px-5 py-3 text-sm font-semibold text-white hover:bg-success-glow"
               >
                 Escríbenos por WhatsApp &rarr;
@@ -207,6 +208,7 @@ export default async function PresupuestoPage({ searchParams }: PresupuestoPageP
                   href={whatsappGenericUrl(`Hola, quiero pagar mi presupuesto de otra forma (matrícula: ${quote.plate ?? "-"}).`)}
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-origen="presupuesto-pagar-otra-forma"
                   className="text-accent hover:underline"
                 >
                   Escríbenos por WhatsApp

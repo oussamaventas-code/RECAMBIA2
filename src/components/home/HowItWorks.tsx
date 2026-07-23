@@ -173,6 +173,7 @@ export function HowItWorks() {
           href={whatsappGenericUrl("¡Hola! Vengo de la web y necesito ayuda para encontrar un recambio.")}
           target="_blank"
           rel="noopener noreferrer"
+          data-origen="como-funciona"
           className="inline-flex items-center gap-2.5 rounded-xl bg-success px-8 py-4 font-semibold text-white shadow-lg shadow-success/20 transition-all hover:bg-success-glow hover:shadow-xl active:scale-[0.98]"
         >
           <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">

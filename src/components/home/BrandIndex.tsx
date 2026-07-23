@@ -28,6 +28,7 @@ export function BrandIndex() {
                 )}
                 target="_blank"
                 rel="noopener noreferrer"
+                data-origen="marcas"
                 className="whitespace-nowrap rounded-full border border-line bg-surface-2 px-4 py-1.5 text-sm text-ink-muted transition-colors hover:border-line-strong hover:text-ink"
               >
                 {brand.name}
@@ -52,6 +53,7 @@ export function BrandIndex() {
           href={whatsappGenericUrl("Hola, quiero información sobre una pieza.")}
           target="_blank"
           rel="noopener noreferrer"
+          data-origen="marcas"
           className="inline-flex items-center gap-2 text-sm font-semibold text-accent hover:text-accent-dark transition-colors"
         >
           Pregúntanos por WhatsApp

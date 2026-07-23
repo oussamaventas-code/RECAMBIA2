@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
 import { formatPlateInput } from "@/components/matricula/plate-format";
+import { markMatriculaEntered } from "@/lib/analytics";
 
 import Image from "next/image";
 
@@ -89,7 +90,11 @@ function PlateField({
         spellCheck={false}
         placeholder="0000 BBB"
         value={value}
-        onChange={(e) => onChange(formatPlateInput(e.target.value))}
+        onChange={(e) => {
+          const formatted = formatPlateInput(e.target.value);
+          onChange(formatted);
+          if (formatted) markMatriculaEntered();
+        }}
         maxLength={8}
         className="w-full bg-plate px-2 py-1.5 font-mono text-xs font-semibold uppercase tracking-[0.15em] text-plate-ink outline-none placeholder:text-plate-ink/30"
       />
@@ -126,6 +131,7 @@ function PackCard({ pack }: { pack: (typeof PACKS)[number] }) {
         href={whatsappGenericUrl(buildPackMessage(`Hola, quiero información sobre el ${pack.title}.`, plate))}
         target="_blank"
         rel="noopener noreferrer"
+        data-origen="packs"
         className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-lg bg-success px-3 py-2.5 text-xs font-semibold text-white transition-all hover:bg-success-glow active:scale-95"
       >
         Preguntar precio de esta pieza &rarr;
@@ -163,6 +169,7 @@ function MoreKitsCard() {
           href={whatsappGenericUrl(buildPackMessage("Hola, quiero un kit de piezas para mi coche.", plate))}
           target="_blank"
           rel="noopener noreferrer"
+          data-origen="packs-otro"
           className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-success px-3 py-2.5 text-xs font-semibold text-white transition-all hover:bg-success-glow active:scale-95"
         >
           Escríbenos por WhatsApp &rarr;

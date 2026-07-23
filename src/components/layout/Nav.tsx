@@ -88,6 +88,7 @@ export function Nav({ showPlate = false }: { showPlate?: boolean }) {
               href={whatsappGenericUrl("Hola, quiero información sobre una pieza.")}
               target="_blank"
               rel="noopener noreferrer"
+              data-origen="nav"
               className="hidden items-center gap-2 rounded-xl bg-success px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-success-glow sm:flex"
             >
               <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
@@ -101,6 +102,7 @@ export function Nav({ showPlate = false }: { showPlate?: boolean }) {
               href={whatsappGenericUrl("¡Hola! Vengo de la web y necesito ayuda para encontrar un recambio.")}
               target="_blank"
               rel="noopener noreferrer"
+              data-origen="nav-mobile"
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-success hover:bg-success/10 transition-colors md:hidden"
               aria-label="Contactar por WhatsApp"
             >

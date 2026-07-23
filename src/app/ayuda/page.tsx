@@ -82,6 +82,7 @@ export default function AyudaPage() {
             href={whatsappGenericUrl("Hola, tengo una duda: ")}
             target="_blank"
             rel="noopener noreferrer"
+            data-origen="ayuda"
             className="rounded-xl bg-success px-5 py-2.5 text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-95"
           >
             WhatsApp

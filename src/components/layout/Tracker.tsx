@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { trackEvent } from "@/lib/analytics";
+import { trackEvent, trackWhatsappClick } from "@/lib/analytics";
 import { markPopupSeen } from "@/lib/popup-coordination";
 
 /**
@@ -45,6 +45,12 @@ export function Tracker() {
         // Eventos de Meta Pixel (no hacen nada sin consentimiento aceptado).
         trackEvent("Contact");
         trackEvent("Lead");
+
+        // Evento propio de embudo: qué bloque de la web disparó el clic
+        // (marcado con data-origen en el propio enlace) y si el visitante
+        // ya había escrito su matrícula antes de escribir por WhatsApp.
+        const origen = target.getAttribute("data-origen") ?? "sin-etiquetar";
+        trackWhatsappClick(origen);
 
         // Ya está escribiendo por WhatsApp: no tiene sentido reasegurarlo
         // con un popup después de esto.

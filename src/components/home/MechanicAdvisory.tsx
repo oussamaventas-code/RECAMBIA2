@@ -154,6 +154,7 @@ export function MechanicAdvisory() {
               )}
               target="_blank"
               rel="noopener noreferrer"
+              data-origen="asesoramiento-mecanico"
               className="inline-flex items-center gap-2.5 rounded-xl bg-success px-7 py-4 font-semibold text-white shadow-lg shadow-success/25 transition-all hover:shadow-xl hover:shadow-success/30 active:scale-[0.98]"
             >
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">

@@ -68,6 +68,7 @@ export default async function GraciasPage({ searchParams }: GraciasPageProps) {
               href={whatsappGenericUrl("Hola, acabo de pagar un presupuesto en la web.")}
               target="_blank"
               rel="noopener noreferrer"
+              data-origen="gracias"
               className="inline-flex items-center justify-center rounded-xl bg-success px-5 py-3 text-sm font-semibold text-white hover:bg-success-glow"
             >
               Escríbenos por WhatsApp &rarr;

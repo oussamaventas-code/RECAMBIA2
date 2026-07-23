@@ -43,6 +43,7 @@ export function CategoryIndex() {
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-origen="categorias"
                   className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface-1 transition-all duration-300 hover:glow-border hover:shadow-lg hover:shadow-accent/5"
                 >
                   {/* Foto de categoría */}

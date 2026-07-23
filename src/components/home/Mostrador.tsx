@@ -181,6 +181,7 @@ export function Mostrador() {
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-origen="hero"
                   className="flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl bg-success px-6 text-base font-semibold text-white shadow-lg shadow-success/25 transition-all hover:bg-success-glow active:scale-[0.98] sm:inline-flex sm:w-auto"
                 >
                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -200,6 +201,7 @@ export function Mostrador() {
                     )}
                     target="_blank"
                     rel="noopener noreferrer"
+                    data-origen="hero-sin-matricula"
                     className="text-ink-muted underline decoration-line transition-colors hover:text-ink hover:decoration-ink-faint"
                   >
                     ¿No te sabes la matrícula?
@@ -210,6 +212,7 @@ export function Mostrador() {
                     )}
                     target="_blank"
                     rel="noopener noreferrer"
+                    data-origen="hero-sin-nombre-pieza"
                     className="text-ink-muted underline decoration-line transition-colors hover:text-ink hover:decoration-ink-faint"
                   >
                     ¿No sabes cómo se llama? Mándanos una foto

@@ -61,6 +61,7 @@ export function Footer() {
               href={whatsappGenericUrl("Hola, busco una pieza que no encuentro en la web. Mi matrícula es: ")}
               target="_blank"
               rel="noopener noreferrer"
+              data-origen="footer"
               className="inline-flex items-center gap-2 rounded-xl bg-success px-6 py-3 font-semibold text-white transition-all hover:bg-success-glow hover:shadow-lg hover:shadow-success/20 active:scale-95"
             >
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">

@@ -4,6 +4,7 @@ import { useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { formatPlateInput, isPlateComplete } from "./plate-format";
 import { whatsappPlateUrl } from "@/lib/whatsapp";
+import { markMatriculaEntered, trackWhatsappClick } from "@/lib/analytics";
 
 type Status = "idle" | "sending" | "ready";
 
@@ -51,6 +52,9 @@ export function PlateSearch({
     e.preventDefault();
     if (!complete) return;
     if (!isHero) {
+      // Enlace abierto por JS, no por clic en un <a>: el interceptor global
+      // de Tracker.tsx no lo ve, así que el evento se dispara aquí a mano.
+      trackWhatsappClick("plate-search-compact");
       window.open(whatsappPlateUrl(value), "_blank", "noopener,noreferrer");
       return;
     }
@@ -116,8 +120,10 @@ export function PlateSearch({
             value={value}
             disabled={status !== "idle" && isHero}
             onChange={(e) => {
-              setValue(formatPlateInput(e.target.value));
+              const formatted = formatPlateInput(e.target.value);
+              setValue(formatted);
               onActivityChange?.(true);
+              if (formatted) markMatriculaEntered();
             }}
             onFocus={() => onActivityChange?.(true)}
             onBlur={() => {
@@ -220,6 +226,7 @@ export function PlateSearch({
                   href={whatsappPlateUrl(value)}
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-origen="hero-matricula"
                   className="inline-flex w-full min-h-[48px] items-center justify-center gap-2 rounded-xl bg-success px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-success-glow hover:shadow-lg hover:shadow-success/20 active:scale-95 sm:w-auto"
                 >
                   <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
