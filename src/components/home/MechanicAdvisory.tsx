@@ -1,7 +1,55 @@
 "use client";
 
+import Image from "next/image";
 import { Reveal } from "@/components/shared/Reveal";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
+
+type TeamMember = {
+  name: string;
+  role: string;
+  trayectoria: string;
+  color: string;
+  photo?: string;
+};
+
+// Cuando haya foto real, basta con rellenar `photo` (ruta en /public) y la
+// tarjeta la muestra en vez del monograma. No hace falta tocar el layout.
+//
+// TODO OUSSAMA: rellenar con datos reales. La línea de trayectoria debe ser
+// concreta y comprobable. Ejemplo de forma correcta: "12 años detrás del
+// mostrador en un almacén de recambios en Murcia". Ejemplo de forma
+// incorrecta: "apasionado del motor".
+const team: TeamMember[] = [
+  { name: "Nombre pendiente", role: "Recambista", trayectoria: "Trayectoria pendiente", color: "accent" },
+  { name: "Nombre pendiente", role: "Mecánico", trayectoria: "Trayectoria pendiente", color: "success" },
+  { name: "Nombre pendiente", role: "Logística", trayectoria: "Trayectoria pendiente", color: "warning" },
+  { name: "Nombre pendiente", role: "Digital", trayectoria: "Trayectoria pendiente", color: "accent-light" },
+];
+
+function TeamMemberCard({ member }: { member: TeamMember }) {
+  return (
+    <div className="rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10">
+      {member.photo ? (
+        <div className="relative mb-2 h-10 w-10 overflow-hidden rounded-full">
+          <Image src={member.photo} alt={member.name} fill sizes="40px" className="object-cover" />
+        </div>
+      ) : (
+        <span
+          className="mb-2 inline-flex h-10 w-10 items-center justify-center rounded-full font-mono-num text-lg font-bold"
+          style={{
+            backgroundColor: `color-mix(in srgb, var(--color-${member.color}, #2563eb) 20%, transparent)`,
+            color: `var(--color-${member.color}, #2563eb)`,
+          }}
+        >
+          {member.name.charAt(0)}
+        </span>
+      )}
+      <p className="text-sm font-semibold text-white">{member.name}</p>
+      <p className="text-xs text-white/50">{member.role}</p>
+      <p className="mt-1.5 text-xs text-white/70 leading-relaxed">{member.trayectoria}</p>
+    </div>
+  );
+}
 
 const benefits = [
   {
@@ -123,41 +171,21 @@ export function MechanicAdvisory() {
                   Nuestro equipo
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
-                  {[
-                    { role: "Recambistas", count: "2", desc: "Expertos en piezas", color: "accent" },
-                    { role: "Mecánico", count: "1", desc: "Asesor técnico", color: "success" },
-                    { role: "Logística", count: "1", desc: "Entregas en 24h", color: "warning" },
-                    { role: "Digital", count: "1", desc: "Web y soporte", color: "accent-light" },
-                  ].map((member) => (
-                    <div
-                      key={member.role}
-                      className="rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10"
-                    >
-                      <span
-                        className={`inline-flex h-10 w-10 items-center justify-center rounded-full bg-${member.color}/20 font-mono-num text-lg font-bold text-${member.color} mb-2`}
-                        style={{
-                          backgroundColor: `color-mix(in srgb, var(--color-${member.color}, #2563eb) 20%, transparent)`,
-                          color: `var(--color-${member.color}, #2563eb)`,
-                        }}
-                      >
-                        {member.count}
-                      </span>
-                      <p className="text-sm font-semibold text-white">{member.role}</p>
-                      <p className="text-xs text-white/50">{member.desc}</p>
-                    </div>
+                  {team.map((member) => (
+                    <TeamMemberCard key={member.role} member={member} />
                   ))}
                 </div>
               </div>
 
               {/* Quote */}
               <div className="rounded-xl border border-success/20 bg-success/10 p-5">
+                {/* TODO OUSSAMA: cita en primera persona de UNA persona del equipo,
+                    firmada con nombre y rol. Que suene a como habla él, no a copy. */}
                 <p className="text-sm text-white/80 leading-relaxed italic">
-                  &ldquo;No somos un almacén con un formulario web. Somos 4 personas que conocen 
-                  el sector y te atienden como en el mostrador de toda la vida, 
-                  pero sin que tengas que salir de casa.&rdquo;
+                  &ldquo;[Cita pendiente]&rdquo;
                 </p>
                 <p className="mt-3 text-xs text-success font-semibold">
-                  — Equipo RECAMBIA
+                  — [Nombre pendiente], [Rol pendiente]
                 </p>
               </div>
             </div>
