@@ -36,7 +36,7 @@ export function Nav({ showPlate = false }: { showPlate?: boolean }) {
               <span className="text-accent">⚡</span> Envío GRATIS en pedidos +60€
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="text-accent">↩</span> Devolución fácil 14 días
+              <span className="text-accent">✓</span> Solo pagas si la pieza encaja
             </span>
             <span className="flex items-center gap-1.5">
               <span className="text-accent">🇪🇸</span> Stock real en España
