@@ -1,4 +1,5 @@
 import { whatsappGenericUrl } from "@/lib/whatsapp";
+import { promesaRespuesta } from "@/config/contacto";
 
 // Sección de portada: antes era un imán de leads con 5% de descuento y
 // captura de email. Se sustituyó porque competía por precio (lo contrario a
@@ -41,6 +42,7 @@ export function DescuentoEmail() {
               >
                 Que me digan qué necesito &rarr;
               </a>
+              <p className="mt-2 text-xs text-ink-faint">{promesaRespuesta()}</p>
             </div>
           </div>
         </div>

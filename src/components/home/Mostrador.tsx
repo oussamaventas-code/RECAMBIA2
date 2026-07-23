@@ -8,6 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { PlateSearch } from "@/components/matricula/PlateSearch";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
+import { HORARIO, promesaRespuesta } from "@/config/contacto";
 
 gsap.registerPlugin(SplitText, ScrollTrigger, useGSAP);
 
@@ -157,7 +158,7 @@ export function Mostrador() {
             {/* Subtitle */}
             <p className="mt-5 max-w-lg text-base leading-relaxed text-ink-muted sm:text-lg">
               Escribe tu matrícula y un recambista te confirma pieza,
-              precio y disponibilidad en menos de 2 horas.
+              precio y disponibilidad en {HORARIO.respuestaEnHorario}.
               <br className="hidden sm:block" />{" "}
               Te atiende una persona, no un bot.
             </p>
@@ -188,6 +189,7 @@ export function Mostrador() {
                   </svg>
                   Escríbenos por WhatsApp &rarr;
                 </a>
+                <p className="mt-2 text-xs text-ink-faint">{promesaRespuesta()}</p>
               </div>
 
               <div className="mt-4 flex flex-col gap-2 text-sm">

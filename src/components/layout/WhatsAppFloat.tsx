@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
 import { isBusinessHours } from "@/lib/site-config";
+import { promesaRespuesta } from "@/config/contacto";
 import { Magnetic } from "@/components/shared/Magnetic";
 
 export function WhatsAppFloat() {
@@ -31,7 +32,7 @@ export function WhatsAppFloat() {
             className="hidden rounded-xl border border-line bg-surface-1 px-3 py-2 text-xs font-medium text-ink-muted shadow-lg sm:block"
           >
             {inHours
-              ? "Respondemos en <2h (L–V 9:00–18:30)"
+              ? promesaRespuesta()
               : "Fuera de horario: te contestamos mañana a primera hora"}
           </motion.button>
         )}
@@ -41,7 +42,7 @@ export function WhatsAppFloat() {
           href={whatsappGenericUrl("¡Hola! Vengo de la web y necesito ayuda para encontrar un recambio.")}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Escríbenos por WhatsApp. Respondemos en menos de 2 horas, de lunes a viernes de 9:00 a 18:30"
+          aria-label={`Escríbenos por WhatsApp. ${promesaRespuesta()}`}
           initial={{ opacity: 0, scale: 0.8, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}

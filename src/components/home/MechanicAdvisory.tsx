@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Reveal } from "@/components/shared/Reveal";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
+import { promesaRespuesta } from "@/config/contacto";
 
 type TeamMember = {
   name: string;
@@ -160,6 +161,7 @@ export function MechanicAdvisory() {
               </svg>
               Consulta a nuestro mecánico
             </a>
+            <p className="mt-2 text-xs text-white/40">{promesaRespuesta()}</p>
           </Reveal>
 
           {/* Right: Visual card */}

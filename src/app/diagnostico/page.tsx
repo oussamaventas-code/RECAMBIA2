@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { InfoPage } from "@/components/layout/InfoPage";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
+import { promesaRespuesta } from "@/config/contacto";
 
 export const metadata: Metadata = {
   title: "Diagnóstico online",
@@ -85,9 +86,8 @@ export default function DiagnosticoPage() {
           Hablar con el mecánico &rarr;
         </a>
         <p className="mt-3 text-xs text-ink-faint">
-          Respuesta en menos de 2 horas laborables. El diagnóstico es
-          orientativo: para averías complejas te recomendaremos pasar por un
-          taller asociado.
+          {promesaRespuesta()}. El diagnóstico es orientativo: para averías
+          complejas te recomendaremos pasar por un taller asociado.
         </p>
       </div>
     </InfoPage>

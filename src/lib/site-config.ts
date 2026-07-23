@@ -16,11 +16,13 @@ export const PHONE_TEL = "+34632334756";
 // Correo de contacto general. OJO: dominio con x → recambiaX.es
 export const EMAIL = "hola@recambiax.es";
 
-export const BUSINESS_HOURS = "Lunes a Viernes, de 9:00 a 18:30";
+// El horario y la promesa de respuesta viven en src/config/contacto.ts
+// (HORARIO, horarioTexto, promesaRespuesta) — única fuente para toda la web.
 
 // Compara contra la hora real de Madrid (no la del navegador del visitante,
-// que puede estar en otro huso) para no prometer "<2h" fuera de horario. Usa
-// en-US solo para parsear el weekday en ASCII fijo (Mon..Sun); no se muestra.
+// que puede estar en otro huso) para no prometer la respuesta rápida fuera
+// de horario. Usa en-US solo para parsear el weekday en ASCII fijo
+// (Mon..Sun); no se muestra.
 export function isBusinessHours(date: Date = new Date()): boolean {
   const parts = Object.fromEntries(
     new Intl.DateTimeFormat("en-US", {

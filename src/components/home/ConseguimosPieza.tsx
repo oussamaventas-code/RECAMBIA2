@@ -2,6 +2,7 @@
 
 import { Reveal } from "@/components/shared/Reveal";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
+import { HORARIO, promesaRespuesta } from "@/config/contacto";
 
 /* ─── Reglas claras: qué podemos conseguir y qué no ─── */
 const rules = [
@@ -45,7 +46,7 @@ export function ConseguimosPieza() {
             <p className="mt-4 text-ink-muted leading-relaxed max-w-xl">
               Lo que ves aquí es nuestro escaparate, no todo lo que vendemos.
               Dinos tu matrícula y la pieza que necesitas, y nos ponemos a
-              buscarla en menos de 2 horas.
+              buscarla en {HORARIO.respuestaEnHorario}.
             </p>
           </Reveal>
 
@@ -102,9 +103,7 @@ export function ConseguimosPieza() {
               </svg>
               Pídenos tu pieza
             </a>
-            <p className="text-xs text-ink-muted">
-              Respuesta de un recambista real, en horario de tienda.
-            </p>
+            <p className="text-xs text-ink-muted">{promesaRespuesta()}</p>
           </Reveal>
         </div>
       </div>

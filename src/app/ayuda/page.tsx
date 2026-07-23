@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { InfoPage } from "@/components/layout/InfoPage";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
+import { promesaRespuesta } from "@/config/contacto";
 
 export const metadata: Metadata = {
   title: "Centro de ayuda",
@@ -74,9 +75,7 @@ export default function AyudaPage() {
       <div className="mt-10 flex flex-col items-start gap-4 rounded-2xl border border-line bg-surface-2/60 p-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="font-display text-lg text-ink">¿Sigues con dudas?</h2>
-          <p className="mt-1 text-sm text-ink-muted">
-            Escríbenos y te contestamos en menos de 2 horas laborables.
-          </p>
+          <p className="mt-1 text-sm text-ink-muted">{promesaRespuesta()}</p>
         </div>
         <div className="flex flex-wrap gap-3">
           <a

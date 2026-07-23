@@ -2,6 +2,7 @@ import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import Link from "next/link";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
+import { HORARIO, promesaRespuesta } from "@/config/contacto";
 import { WorkshopMap } from "@/components/talleres/WorkshopMap";
 
 export default function TalleresAsociadosPage() {
@@ -59,7 +60,7 @@ export default function TalleresAsociadosPage() {
                 </div>
                 <h3 className="font-display text-xl text-ink mb-3">Encuentra tu pieza</h3>
                 <p className="text-sm text-ink-muted">
-                  Escríbenos por WhatsApp con tu matrícula y la pieza que necesitas. Te confirmamos referencia exacta y precio en menos de 2 horas.
+                  Escríbenos por WhatsApp con tu matrícula y la pieza que necesitas. Te confirmamos referencia exacta y precio en {HORARIO.respuestaEnHorario}.
                 </p>
               </div>
 
@@ -113,6 +114,7 @@ export default function TalleresAsociadosPage() {
               </svg>
                 Escríbenos por WhatsApp &rarr;
             </a>
+            <p className="mt-3 text-xs text-ink-faint">{promesaRespuesta()}</p>
             <ul className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-sm text-ink-muted">
               <li className="flex items-center gap-2">
                 <svg className="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>

@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { InfoPage } from "@/components/layout/InfoPage";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
 import { PHONE_DISPLAY, PHONE_TEL, EMAIL } from "@/lib/site-config";
+import { HORARIO, horarioTexto, promesaRespuesta } from "@/config/contacto";
 
 export const metadata: Metadata = {
   title: "Contacto",
-  description:
-    "Habla con el equipo de RECAMBIA: WhatsApp, teléfono o email. Respuesta en menos de 2 horas laborables.",
+  description: `Habla con el equipo de RECAMBIA: WhatsApp, teléfono o email. Respuesta en ${HORARIO.respuestaEnHorario} en horario laboral.`,
 };
 
 const CHANNELS = [
@@ -20,7 +20,7 @@ const CHANNELS = [
   {
     icon: "📞",
     title: "Teléfono",
-    detail: "Lunes a viernes, de 9:00 a 18:30.",
+    detail: horarioTexto(),
     action: { label: PHONE_DISPLAY, href: `tel:${PHONE_TEL}` },
     external: false,
   },
@@ -37,7 +37,7 @@ export default function ContactoPage() {
   return (
     <InfoPage
       title="Contacto"
-      subtitle="Detrás de RECAMBIA hay personas que saben de piezas. Elige la vía que prefieras: contestamos en menos de 2 horas laborables."
+      subtitle={`Detrás de RECAMBIA hay personas que saben de piezas. Elige la vía que prefieras: contestamos en ${HORARIO.respuestaEnHorario} en horario laboral.`}
     >
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {CHANNELS.map((channel) => (
@@ -68,8 +68,8 @@ export default function ContactoPage() {
       </div>
 
       <p className="mt-8 text-xs text-ink-faint">
-        Horario de atención: lunes a viernes de 9:00 a 18:30 (excepto
-        festivos nacionales). Los pedidos por WhatsApp fuera de horario se
+        Horario de atención: {horarioTexto()} (excepto festivos nacionales).{" "}
+        {promesaRespuesta()}. Los pedidos por WhatsApp fuera de horario se
         atienden a primera hora del siguiente día laborable.
       </p>
     </InfoPage>
