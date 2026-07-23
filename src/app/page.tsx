@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Mostrador } from "@/components/home/Mostrador";
 import { BrandIndex } from "@/components/home/BrandIndex";
 import { CategoryIndex } from "@/components/home/CategoryIndex";
+import { Packs } from "@/components/home/Packs";
 import { ConseguimosPieza } from "@/components/home/ConseguimosPieza";
 import { CounterNotes } from "@/components/home/CounterNotes";
 import { TrustStrip } from "@/components/home/TrustStrip";
@@ -31,6 +32,7 @@ export default function Home() {
         <CategoryIndex />
         <BrandIndex />
         <HowItWorks />
+        <Packs />
         <ConseguimosPieza />
         <TrustMetrics />
         <MechanicAdvisory />
