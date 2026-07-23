@@ -26,6 +26,12 @@ export type LostReason =
   | "pieza_no_disponible"
   | "solo_consultaba"
   | "otro";
+// Envío del pedido, solo aplica una vez pagado. Un pedido tiene un único envío.
+export type ShippingStatus = "preparando" | "enviado" | "entregado";
+// Incidencia post-venta. Tipo separado de CrmRecord: un pedido puede tener
+// varias a lo largo del tiempo (una devolución hoy, una garantía en meses).
+export type CaseType = "garantia" | "devolucion";
+export type CaseStatus = "abierto" | "en_revision" | "resuelto" | "rechazado";
 
 export interface CrmRecord {
   id: string;
@@ -56,6 +62,13 @@ export interface CrmRecord {
   source?: string;
   firstContactAt?: string;
   lostReason?: LostReason;
+  // Envío (una vez pagado).
+  shippingStatus?: ShippingStatus;
+  carrier?: string;
+  trackingNumber?: string;
+  trackingUrl?: string;
+  shippedAt?: string;
+  deliveredAt?: string;
 }
 
 type CrmPatch = Partial<Omit<CrmRecord, "id" | "createdAt">>;
@@ -67,6 +80,28 @@ interface CrmDriver {
   create(record: CrmRecord): Promise<CrmRecord>;
   update(id: string, patch: CrmPatch): Promise<CrmRecord | null>;
   remove(id: string): Promise<boolean>;
+}
+
+// Incidencia post-venta (garantía o devolución). Tabla propia: un pedido
+// puede tener varias a lo largo del tiempo.
+export interface CrmCase {
+  id: string;
+  quoteId: string;
+  createdAt: string;
+  updatedAt: string;
+  type: CaseType;
+  status: CaseStatus;
+  reason?: string;
+  resolution?: string;
+  resolvedAt?: string;
+}
+
+type CrmCasePatch = Partial<Omit<CrmCase, "id" | "quoteId" | "createdAt">>;
+
+interface CrmCaseDriver {
+  listByQuote(quoteId: string): Promise<CrmCase[]>;
+  create(record: CrmCase): Promise<CrmCase>;
+  update(id: string, patch: CrmCasePatch): Promise<CrmCase | null>;
 }
 
 // ---------------------------------------------------------------------------
@@ -97,6 +132,48 @@ interface DbRow {
   source: string | null;
   first_contact_at: string | null;
   lost_reason: LostReason | null;
+  shipping_status: ShippingStatus | null;
+  carrier: string | null;
+  tracking_number: string | null;
+  tracking_url: string | null;
+  shipped_at: string | null;
+  delivered_at: string | null;
+}
+
+interface CaseDbRow {
+  id: string;
+  quote_id: string;
+  created_at: string;
+  updated_at: string;
+  type: CaseType;
+  status: CaseStatus;
+  reason: string | null;
+  resolution: string | null;
+  resolved_at: string | null;
+}
+
+function fromCaseRow(row: CaseDbRow): CrmCase {
+  return {
+    id: row.id,
+    quoteId: row.quote_id,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    type: row.type,
+    status: row.status,
+    reason: row.reason ?? undefined,
+    resolution: row.resolution ?? undefined,
+    resolvedAt: row.resolved_at ?? undefined,
+  };
+}
+
+function casePatchToRow(patch: CrmCasePatch): Record<string, unknown> {
+  const row: Record<string, unknown> = {};
+  if ("updatedAt" in patch) row.updated_at = patch.updatedAt;
+  if ("status" in patch) row.status = patch.status;
+  if ("reason" in patch) row.reason = patch.reason ?? null;
+  if ("resolution" in patch) row.resolution = patch.resolution ?? null;
+  if ("resolvedAt" in patch) row.resolved_at = patch.resolvedAt ?? null;
+  return row;
 }
 
 let supabaseClient: SupabaseClient | null = null;
@@ -136,6 +213,12 @@ function fromRow(row: DbRow): CrmRecord {
     source: row.source ?? undefined,
     firstContactAt: row.first_contact_at ?? undefined,
     lostReason: row.lost_reason ?? undefined,
+    shippingStatus: row.shipping_status ?? undefined,
+    carrier: row.carrier ?? undefined,
+    trackingNumber: row.tracking_number ?? undefined,
+    trackingUrl: row.tracking_url ?? undefined,
+    shippedAt: row.shipped_at ?? undefined,
+    deliveredAt: row.delivered_at ?? undefined,
   };
 }
 
@@ -163,6 +246,12 @@ function patchToRow(patch: CrmPatch): Record<string, unknown> {
   if ("source" in patch) row.source = patch.source ?? null;
   if ("firstContactAt" in patch) row.first_contact_at = patch.firstContactAt ?? null;
   if ("lostReason" in patch) row.lost_reason = patch.lostReason ?? null;
+  if ("shippingStatus" in patch) row.shipping_status = patch.shippingStatus ?? null;
+  if ("carrier" in patch) row.carrier = patch.carrier ?? null;
+  if ("trackingNumber" in patch) row.tracking_number = patch.trackingNumber ?? null;
+  if ("trackingUrl" in patch) row.tracking_url = patch.trackingUrl ?? null;
+  if ("shippedAt" in patch) row.shipped_at = patch.shippedAt ?? null;
+  if ("deliveredAt" in patch) row.delivered_at = patch.deliveredAt ?? null;
   return row;
 }
 
@@ -247,6 +336,49 @@ const supabaseDriver: CrmDriver = {
       .select("id");
     if (error) throw new Error(`Supabase (remove): ${error.message}`);
     return (data?.length ?? 0) > 0;
+  },
+};
+
+const supabaseCaseDriver: CrmCaseDriver = {
+  async listByQuote(quoteId) {
+    const { data, error } = await getSupabase()
+      .from("crm_cases")
+      .select("*")
+      .eq("quote_id", quoteId)
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(`Supabase (cases list): ${error.message}`);
+    return (data as CaseDbRow[]).map(fromCaseRow);
+  },
+
+  async create(record) {
+    const { data, error } = await getSupabase()
+      .from("crm_cases")
+      .insert({
+        id: record.id,
+        quote_id: record.quoteId,
+        created_at: record.createdAt,
+        updated_at: record.updatedAt,
+        type: record.type,
+        status: record.status,
+        reason: record.reason ?? null,
+        resolution: record.resolution ?? null,
+        resolved_at: record.resolvedAt ?? null,
+      })
+      .select()
+      .single();
+    if (error) throw new Error(`Supabase (cases create): ${error.message}`);
+    return fromCaseRow(data as CaseDbRow);
+  },
+
+  async update(id, patch) {
+    const { data, error } = await getSupabase()
+      .from("crm_cases")
+      .update(casePatchToRow(patch))
+      .eq("id", id)
+      .select()
+      .maybeSingle();
+    if (error) throw new Error(`Supabase (cases update): ${error.message}`);
+    return data ? fromCaseRow(data as CaseDbRow) : null;
   },
 };
 
@@ -339,6 +471,69 @@ const fileDriver: CrmDriver = {
   },
 };
 
+const CASES_FILE = path.join(DATA_DIR, "crm-cases.json");
+let caseWriteLock: Promise<unknown> = Promise.resolve();
+
+async function readAllCases(): Promise<CrmCase[]> {
+  try {
+    const raw = await fs.readFile(CASES_FILE, "utf-8");
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as CrmCase[]) : [];
+  } catch (err) {
+    const code = (err as NodeJS.ErrnoException).code;
+    if (code === "ENOENT") return [];
+    if (err instanceof SyntaxError) {
+      const backup = `${CASES_FILE}.corrupto-${Date.now()}`;
+      await fs.rename(CASES_FILE, backup).catch(() => {});
+      console.error(`CRM: crm-cases.json corrupto, apartado como ${backup}`);
+      return [];
+    }
+    throw err;
+  }
+}
+
+async function writeAllCases(records: CrmCase[]): Promise<void> {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  const tmp = `${CASES_FILE}.tmp`;
+  await fs.writeFile(tmp, JSON.stringify(records, null, 2), "utf-8");
+  await fs.rename(tmp, CASES_FILE);
+}
+
+function withCaseLock<T>(fn: () => Promise<T>): Promise<T> {
+  const run = caseWriteLock.then(fn, fn);
+  caseWriteLock = run.catch(() => {});
+  return run;
+}
+
+const fileCaseDriver: CrmCaseDriver = {
+  async listByQuote(quoteId) {
+    const all = await readAllCases();
+    return all
+      .filter((c) => c.quoteId === quoteId)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  },
+
+  async create(record) {
+    return withCaseLock(async () => {
+      const all = await readAllCases();
+      all.push(record);
+      await writeAllCases(all);
+      return record;
+    });
+  },
+
+  async update(id, patch) {
+    return withCaseLock(async () => {
+      const all = await readAllCases();
+      const idx = all.findIndex((c) => c.id === id);
+      if (idx === -1) return null;
+      all[idx] = { ...all[idx], ...patch };
+      await writeAllCases(all);
+      return all[idx];
+    });
+  },
+};
+
 // ---------------------------------------------------------------------------
 // API pública (selección de driver por entorno)
 // ---------------------------------------------------------------------------
@@ -347,6 +542,12 @@ function driver(): CrmDriver {
   return process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
     ? supabaseDriver
     : fileDriver;
+}
+
+function caseDriver(): CrmCaseDriver {
+  return process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
+    ? supabaseCaseDriver
+    : fileCaseDriver;
 }
 
 function newId(): string {
@@ -446,4 +647,34 @@ export async function markQuotePaid(
 
 export async function deleteQuoteRecord(id: string): Promise<boolean> {
   return driver().remove(id);
+}
+
+// ---------------------------------------------------------------------------
+// Incidencias post-venta (garantías y devoluciones)
+// ---------------------------------------------------------------------------
+
+export async function listCasesForQuote(quoteId: string): Promise<CrmCase[]> {
+  return caseDriver().listByQuote(quoteId);
+}
+
+export async function createCaseRecord(input: {
+  quoteId: string;
+  type: CaseType;
+  reason?: string;
+}): Promise<CrmCase> {
+  const now = new Date().toISOString();
+  const record: CrmCase = {
+    id: newId(),
+    quoteId: input.quoteId,
+    createdAt: now,
+    updatedAt: now,
+    type: input.type,
+    status: "abierto",
+    reason: input.reason,
+  };
+  return caseDriver().create(record);
+}
+
+export async function updateCaseRecord(id: string, patch: CrmCasePatch): Promise<CrmCase | null> {
+  return caseDriver().update(id, { ...patch, updatedAt: new Date().toISOString() });
 }

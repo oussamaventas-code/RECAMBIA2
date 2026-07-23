@@ -5,15 +5,20 @@ import { revalidatePath } from "next/cache";
 import { ADMIN_COOKIE } from "@/lib/site-config";
 import { verifySession } from "@/lib/session";
 import {
+  createCaseRecord,
   createLeadRecord,
   deleteQuoteRecord,
   getQuote,
   listQuotes,
   markQuotePaid,
+  updateCaseRecord,
   updateQuoteRecord,
+  type CaseStatus,
+  type CaseType,
   type CrmRecord,
   type LostReason,
   type PaymentMethod,
+  type ShippingStatus,
 } from "@/lib/crm-store";
 
 // El middleware ya protege /presupuesto/crm, pero las server actions se
@@ -137,6 +142,68 @@ export async function borrarAction(formData: FormData): Promise<void> {
   if (!id) return;
   await deleteQuoteRecord(id);
   revalidatePath("/presupuesto/crm");
+}
+
+const VALID_SHIPPING_STATUSES: ShippingStatus[] = ["preparando", "enviado", "entregado"];
+const VALID_CASE_TYPES: CaseType[] = ["garantia", "devolucion"];
+const VALID_CASE_STATUSES: CaseStatus[] = ["abierto", "en_revision", "resuelto", "rechazado"];
+
+// Envío del pedido: solo tiene sentido una vez pagado, pero no lo forzamos
+// aquí para no acoplar esta acción al estado del presupuesto.
+export async function actualizarEnvioAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+  const str = (key: string) => {
+    const v = String(formData.get(key) ?? "").trim();
+    return v || undefined;
+  };
+  const shippingRaw = String(formData.get("shippingStatus") ?? "");
+  const shippingStatus = VALID_SHIPPING_STATUSES.includes(shippingRaw as ShippingStatus)
+    ? (shippingRaw as ShippingStatus)
+    : undefined;
+
+  const record = await getQuote(id);
+  const now = new Date().toISOString();
+  await updateQuoteRecord(id, {
+    shippingStatus,
+    carrier: str("carrier"),
+    trackingNumber: str("trackingNumber"),
+    trackingUrl: str("trackingUrl"),
+    // Se fija la primera vez que se marca cada hito, no se pisa si ya estaba.
+    shippedAt: shippingStatus === "enviado" ? (record?.shippedAt ?? now) : record?.shippedAt,
+    deliveredAt: shippingStatus === "entregado" ? (record?.deliveredAt ?? now) : record?.deliveredAt,
+  });
+  revalidatePath("/presupuesto/crm");
+  revalidatePath(`/presupuesto/crm/${id}`);
+}
+
+// Alta de una incidencia post-venta (garantía o devolución). Un pedido puede
+// tener varias a lo largo del tiempo, así que esto no toca crm_quotes.
+export async function abrirCasoAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const quoteId = String(formData.get("quoteId") ?? "");
+  const tipoRaw = String(formData.get("type") ?? "");
+  if (!quoteId || !VALID_CASE_TYPES.includes(tipoRaw as CaseType)) return;
+  const reason = String(formData.get("reason") ?? "").trim() || undefined;
+  await createCaseRecord({ quoteId, type: tipoRaw as CaseType, reason });
+  revalidatePath(`/presupuesto/crm/${quoteId}`);
+}
+
+export async function actualizarCasoAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const quoteId = String(formData.get("quoteId") ?? "");
+  const statusRaw = String(formData.get("status") ?? "");
+  if (!id || !VALID_CASE_STATUSES.includes(statusRaw as CaseStatus)) return;
+  const status = statusRaw as CaseStatus;
+  const resolution = String(formData.get("resolution") ?? "").trim() || undefined;
+  await updateCaseRecord(id, {
+    status,
+    resolution,
+    resolvedAt: status === "resuelto" || status === "rechazado" ? new Date().toISOString() : undefined,
+  });
+  if (quoteId) revalidatePath(`/presupuesto/crm/${quoteId}`);
 }
 
 function csvCell(value: unknown): string {

@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getQuote } from "@/lib/crm-store";
+import { getQuote, listCasesForQuote } from "@/lib/crm-store";
 import { EditarVehiculoForm } from "@/components/crm/EditarVehiculoForm";
+import { EditarEnvioForm } from "@/components/crm/EditarEnvioForm";
+import { CasosPostventa } from "@/components/crm/CasosPostventa";
 
 export const metadata: Metadata = {
   title: "Ficha del cliente",
@@ -27,6 +29,7 @@ export default async function FichaClientePage({ params }: FichaClientePageProps
   const { id } = await params;
   const record = await getQuote(id);
   if (!record) notFound();
+  const cases = await listCasesForQuote(id);
 
   const wa = record.customerPhone ? waLink(record.customerPhone) : null;
 
@@ -73,6 +76,34 @@ export default async function FichaClientePage({ params }: FichaClientePageProps
                 model={record.model}
               />
             </div>
+          </div>
+
+          {record.status === "pagado" && (
+            <div className="mt-8">
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-ink-faint">Envío</h2>
+              <p className="mt-1 text-xs text-ink-muted">
+                El cliente ve este estado y el link de seguimiento en su presupuesto.
+              </p>
+              <div className="mt-4">
+                <EditarEnvioForm
+                  id={record.id}
+                  shippingStatus={record.shippingStatus}
+                  carrier={record.carrier}
+                  trackingNumber={record.trackingNumber}
+                  trackingUrl={record.trackingUrl}
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="mt-8">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-ink-faint">
+              Garantías y devoluciones
+            </h2>
+            <p className="mt-1 text-xs text-ink-muted">
+              El cliente ve el estado de su incidencia en el link del presupuesto.
+            </p>
+            <CasosPostventa quoteId={record.id} cases={cases} />
           </div>
         </div>
       </div>

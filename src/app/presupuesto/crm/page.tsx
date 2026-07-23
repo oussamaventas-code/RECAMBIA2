@@ -82,6 +82,21 @@ function StatusBadge({ record }: { record: CrmRecord }) {
   );
 }
 
+const SHIPPING_LABEL: Record<string, string> = {
+  preparando: "Preparando",
+  enviado: "Enviado",
+  entregado: "Entregado",
+};
+
+function ShippingBadge({ record }: { record: CrmRecord }) {
+  if (record.status !== "pagado" || !record.shippingStatus) return null;
+  return (
+    <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-surface-2 px-2.5 py-1 text-xs font-medium text-ink-muted">
+      🚚 {SHIPPING_LABEL[record.shippingStatus]}
+    </span>
+  );
+}
+
 interface CrmPageProps {
   searchParams: Promise<{ estado?: string; q?: string }>;
 }
@@ -464,7 +479,10 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
                         )}
                       </td>
                       <td className="whitespace-nowrap px-4 py-3">
-                        <StatusBadge record={r} />
+                        <div className="flex flex-col items-start gap-1">
+                          <StatusBadge record={r} />
+                          <ShippingBadge record={r} />
+                        </div>
                       </td>
                       <td className="px-4 py-3">
                         <QuoteActions id={r.id} status={r.status} d={r.d} s={r.s} />

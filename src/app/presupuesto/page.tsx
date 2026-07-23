@@ -7,7 +7,8 @@ import { BizumPayment } from "@/components/presupuesto/BizumPayment";
 import { verifyAndDecodeQuote, quoteTotal, quoteVatBreakdown, quoteValidUntil, bizumConcept } from "@/lib/quote";
 import { whatsappGenericUrl } from "@/lib/whatsapp";
 import { getBizumPhone, LEGAL } from "@/lib/site-config";
-import { findQuoteByData, type QuoteStatus } from "@/lib/crm-store";
+import { findQuoteByData, listCasesForQuote, type CrmRecord } from "@/lib/crm-store";
+import { PedidoEstado } from "@/components/presupuesto/PedidoEstado";
 import { DescargarPresupuestoButton } from "@/components/presupuesto/DescargarPresupuestoButton";
 
 const fechaLarga = new Intl.DateTimeFormat("es-ES", {
@@ -36,17 +37,24 @@ export default async function PresupuestoPage({ searchParams }: PresupuestoPageP
   const quote = d && s ? verifyAndDecodeQuote(d, s) : null;
 
   // Estado real en el CRM: evita mostrar los botones de pago si el
-  // presupuesto ya está cobrado, perdido o cancelado. Si la consulta falla,
-  // se trata como "desconocido" y se dejan los botones de pago disponibles.
-  let crmStatus: QuoteStatus | null = null;
+  // presupuesto ya está cobrado, perdido o cancelado. También trae el envío y
+  // las incidencias abiertas para enseñárselas al cliente en este mismo link.
+  // Si la consulta falla, se trata como "desconocido" y se dejan los botones
+  // de pago disponibles.
+  let crmRecord: CrmRecord | null = null;
+  let openCase: Awaited<ReturnType<typeof listCasesForQuote>>[number] | null = null;
   if (quote && d) {
     try {
-      const record = await findQuoteByData(d);
-      crmStatus = record?.status ?? null;
+      crmRecord = await findQuoteByData(d);
+      if (crmRecord) {
+        const cases = await listCasesForQuote(crmRecord.id);
+        openCase = cases.find((c) => c.status === "abierto" || c.status === "en_revision") ?? null;
+      }
     } catch (err) {
       console.error("CRM: no se pudo comprobar el estado del presupuesto:", err);
     }
   }
+  const crmStatus = crmRecord?.status ?? null;
 
   const bizumPhone = getBizumPhone();
 
@@ -169,11 +177,23 @@ export default async function PresupuestoPage({ searchParams }: PresupuestoPageP
               )}
 
               {crmStatus === "pagado" ? (
-                <div className="mt-8 rounded-xl border border-success/30 bg-success/5 p-5 text-center print:hidden">
-                  <p className="text-sm font-semibold text-success">✓ Este presupuesto ya está pagado</p>
-                  <p className="mt-1 text-xs text-ink-muted">
-                    Si tienes cualquier duda sobre tu pedido, escríbenos por WhatsApp.
-                  </p>
+                <div className="mt-8 space-y-4 print:hidden">
+                  <div className="rounded-xl border border-success/30 bg-success/5 p-5 text-center">
+                    <p className="text-sm font-semibold text-success">✓ Este presupuesto ya está pagado</p>
+                    <p className="mt-1 text-xs text-ink-muted">
+                      Si tienes cualquier duda sobre tu pedido, escríbenos por WhatsApp.
+                    </p>
+                  </div>
+                  {crmRecord && (
+                    <PedidoEstado
+                      shippingStatus={crmRecord.shippingStatus}
+                      carrier={crmRecord.carrier}
+                      trackingNumber={crmRecord.trackingNumber}
+                      trackingUrl={crmRecord.trackingUrl}
+                      openCase={openCase}
+                      plate={quote.plate}
+                    />
+                  )}
                 </div>
               ) : crmStatus === "cancelado" || crmStatus === "perdido" ? (
                 <div className="mt-8 rounded-xl border border-line bg-surface-2 p-5 text-center print:hidden">
